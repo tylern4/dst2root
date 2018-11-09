@@ -1,4 +1,4 @@
-LZ4INC = -Ilz4/lib
+LZ4INC = -Isrc/lz4/lib
 ROOTLIBS = $(shell root-config --libs)
 CXXFLAGS = $(shell root-config --cflags) -Isrc/hipocpp $(LZ4INC)
 LIBFLAG = -c $(shell root-config --auxcflags) $(LZ4INC) -D__LZ4__
