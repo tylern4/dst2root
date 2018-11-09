@@ -28,5 +28,5 @@ int samplingFraction() {
   c1->cd();
   sf_hist->Draw("colz");
 
-  return 1;
+  return 0;
 }

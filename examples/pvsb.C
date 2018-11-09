@@ -4,6 +4,7 @@
 std::vector<int> *pid;
 std::vector<float> *p;
 std::vector<float> *beta;
+std::vector<int> *charge;
 
 TH2D *MomVsBeta = new TH2D("MomVsBeta", "Momentum vs Beta", 500, 0, 3.5, 500, 0, 1.2);
 
@@ -14,12 +15,13 @@ int pvsb() {
   clas12->SetBranchAddress("pid", &pid);
   clas12->SetBranchAddress("p", &p);
   clas12->SetBranchAddress("beta", &beta);
+  clas12->SetBranchAddress("charge", &charge);
 
   int num_of_events = (int)clas12->GetEntries();
   for (int current_event = 0; current_event < num_of_events; current_event++) {
     clas12->GetEntry(current_event);
     for (size_t i = 1; i < pid->size(); i++) {
-      if (beta->at(i) < 0.05) continue;
+      if (beta->at(i) < 0.05 || charge->at(i) == 0) continue;
       MomVsBeta->Fill(p->at(i), beta->at(i));
     }
   }
@@ -28,5 +30,5 @@ int pvsb() {
   c1->cd();
   MomVsBeta->Draw("colz");
 
-  return 1;
+  return 0;
 }
