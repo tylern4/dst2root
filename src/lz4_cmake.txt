@@ -1,0 +1,15 @@
+PROJECT(LZ4 C)
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "LZ4 compression library")
+set(CPACK_PACKAGE_VERSION_MAJOR 1)
+set(CPACK_PACKAGE_VERSION_MINOR 8)
+set(CPACK_PACKAGE_VERSION_PATCH 3)
+set(VERSION_STRING	" \"${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}\" ")
+include(CPack)
+
+cmake_minimum_required (VERSION 2.6)
+option(BUILD_LIBS  "Build the libraries in addition to the tools" ON)
+
+add_definitions(-fPIC)
+set(SRC_DIR lib/)
+set(LZ4_SRCS_LIB ${SRC_DIR}lz4.c ${SRC_DIR}lz4hc.c ${SRC_DIR}lz4.h ${SRC_DIR}xxhash.c)
+add_library(lz4 STATIC ${LZ4_SRCS_LIB})
