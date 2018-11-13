@@ -7,19 +7,16 @@ set(CMAKE_MODULE_PATH
    ${PROJECT_SOURCE_DIR}/cmake
    ${PROJECT_SOURCE_DIR}/cmake/modules)
 
-
-option(BUILD_LZ4  "Build lz4 libraries" OFF)
-set(LZ4_FOUND FALSE)
-find_package(LZ4)
-IF(${BUILD_LZ4} OR NOT ${LZ4_FOUND})
-  add_subdirectory(${PROJECT_SOURCE_DIR}/src)
-ENDIF()
-
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 
 find_package(ROOT REQUIRED COMPONENTS RIO Net)
 include(${ROOT_USE_FILE})
 
+set(LZ4_FOUND FALSE)
+find_package(LZ4)
+IF(NOT ${LZ4_FOUND})
+  add_subdirectory(${PROJECT_SOURCE_DIR}/src)
+ENDIF()
 
 include_directories(src/hipocpp)
 add_subdirectory(src/hipocpp)
