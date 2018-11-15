@@ -14,33 +14,40 @@
 // Hipo libs
 #include "reader.h"
 
+#include "clipp.h"
+
 #define NaN std::nanf("-9999")
 
 int main(int argc, char **argv) {
-  auto start_full = std::chrono::high_resolution_clock::now();
-  char InFileName[128];
-  char OutFileName[128];
-  bool batch = true;
+  std::string InFileName = "";
+  std::string OutFileName = "";
+  bool is_mc = false;
+  bool is_batch = false;
+  bool print_help = false;
+  bool good_rec = false;
+  bool elec_first = false;
 
-  if (argc == 2) {
-    sprintf(InFileName, "%s", argv[1]);
-    sprintf(OutFileName, "%s.root", argv[1]);
-    std::cout << OutFileName << std::endl;
-  } else if (argc == 3) {
-    sprintf(InFileName, "%s", argv[1]);
-    sprintf(OutFileName, "%s", argv[2]);
-  } else if (argc == 4) {
-    batch = false;
-    sprintf(InFileName, "%s", argv[2]);
-    sprintf(OutFileName, "%s", argv[3]);
-  } else {
-    std::cout << "Please provide a filename to read...." << std::endl;
+  auto cli =
+      (clipp::option("-h", "--help").set(print_help) % "print help",
+       clipp::option("-mc", "--MoneCarlo").set(is_mc) % "convert dst and mc banks",
+       clipp::option("-b", "--batch").set(is_batch) % "Don't show progress and statistics",
+       clipp::option("-r", "--rec").set(good_rec) % "Only save events where number of partilces in the event > 0",
+       clipp::option("-e", "--elec").set(elec_first) % "Only save events with good electron as first particle",
+       clipp::value("inputFile.hipo", InFileName), clipp::opt_value("outputFile.root", OutFileName));
+
+  clipp::parse(argc, argv, cli);
+  if (print_help || InFileName == "") {
+    std::cout << make_man_page(cli, argv[0]);
     exit(0);
   }
-  TFile *OutputFile = new TFile(OutFileName, "RECREATE");
+
+  if (OutFileName == "") OutFileName = InFileName + ".root";
+
+  auto start_full = std::chrono::high_resolution_clock::now();
+  TFile *OutputFile = new TFile(OutFileName.c_str(), "RECREATE");
   OutputFile->SetCompressionSettings(9);
   TTree *clas12 = new TTree("clas12", "clas12");
-  hipo::reader *reader = new hipo::reader(InFileName);
+  hipo::reader *reader = new hipo::reader(InFileName.c_str());
   int tot_hipo_events = reader->numEvents();
 
   hipo::node<int32_t> *run_node = reader->getBranch<int32_t>(11, 1);
@@ -129,6 +136,27 @@ int main(int argc, char **argv) {
   hipo::node<float> *track_vx_nomm_node = reader->getBranch<float>(336, 12);
   hipo::node<float> *track_vy_nomm_node = reader->getBranch<float>(336, 13);
   hipo::node<float> *track_vz_nomm_node = reader->getBranch<float>(336, 14);
+
+  hipo::node<float> *MC_Header_helicity_node = reader->getBranch<float>(40, 4);
+  hipo::node<int16_t> *MC_Event_npart_node = reader->getBranch<int16_t>(41, 1);
+  hipo::node<int32_t> *MC_Particle_pid_node = reader->getBranch<int32_t>(42, 1);
+  hipo::node<float> *MC_Particle_px_node = reader->getBranch<float>(42, 2);
+  hipo::node<float> *MC_Particle_py_node = reader->getBranch<float>(42, 3);
+  hipo::node<float> *MC_Particle_pz_node = reader->getBranch<float>(42, 4);
+  hipo::node<float> *MC_Particle_vx_node = reader->getBranch<float>(42, 5);
+  hipo::node<float> *MC_Particle_vy_node = reader->getBranch<float>(42, 6);
+  hipo::node<float> *MC_Particle_vz_node = reader->getBranch<float>(42, 7);
+  hipo::node<float> *MC_Particle_vt_node = reader->getBranch<float>(42, 8);
+
+  hipo::node<int32_t> *MC_Lund_pid_node = reader->getBranch<int32_t>(43, 3);
+  hipo::node<float> *MC_Lund_px_node = reader->getBranch<float>(43, 6);
+  hipo::node<float> *MC_Lund_py_node = reader->getBranch<float>(43, 7);
+  hipo::node<float> *MC_Lund_pz_node = reader->getBranch<float>(43, 8);
+  hipo::node<float> *MC_Lund_E_node = reader->getBranch<float>(43, 9);
+  hipo::node<float> *MC_Lund_vx_node = reader->getBranch<float>(43, 11);
+  hipo::node<float> *MC_Lund_vy_node = reader->getBranch<float>(43, 12);
+  hipo::node<float> *MC_Lund_vz_node = reader->getBranch<float>(43, 13);
+  hipo::node<float> *MC_Lund_ltime_node = reader->getBranch<float>(43, 14);
 
   std::vector<int> run;
   std::vector<int> event;
@@ -314,6 +342,26 @@ int main(int argc, char **argv) {
   std::vector<float> ft_hodo_dy;
   std::vector<float> ft_hodo_radius;
 
+  std::vector<int> MC_pid;
+  std::vector<float> MC_helicity;
+  std::vector<float> MC_px;
+  std::vector<float> MC_py;
+  std::vector<float> MC_pz;
+  std::vector<float> MC_vx;
+  std::vector<float> MC_vy;
+  std::vector<float> MC_vz;
+  std::vector<float> MC_vt;
+
+  std::vector<int> Lund_pid;
+  std::vector<float> Lund_px;
+  std::vector<float> Lund_py;
+  std::vector<float> Lund_pz;
+  std::vector<float> Lund_E;
+  std::vector<float> Lund_vx;
+  std::vector<float> Lund_vy;
+  std::vector<float> Lund_vz;
+  std::vector<float> Lund_ltime;
+
   clas12->Branch("run", &run);
   clas12->Branch("event", &event);
   clas12->Branch("torus", &torus);
@@ -340,6 +388,28 @@ int main(int argc, char **argv) {
   clas12->Branch("beta", &beta);
   clas12->Branch("chi2pid", &chi2pid);
   clas12->Branch("status", &status);
+
+  if (is_mc) {
+    clas12->Branch("mc_pid", &MC_pid);
+    clas12->Branch("mc_px", &MC_px);
+    clas12->Branch("mc_py", &MC_py);
+    clas12->Branch("mc_pz", &MC_pz);
+    clas12->Branch("mc_vx", &MC_vx);
+    clas12->Branch("mc_vy", &MC_vy);
+    clas12->Branch("mc_vz", &MC_vz);
+    clas12->Branch("mc_vt", &MC_vt);
+    clas12->Branch("mc_helicity", &MC_helicity);
+
+    clas12->Branch("lund_pid", &Lund_pid);
+    clas12->Branch("lund_px", &Lund_px);
+    clas12->Branch("lund_py", &Lund_py);
+    clas12->Branch("lund_pz", &Lund_pz);
+    clas12->Branch("lund_E", &Lund_E);
+    clas12->Branch("lund_vx", &Lund_vx);
+    clas12->Branch("lund_vy", &Lund_vy);
+    clas12->Branch("lund_vz", &Lund_vz);
+    clas12->Branch("lund_ltime", &Lund_ltime);
+  }
 
   clas12->Branch("ec_tot_energy", &ec_tot_energy);
   clas12->Branch("ec_pcal_energy", &ec_pcal_energy);
@@ -441,12 +511,12 @@ int main(int argc, char **argv) {
   int len_pindex = 0;
   while (reader->next() == true) {
     // entry++;
-    if (!batch && (++entry % 1000) == 0)
+    if (!is_batch && (++entry % 1000) == 0)
       std::cout << "\t" << int(100 * entry / tot_hipo_events) << "%\r\r" << std::flush;
-    /*
-        if (pid_node->getLength() == 0) continue;
-        if (pid_node->getValue(0) != 11) continue;
-    */
+
+    if (good_rec && pid_node->getLength() == 0) continue;
+    if (elec_first && pid_node->getValue(0) != 11) continue;
+
     l = run_node->getLength();
     run.resize(l);
     event.resize(l);
@@ -518,6 +588,48 @@ int main(int argc, char **argv) {
       status[i] = status_node->getValue(i);
     }
 
+    if (is_mc) {
+      l = MC_Particle_pid_node->getLength();
+      MC_helicity.resize(l);
+      MC_pid.resize(l);
+      MC_px.resize(l);
+      MC_py.resize(l);
+      MC_pz.resize(l);
+      MC_vx.resize(l);
+      MC_vy.resize(l);
+      MC_vz.resize(l);
+      MC_vt.resize(l);
+      Lund_pid.resize(l);
+      Lund_px.resize(l);
+      Lund_py.resize(l);
+      Lund_pz.resize(l);
+      Lund_E.resize(l);
+      Lund_vx.resize(l);
+      Lund_vy.resize(l);
+      Lund_vz.resize(l);
+      Lund_ltime.resize(l);
+      for (int i = 0; i < l; i++) {
+        MC_helicity[i] = MC_Header_helicity_node->getValue(i);
+        MC_pid[i] = MC_Particle_pid_node->getValue(i);
+        MC_px[i] = MC_Particle_px_node->getValue(i);
+        MC_py[i] = MC_Particle_py_node->getValue(i);
+        MC_pz[i] = MC_Particle_pz_node->getValue(i);
+        MC_vx[i] = MC_Particle_vx_node->getValue(i);
+        MC_vy[i] = MC_Particle_vy_node->getValue(i);
+        MC_vz[i] = MC_Particle_vz_node->getValue(i);
+        MC_vt[i] = MC_Particle_vt_node->getValue(i);
+
+        Lund_pid[i] = MC_Lund_pid_node->getValue(i);
+        Lund_px[i] = MC_Lund_px_node->getValue(i);
+        Lund_py[i] = MC_Lund_py_node->getValue(i);
+        Lund_pz[i] = MC_Lund_pz_node->getValue(i);
+        Lund_E[i] = MC_Lund_E_node->getValue(i);
+        Lund_vx[i] = MC_Lund_vx_node->getValue(i);
+        Lund_vy[i] = MC_Lund_vy_node->getValue(i);
+        Lund_vz[i] = MC_Lund_vz_node->getValue(i);
+        Lund_ltime[i] = MC_Lund_ltime_node->getValue(i);
+      }
+    }
     len_pid = pid_node->getLength();
     len_pindex = cal_pindex_node->getLength();
 
@@ -1223,13 +1335,34 @@ int main(int argc, char **argv) {
     cvt_vx.clear();
     cvt_vy.clear();
     cvt_vz.clear();
+
+    if (is_mc) {
+      MC_helicity.clear();
+      MC_pid.clear();
+      MC_px.clear();
+      MC_py.clear();
+      MC_pz.clear();
+      MC_vx.clear();
+      MC_vy.clear();
+      MC_vz.clear();
+      MC_vt.clear();
+      Lund_pid.clear();
+      Lund_px.clear();
+      Lund_py.clear();
+      Lund_pz.clear();
+      Lund_E.clear();
+      Lund_vx.clear();
+      Lund_vy.clear();
+      Lund_vz.clear();
+      Lund_ltime.clear();
+    }
   }
 
   OutputFile->cd();
   clas12->Write();
   OutputFile->Close();
 
-  if (!batch) {
+  if (!is_batch) {
     std::chrono::duration<double> elapsed_full = (std::chrono::high_resolution_clock::now() - start_full);
     std::cout << "Elapsed time: " << elapsed_full.count() << " s" << std::endl;
     std::cout << "Events/Sec: " << entry / elapsed_full.count() << " Hz" << std::endl;
