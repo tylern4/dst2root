@@ -9,12 +9,14 @@
 #include <iostream>
 #include <vector>
 // ROOT libs
+#include "Math/Vector4D.h"
 #include "TFile.h"
 #include "TTree.h"
 // Hipo libs
 #include "reader.h"
 
 #include "clipp.h"
+#include "constants.h"
 
 #define NaN std::nanf("-9999")
 
@@ -26,18 +28,20 @@ int main(int argc, char **argv) {
   bool print_help = false;
   bool good_rec = false;
   bool elec_first = false;
+  bool cov = false;
 
   auto cli =
       (clipp::option("-h", "--help").set(print_help) % "print help",
-       clipp::option("-mc", "--MoneCarlo").set(is_mc) % "convert dst and mc banks",
+       clipp::option("-mc", "--MC").set(is_mc) % "Convert dst and mc banks",
        clipp::option("-b", "--batch").set(is_batch) % "Don't show progress and statistics",
        clipp::option("-r", "--rec").set(good_rec) % "Only save events where number of partilces in the event > 0",
        clipp::option("-e", "--elec").set(elec_first) % "Only save events with good electron as first particle",
+       clipp::option("-c", "--cov").set(cov) % "Save Covariant Matrix for kinematic fitting",
        clipp::value("inputFile.hipo", InFileName), clipp::opt_value("outputFile.root", OutFileName));
 
   clipp::parse(argc, argv, cli);
   if (print_help || InFileName == "") {
-    std::cout << make_man_page(cli, argv[0]);
+    std::cout << clipp::make_man_page(cli, argv[0]);
     exit(0);
   }
 
@@ -45,7 +49,8 @@ int main(int argc, char **argv) {
 
   auto start_full = std::chrono::high_resolution_clock::now();
   TFile *OutputFile = new TFile(OutFileName.c_str(), "RECREATE");
-  OutputFile->SetCompressionSettings(9);
+  OutputFile->SetCompressionSettings(6);
+
   TTree *clas12 = new TTree("clas12", "clas12");
   hipo::reader *reader = new hipo::reader(InFileName.c_str());
   int tot_hipo_events = reader->numEvents();
@@ -139,14 +144,14 @@ int main(int argc, char **argv) {
 
   hipo::node<float> *MC_Header_helicity_node = reader->getBranch<float>(40, 4);
   hipo::node<int16_t> *MC_Event_npart_node = reader->getBranch<int16_t>(41, 1);
-  hipo::node<int32_t> *MC_Particle_pid_node = reader->getBranch<int32_t>(42, 1);
-  hipo::node<float> *MC_Particle_px_node = reader->getBranch<float>(42, 2);
-  hipo::node<float> *MC_Particle_py_node = reader->getBranch<float>(42, 3);
-  hipo::node<float> *MC_Particle_pz_node = reader->getBranch<float>(42, 4);
-  hipo::node<float> *MC_Particle_vx_node = reader->getBranch<float>(42, 5);
-  hipo::node<float> *MC_Particle_vy_node = reader->getBranch<float>(42, 6);
-  hipo::node<float> *MC_Particle_vz_node = reader->getBranch<float>(42, 7);
-  hipo::node<float> *MC_Particle_vt_node = reader->getBranch<float>(42, 8);
+  hipo::node<int32_t> *MC_pid_node = reader->getBranch<int32_t>(42, 1);
+  hipo::node<float> *MC_px_node = reader->getBranch<float>(42, 2);
+  hipo::node<float> *MC_py_node = reader->getBranch<float>(42, 3);
+  hipo::node<float> *MC_pz_node = reader->getBranch<float>(42, 4);
+  hipo::node<float> *MC_vx_node = reader->getBranch<float>(42, 5);
+  hipo::node<float> *MC_vy_node = reader->getBranch<float>(42, 6);
+  hipo::node<float> *MC_vz_node = reader->getBranch<float>(42, 7);
+  hipo::node<float> *MC_vt_node = reader->getBranch<float>(42, 8);
 
   hipo::node<int32_t> *MC_Lund_pid_node = reader->getBranch<int32_t>(43, 3);
   hipo::node<float> *MC_Lund_px_node = reader->getBranch<float>(43, 6);
@@ -157,6 +162,23 @@ int main(int argc, char **argv) {
   hipo::node<float> *MC_Lund_vy_node = reader->getBranch<float>(43, 12);
   hipo::node<float> *MC_Lund_vz_node = reader->getBranch<float>(43, 13);
   hipo::node<float> *MC_Lund_ltime_node = reader->getBranch<float>(43, 14);
+
+  hipo::node<int16_t> *CovMat_pindex_node = reader->getBranch<int16_t>(338, 2);
+  hipo::node<float> *CovMat_C11_node = reader->getBranch<float>(338, 3);
+  hipo::node<float> *CovMat_C12_node = reader->getBranch<float>(338, 4);
+  hipo::node<float> *CovMat_C13_node = reader->getBranch<float>(338, 5);
+  hipo::node<float> *CovMat_C14_node = reader->getBranch<float>(338, 6);
+  hipo::node<float> *CovMat_C15_node = reader->getBranch<float>(338, 7);
+  hipo::node<float> *CovMat_C22_node = reader->getBranch<float>(338, 8);
+  hipo::node<float> *CovMat_C23_node = reader->getBranch<float>(338, 9);
+  hipo::node<float> *CovMat_C24_node = reader->getBranch<float>(338, 10);
+  hipo::node<float> *CovMat_C25_node = reader->getBranch<float>(338, 11);
+  hipo::node<float> *CovMat_C33_node = reader->getBranch<float>(338, 12);
+  hipo::node<float> *CovMat_C34_node = reader->getBranch<float>(338, 13);
+  hipo::node<float> *CovMat_C35_node = reader->getBranch<float>(338, 14);
+  hipo::node<float> *CovMat_C44_node = reader->getBranch<float>(338, 15);
+  hipo::node<float> *CovMat_C45_node = reader->getBranch<float>(338, 16);
+  hipo::node<float> *CovMat_C55_node = reader->getBranch<float>(338, 17);
 
   std::vector<int> run;
   std::vector<int> event;
@@ -179,6 +201,9 @@ int main(int argc, char **argv) {
   std::vector<int> Helic;
 
   std::vector<int> pid;
+  std::vector<ROOT::Math::XYZTVector> particle;
+  std::vector<float> mass;
+  std::vector<float> energy;
   std::vector<float> p;
   std::vector<float> p2;
   std::vector<float> px;
@@ -353,6 +378,7 @@ int main(int argc, char **argv) {
   std::vector<float> MC_vt;
 
   std::vector<int> Lund_pid;
+  std::vector<ROOT::Math::XYZTVector> Lund_particle;
   std::vector<float> Lund_px;
   std::vector<float> Lund_py;
   std::vector<float> Lund_pz;
@@ -361,6 +387,22 @@ int main(int argc, char **argv) {
   std::vector<float> Lund_vy;
   std::vector<float> Lund_vz;
   std::vector<float> Lund_ltime;
+
+  std::vector<float> CovMat_11;
+  std::vector<float> CovMat_12;
+  std::vector<float> CovMat_13;
+  std::vector<float> CovMat_14;
+  std::vector<float> CovMat_15;
+  std::vector<float> CovMat_22;
+  std::vector<float> CovMat_23;
+  std::vector<float> CovMat_24;
+  std::vector<float> CovMat_25;
+  std::vector<float> CovMat_33;
+  std::vector<float> CovMat_34;
+  std::vector<float> CovMat_35;
+  std::vector<float> CovMat_44;
+  std::vector<float> CovMat_45;
+  std::vector<float> CovMat_55;
 
   clas12->Branch("run", &run);
   clas12->Branch("event", &event);
@@ -376,6 +418,7 @@ int main(int argc, char **argv) {
   clas12->Branch("RFTime", &RFTime);
 
   clas12->Branch("pid", &pid);
+  clas12->Branch("particle", &particle);
   clas12->Branch("p", &p);
   clas12->Branch("p2", &p2);
   clas12->Branch("px", &px);
@@ -384,11 +427,29 @@ int main(int argc, char **argv) {
   clas12->Branch("vx", &vx);
   clas12->Branch("vy", &vy);
   clas12->Branch("vz", &vz);
+  clas12->Branch("mass_pid", &mass);
+  clas12->Branch("energy_pid", &energy);
   clas12->Branch("charge", &charge);
   clas12->Branch("beta", &beta);
   clas12->Branch("chi2pid", &chi2pid);
   clas12->Branch("status", &status);
-
+  if (cov) {
+    clas12->Branch("CovMat_11", &CovMat_11);
+    clas12->Branch("CovMat_12", &CovMat_12);
+    clas12->Branch("CovMat_13", &CovMat_13);
+    clas12->Branch("CovMat_14", &CovMat_14);
+    clas12->Branch("CovMat_15", &CovMat_15);
+    clas12->Branch("CovMat_22", &CovMat_22);
+    clas12->Branch("CovMat_23", &CovMat_23);
+    clas12->Branch("CovMat_24", &CovMat_24);
+    clas12->Branch("CovMat_25", &CovMat_25);
+    clas12->Branch("CovMat_33", &CovMat_33);
+    clas12->Branch("CovMat_34", &CovMat_34);
+    clas12->Branch("CovMat_35", &CovMat_35);
+    clas12->Branch("CovMat_44", &CovMat_44);
+    clas12->Branch("CovMat_45", &CovMat_45);
+    clas12->Branch("CovMat_55", &CovMat_55);
+  }
   if (is_mc) {
     clas12->Branch("mc_pid", &MC_pid);
     clas12->Branch("mc_px", &MC_px);
@@ -401,6 +462,7 @@ int main(int argc, char **argv) {
     clas12->Branch("mc_helicity", &MC_helicity);
 
     clas12->Branch("lund_pid", &Lund_pid);
+    clas12->Branch("lund_particle", &Lund_particle);
     clas12->Branch("lund_px", &Lund_px);
     clas12->Branch("lund_py", &Lund_py);
     clas12->Branch("lund_pz", &Lund_pz);
@@ -557,6 +619,9 @@ int main(int argc, char **argv) {
     }
 
     l = pid_node->getLength();
+    mass.resize(l);
+    energy.resize(l);
+    particle.resize(l);
     pid.resize(l);
     p.resize(l);
     p2.resize(l);
@@ -586,10 +651,14 @@ int main(int argc, char **argv) {
       beta[i] = ((beta_node->getValue(i) != -9999) ? beta_node->getValue(i) : NaN);
       chi2pid[i] = chi2pid_node->getValue(i);
       status[i] = status_node->getValue(i);
+      mass[i] = massFromPID(pid[i]);
+      energy[i] = ROOT::Math::sqrt(p2[i] + mass[i]);
+
+      particle[i].SetPxPyPzE(px[i], py[i], pz[i], energy[i]);
     }
 
     if (is_mc) {
-      l = MC_Particle_pid_node->getLength();
+      l = MC_pid_node->getLength();
       MC_helicity.resize(l);
       MC_pid.resize(l);
       MC_px.resize(l);
@@ -599,6 +668,7 @@ int main(int argc, char **argv) {
       MC_vy.resize(l);
       MC_vz.resize(l);
       MC_vt.resize(l);
+      Lund_particle.resize(l);
       Lund_pid.resize(l);
       Lund_px.resize(l);
       Lund_py.resize(l);
@@ -610,20 +680,21 @@ int main(int argc, char **argv) {
       Lund_ltime.resize(l);
       for (int i = 0; i < l; i++) {
         MC_helicity[i] = MC_Header_helicity_node->getValue(i);
-        MC_pid[i] = MC_Particle_pid_node->getValue(i);
-        MC_px[i] = MC_Particle_px_node->getValue(i);
-        MC_py[i] = MC_Particle_py_node->getValue(i);
-        MC_pz[i] = MC_Particle_pz_node->getValue(i);
-        MC_vx[i] = MC_Particle_vx_node->getValue(i);
-        MC_vy[i] = MC_Particle_vy_node->getValue(i);
-        MC_vz[i] = MC_Particle_vz_node->getValue(i);
-        MC_vt[i] = MC_Particle_vt_node->getValue(i);
+        MC_pid[i] = MC_pid_node->getValue(i);
+        MC_px[i] = MC_px_node->getValue(i);
+        MC_py[i] = MC_py_node->getValue(i);
+        MC_pz[i] = MC_pz_node->getValue(i);
+        MC_vx[i] = MC_vx_node->getValue(i);
+        MC_vy[i] = MC_vy_node->getValue(i);
+        MC_vz[i] = MC_vz_node->getValue(i);
+        MC_vt[i] = MC_vt_node->getValue(i);
 
         Lund_pid[i] = MC_Lund_pid_node->getValue(i);
         Lund_px[i] = MC_Lund_px_node->getValue(i);
         Lund_py[i] = MC_Lund_py_node->getValue(i);
         Lund_pz[i] = MC_Lund_pz_node->getValue(i);
         Lund_E[i] = MC_Lund_E_node->getValue(i);
+        Lund_particle[i].SetPxPyPzE(Lund_px[i], Lund_py[i], Lund_pz[i], Lund_E[i]);
         Lund_vx[i] = MC_Lund_vx_node->getValue(i);
         Lund_vy[i] = MC_Lund_vy_node->getValue(i);
         Lund_vz[i] = MC_Lund_vz_node->getValue(i);
@@ -1174,7 +1245,72 @@ int main(int argc, char **argv) {
       }
     }
 
+    if (cov) {
+      len_pid = pid_node->getLength();
+      len_pindex = CovMat_pindex_node->getLength();
+
+      CovMat_11.resize(len_pid);
+      CovMat_12.resize(len_pid);
+      CovMat_13.resize(len_pid);
+      CovMat_14.resize(len_pid);
+      CovMat_15.resize(len_pid);
+      CovMat_22.resize(len_pid);
+      CovMat_23.resize(len_pid);
+      CovMat_24.resize(len_pid);
+      CovMat_25.resize(len_pid);
+      CovMat_33.resize(len_pid);
+      CovMat_34.resize(len_pid);
+      CovMat_35.resize(len_pid);
+      CovMat_44.resize(len_pid);
+      CovMat_45.resize(len_pid);
+      CovMat_55.resize(len_pid);
+
+      for (int i = 0; i < len_pid; i++) {
+        CovMat_11[i] = NaN;
+        CovMat_12[i] = NaN;
+        CovMat_13[i] = NaN;
+        CovMat_14[i] = NaN;
+        CovMat_15[i] = NaN;
+        CovMat_22[i] = NaN;
+        CovMat_23[i] = NaN;
+        CovMat_24[i] = NaN;
+        CovMat_25[i] = NaN;
+        CovMat_33[i] = NaN;
+        CovMat_34[i] = NaN;
+        CovMat_35[i] = NaN;
+        CovMat_44[i] = NaN;
+        CovMat_45[i] = NaN;
+        CovMat_55[i] = NaN;
+      }
+
+      for (int i = 0; i < len_pid; i++) {
+        for (int k = 0; k < len_pindex; ++k) {
+          int pindex = CovMat_pindex_node->getValue(k);
+          // std::cout << "i: " << i << " len_i: " << len_pid << " k:" << k << " len_k:" << len_pindex << '\n';
+          if (pindex == i) {
+            CovMat_11[i] = CovMat_C11_node->getValue(k);
+            CovMat_12[i] = CovMat_C12_node->getValue(k);
+            CovMat_13[i] = CovMat_C13_node->getValue(k);
+            CovMat_14[i] = CovMat_C14_node->getValue(k);
+            CovMat_15[i] = CovMat_C15_node->getValue(k);
+            CovMat_22[i] = CovMat_C22_node->getValue(k);
+            CovMat_23[i] = CovMat_C23_node->getValue(k);
+            CovMat_24[i] = CovMat_C24_node->getValue(k);
+            CovMat_25[i] = CovMat_C25_node->getValue(k);
+            CovMat_33[i] = CovMat_C33_node->getValue(k);
+            CovMat_34[i] = CovMat_C34_node->getValue(k);
+            CovMat_35[i] = CovMat_C35_node->getValue(k);
+            CovMat_44[i] = CovMat_C44_node->getValue(k);
+            CovMat_45[i] = CovMat_C45_node->getValue(k);
+            CovMat_55[i] = CovMat_C55_node->getValue(k);
+          }
+        }
+      }
+    }
+
     clas12->Fill();
+    /*
+    std::cout << "del" << '\n';
     run.clear();
     event.clear();
     torus.clear();
@@ -1196,6 +1332,9 @@ int main(int argc, char **argv) {
     Helic.clear();
 
     pid.clear();
+    particle.clear();
+    mass.clear();
+    energy.clear();
     p.clear();
     p2.clear();
     px.clear();
@@ -1336,6 +1475,24 @@ int main(int argc, char **argv) {
     cvt_vy.clear();
     cvt_vz.clear();
 
+    if (cov) {
+      CovMat_11.clear();
+      CovMat_12.clear();
+      CovMat_13.clear();
+      CovMat_14.clear();
+      CovMat_15.clear();
+      CovMat_22.clear();
+      CovMat_23.clear();
+      CovMat_24.clear();
+      CovMat_25.clear();
+      CovMat_33.clear();
+      CovMat_34.clear();
+      CovMat_35.clear();
+      CovMat_44.clear();
+      CovMat_45.clear();
+      CovMat_55.clear();
+    }
+
     if (is_mc) {
       MC_helicity.clear();
       MC_pid.clear();
@@ -1356,6 +1513,7 @@ int main(int argc, char **argv) {
       Lund_vz.clear();
       Lund_ltime.clear();
     }
+    */
   }
 
   OutputFile->cd();
