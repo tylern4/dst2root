@@ -11,6 +11,20 @@ Conversion program from hipo to root format for dst and skimmed files. This prog
 ## To use
     ./dst2root infile.hipo outfile.root
 
+## Help
+```
+SYNOPSIS
+    ./dst2root [-h] [-mc] [-b] [-r] [-e] [-c] <inputFile.hipo> [<outputFile.root>]
+
+OPTIONS
+    -h, --help  print help
+    -mc, --MC   Convert dst and mc banks
+    -b, --batch Don't show progress and statistics
+    -r, --rec   Only save events where number of partilces in the event > 0
+    -e, --elec  Only save events with good electron as first particle
+    -c, --cov   Save Covariant Matrix for kinematic fitting
+```
+
 ## TODO
 
 -   [ ] Check that all needed banks are present and correctly ported over.

@@ -1286,7 +1286,6 @@ int main(int argc, char **argv) {
       for (int i = 0; i < len_pid; i++) {
         for (int k = 0; k < len_pindex; ++k) {
           int pindex = CovMat_pindex_node->getValue(k);
-          // std::cout << "i: " << i << " len_i: " << len_pid << " k:" << k << " len_k:" << len_pindex << '\n';
           if (pindex == i) {
             CovMat_11[i] = CovMat_C11_node->getValue(k);
             CovMat_12[i] = CovMat_C12_node->getValue(k);
