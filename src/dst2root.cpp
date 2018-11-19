@@ -29,6 +29,7 @@ int main(int argc, char **argv) {
   bool good_rec = false;
   bool elec_first = false;
   bool cov = false;
+  bool cvt = false;
 
   auto cli =
       (clipp::option("-h", "--help").set(print_help) % "print help",
@@ -37,6 +38,7 @@ int main(int argc, char **argv) {
        clipp::option("-r", "--rec").set(good_rec) % "Only save events where number of partilces in the event > 0",
        clipp::option("-e", "--elec").set(elec_first) % "Only save events with good electron as first particle",
        clipp::option("-c", "--cov").set(cov) % "Save Covariant Matrix for kinematic fitting",
+       clipp::option("-cvt", "-centralDetector").set(cvt) % "Save CVT information for kinematic fitting",
        clipp::value("inputFile.hipo", InFileName), clipp::opt_value("outputFile.root", OutFileName));
 
   clipp::parse(argc, argv, cli);
@@ -179,6 +181,23 @@ int main(int argc, char **argv) {
   hipo::node<float> *CovMat_C44_node = reader->getBranch<float>(338, 15);
   hipo::node<float> *CovMat_C45_node = reader->getBranch<float>(338, 16);
   hipo::node<float> *CovMat_C55_node = reader->getBranch<float>(338, 17);
+
+  hipo::node<int16_t> *CVT_pid_node = reader->getBranch<int16_t>(20526, 1);
+  hipo::node<int8_t> *CVT_q_node = reader->getBranch<int8_t>(20526, 10);
+  hipo::node<float> *CVT_p_node = reader->getBranch<float>(20526, 11);
+  hipo::node<float> *CVT_pt_node = reader->getBranch<float>(20526, 12);
+  hipo::node<float> *CVT_phi0_node = reader->getBranch<float>(20526, 13);
+  hipo::node<float> *CVT_tandip_node = reader->getBranch<float>(20526, 14);
+  hipo::node<float> *CVT_z0_node = reader->getBranch<float>(20526, 15);
+  hipo::node<float> *CVT_d0_node = reader->getBranch<float>(20526, 16);
+  hipo::node<float> *CVT_Cov_d02_node = reader->getBranch<float>(20526, 17);
+  hipo::node<float> *CVT_Cov_d0phi0_node = reader->getBranch<float>(20526, 18);
+  hipo::node<float> *CVT_Cov_d0rho_node = reader->getBranch<float>(20526, 19);
+  hipo::node<float> *CVT_Cov_phi02_node = reader->getBranch<float>(20526, 20);
+  hipo::node<float> *CVT_Cov_phi0rho_node = reader->getBranch<float>(20526, 21);
+  hipo::node<float> *CVT_Cov_rho2_node = reader->getBranch<float>(20526, 22);
+  hipo::node<float> *CVT_Cov_z02_node = reader->getBranch<float>(20526, 23);
+  hipo::node<float> *CVT_Cov_tandip2_node = reader->getBranch<float>(20526, 24);
 
   std::vector<int> run;
   std::vector<int> event;
@@ -404,6 +423,24 @@ int main(int argc, char **argv) {
   std::vector<float> CovMat_45;
   std::vector<float> CovMat_55;
 
+
+  std::vector<int> cvt_pid;
+  std::vector<int> cvt_q;
+  std::vector<float> cvt_p;
+  std::vector<float> cvt_pt;
+  std::vector<float> cvt_phi0;
+  std::vector<float> cvt_tandip;
+  std::vector<float> cvt_z0;
+  std::vector<float> cvt_d0;
+  std::vector<float> cvt_CovMat_d02;
+  std::vector<float> cvt_CovMat_d0phi0;
+  std::vector<float> cvt_CovMat_d0rho;
+  std::vector<float> cvt_CovMat_phi02;
+  std::vector<float> cvt_CovMat_phi0rho;
+  std::vector<float> cvt_CovMat_rho2;
+  std::vector<float> cvt_CovMat_z02;
+  std::vector<float> cvt_CovMat_tandip2;
+
   clas12->Branch("run", &run);
   clas12->Branch("event", &event);
   clas12->Branch("torus", &torus);
@@ -433,6 +470,7 @@ int main(int argc, char **argv) {
   clas12->Branch("beta", &beta);
   clas12->Branch("chi2pid", &chi2pid);
   clas12->Branch("status", &status);
+  
   if (cov) {
     clas12->Branch("CovMat_11", &CovMat_11);
     clas12->Branch("CovMat_12", &CovMat_12);
@@ -449,6 +487,23 @@ int main(int argc, char **argv) {
     clas12->Branch("CovMat_44", &CovMat_44);
     clas12->Branch("CovMat_45", &CovMat_45);
     clas12->Branch("CovMat_55", &CovMat_55);
+  }
+  if( cvt ){
+    clas12->Branch("cvt_pid",&cvt_pid);
+    clas12->Branch("cvt_q",&cvt_q);
+    clas12->Branch("cvt_p",&cvt_p);
+    clas12->Branch("cvt_pt",&cvt_pt);
+    clas12->Branch("cvt_phi0",&cvt_phi0);
+    clas12->Branch("cvt_tandip",&cvt_tandip);
+    clas12->Branch("cvt_z0",&cvt_z0);
+    clas12->Branch("cvt_d0",&cvt_d0);
+    clas12->Branch("cvt_CovMat_d02",&cvt_CovMat_d02);
+    clas12->Branch("cvt_CovMat_d0rho",&cvt_CovMat_d0rho);
+    clas12->Branch("cvt_CovMat_phi02",&cvt_CovMat_phi02);
+    clas12->Branch("cvt_CovMat_phi0rho",&cvt_CovMat_phi0rho);
+    clas12->Branch("cvt_CovMat_rho2",&cvt_CovMat_rho2);
+    clas12->Branch("cvt_CovMat_z02",&cvt_CovMat_z02);
+    clas12->Branch("cvt_CovMat_tandip2",&cvt_CovMat_tandip2);    
   }
   if (is_mc) {
     clas12->Branch("mc_pid", &MC_pid);
@@ -1246,6 +1301,7 @@ int main(int argc, char **argv) {
     }
 
     if (cov) {
+
       len_pid = pid_node->getLength();
       len_pindex = CovMat_pindex_node->getLength();
 
@@ -1307,9 +1363,55 @@ int main(int argc, char **argv) {
       }
     }
 
+    if( cvt ){
+
+      len_pid = CVT_pid_node->getLength();
+
+      if( len_pid != 0 ){
+	l = CVT_pid_node->getLength();
+	cvt_pid.resize(l);
+	cvt_q.resize(l);
+	cvt_p.resize(l);
+	cvt_pt.resize(l);
+	cvt_phi0.resize(l);
+	cvt_tandip.resize(l);
+	cvt_z0.resize(l);
+	cvt_d0.resize(l);
+	cvt_CovMat_d02.resize(l);
+	cvt_CovMat_d0phi0.resize(l);
+	cvt_CovMat_d0rho.resize(l);
+	cvt_CovMat_phi02.resize(l);
+	cvt_CovMat_phi0rho.resize(l);
+	cvt_CovMat_rho2.resize(l);
+	cvt_CovMat_z02.resize(l);
+	cvt_CovMat_tandip2.resize(l);
+
+
+	for( int i = 0; i < l; i++ ){
+	  cvt_pid[i] = CVT_pid_node->getValue(i);
+	  cvt_q[i] = CVT_q_node->getValue(i);
+	  cvt_p[i] = CVT_p_node->getValue(i);
+	  cvt_phi0[i] = CVT_phi0_node->getValue(i);
+	  cvt_tandip[i] = CVT_tandip_node->getValue(i);
+	  cvt_z0[i] = CVT_z0_node->getValue(i);
+	  cvt_d0[i] = CVT_d0_node->getValue(i);
+	  cvt_CovMat_d02[i] = CVT_Cov_d02_node->getValue(i);
+	  cvt_CovMat_d0phi0[i] = CVT_Cov_d0phi0_node->getValue(i);
+	  cvt_CovMat_d0rho[i] = CVT_Cov_d0rho_node->getValue(i);
+	  cvt_CovMat_phi02[i] = CVT_Cov_phi02_node->getValue(i);
+	  cvt_CovMat_phi0rho[i] = CVT_Cov_phi0rho_node->getValue(i);
+	  cvt_CovMat_rho2[i] = CVT_Cov_rho2_node->getValue(i);
+	  cvt_CovMat_z02[i] = CVT_Cov_z02_node->getValue(i);
+	  cvt_CovMat_tandip2[i] = CVT_Cov_tandip2_node->getValue(i);
+	}
+	
+      }
+      
+    }
+    
     clas12->Fill();
     /*
-    std::cout << "del" << '\n';
+      std::cout << "del" << '\n';
     run.clear();
     event.clear();
     torus.clear();
