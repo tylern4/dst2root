@@ -423,7 +423,6 @@ int main(int argc, char **argv) {
   std::vector<float> CovMat_45;
   std::vector<float> CovMat_55;
 
-
   std::vector<int> cvt_pid;
   std::vector<int> cvt_q;
   std::vector<float> cvt_p;
@@ -470,7 +469,7 @@ int main(int argc, char **argv) {
   clas12->Branch("beta", &beta);
   clas12->Branch("chi2pid", &chi2pid);
   clas12->Branch("status", &status);
-  
+
   if (cov) {
     clas12->Branch("CovMat_11", &CovMat_11);
     clas12->Branch("CovMat_12", &CovMat_12);
@@ -488,22 +487,22 @@ int main(int argc, char **argv) {
     clas12->Branch("CovMat_45", &CovMat_45);
     clas12->Branch("CovMat_55", &CovMat_55);
   }
-  if( cvt ){
-    clas12->Branch("cvt_pid",&cvt_pid);
-    clas12->Branch("cvt_q",&cvt_q);
-    clas12->Branch("cvt_p",&cvt_p);
-    clas12->Branch("cvt_pt",&cvt_pt);
-    clas12->Branch("cvt_phi0",&cvt_phi0);
-    clas12->Branch("cvt_tandip",&cvt_tandip);
-    clas12->Branch("cvt_z0",&cvt_z0);
-    clas12->Branch("cvt_d0",&cvt_d0);
-    clas12->Branch("cvt_CovMat_d02",&cvt_CovMat_d02);
-    clas12->Branch("cvt_CovMat_d0rho",&cvt_CovMat_d0rho);
-    clas12->Branch("cvt_CovMat_phi02",&cvt_CovMat_phi02);
-    clas12->Branch("cvt_CovMat_phi0rho",&cvt_CovMat_phi0rho);
-    clas12->Branch("cvt_CovMat_rho2",&cvt_CovMat_rho2);
-    clas12->Branch("cvt_CovMat_z02",&cvt_CovMat_z02);
-    clas12->Branch("cvt_CovMat_tandip2",&cvt_CovMat_tandip2);    
+  if (cvt) {
+    clas12->Branch("cvt_pid", &cvt_pid);
+    clas12->Branch("cvt_q", &cvt_q);
+    clas12->Branch("cvt_p", &cvt_p);
+    clas12->Branch("cvt_pt", &cvt_pt);
+    clas12->Branch("cvt_phi0", &cvt_phi0);
+    clas12->Branch("cvt_tandip", &cvt_tandip);
+    clas12->Branch("cvt_z0", &cvt_z0);
+    clas12->Branch("cvt_d0", &cvt_d0);
+    clas12->Branch("cvt_CovMat_d02", &cvt_CovMat_d02);
+    clas12->Branch("cvt_CovMat_d0rho", &cvt_CovMat_d0rho);
+    clas12->Branch("cvt_CovMat_phi02", &cvt_CovMat_phi02);
+    clas12->Branch("cvt_CovMat_phi0rho", &cvt_CovMat_phi0rho);
+    clas12->Branch("cvt_CovMat_rho2", &cvt_CovMat_rho2);
+    clas12->Branch("cvt_CovMat_z02", &cvt_CovMat_z02);
+    clas12->Branch("cvt_CovMat_tandip2", &cvt_CovMat_tandip2);
   }
   if (is_mc) {
     clas12->Branch("mc_pid", &MC_pid);
@@ -1301,7 +1300,6 @@ int main(int argc, char **argv) {
     }
 
     if (cov) {
-
       len_pid = pid_node->getLength();
       len_pindex = CovMat_pindex_node->getLength();
 
@@ -1363,258 +1361,49 @@ int main(int argc, char **argv) {
       }
     }
 
-    if( cvt ){
-
+    if (cvt) {
       len_pid = CVT_pid_node->getLength();
 
-      if( len_pid != 0 ){
-	l = CVT_pid_node->getLength();
-	cvt_pid.resize(l);
-	cvt_q.resize(l);
-	cvt_p.resize(l);
-	cvt_pt.resize(l);
-	cvt_phi0.resize(l);
-	cvt_tandip.resize(l);
-	cvt_z0.resize(l);
-	cvt_d0.resize(l);
-	cvt_CovMat_d02.resize(l);
-	cvt_CovMat_d0phi0.resize(l);
-	cvt_CovMat_d0rho.resize(l);
-	cvt_CovMat_phi02.resize(l);
-	cvt_CovMat_phi0rho.resize(l);
-	cvt_CovMat_rho2.resize(l);
-	cvt_CovMat_z02.resize(l);
-	cvt_CovMat_tandip2.resize(l);
+      if (len_pid != 0) {
+        l = CVT_pid_node->getLength();
+        cvt_pid.resize(l);
+        cvt_q.resize(l);
+        cvt_p.resize(l);
+        cvt_pt.resize(l);
+        cvt_phi0.resize(l);
+        cvt_tandip.resize(l);
+        cvt_z0.resize(l);
+        cvt_d0.resize(l);
+        cvt_CovMat_d02.resize(l);
+        cvt_CovMat_d0phi0.resize(l);
+        cvt_CovMat_d0rho.resize(l);
+        cvt_CovMat_phi02.resize(l);
+        cvt_CovMat_phi0rho.resize(l);
+        cvt_CovMat_rho2.resize(l);
+        cvt_CovMat_z02.resize(l);
+        cvt_CovMat_tandip2.resize(l);
 
-
-	for( int i = 0; i < l; i++ ){
-	  cvt_pid[i] = CVT_pid_node->getValue(i);
-	  cvt_q[i] = CVT_q_node->getValue(i);
-	  cvt_p[i] = CVT_p_node->getValue(i);
-	  cvt_phi0[i] = CVT_phi0_node->getValue(i);
-	  cvt_tandip[i] = CVT_tandip_node->getValue(i);
-	  cvt_z0[i] = CVT_z0_node->getValue(i);
-	  cvt_d0[i] = CVT_d0_node->getValue(i);
-	  cvt_CovMat_d02[i] = CVT_Cov_d02_node->getValue(i);
-	  cvt_CovMat_d0phi0[i] = CVT_Cov_d0phi0_node->getValue(i);
-	  cvt_CovMat_d0rho[i] = CVT_Cov_d0rho_node->getValue(i);
-	  cvt_CovMat_phi02[i] = CVT_Cov_phi02_node->getValue(i);
-	  cvt_CovMat_phi0rho[i] = CVT_Cov_phi0rho_node->getValue(i);
-	  cvt_CovMat_rho2[i] = CVT_Cov_rho2_node->getValue(i);
-	  cvt_CovMat_z02[i] = CVT_Cov_z02_node->getValue(i);
-	  cvt_CovMat_tandip2[i] = CVT_Cov_tandip2_node->getValue(i);
-	}
-	
+        for (int i = 0; i < l; i++) {
+          cvt_pid[i] = CVT_pid_node->getValue(i);
+          cvt_q[i] = CVT_q_node->getValue(i);
+          cvt_p[i] = CVT_p_node->getValue(i);
+          cvt_phi0[i] = CVT_phi0_node->getValue(i);
+          cvt_tandip[i] = CVT_tandip_node->getValue(i);
+          cvt_z0[i] = CVT_z0_node->getValue(i);
+          cvt_d0[i] = CVT_d0_node->getValue(i);
+          cvt_CovMat_d02[i] = CVT_Cov_d02_node->getValue(i);
+          cvt_CovMat_d0phi0[i] = CVT_Cov_d0phi0_node->getValue(i);
+          cvt_CovMat_d0rho[i] = CVT_Cov_d0rho_node->getValue(i);
+          cvt_CovMat_phi02[i] = CVT_Cov_phi02_node->getValue(i);
+          cvt_CovMat_phi0rho[i] = CVT_Cov_phi0rho_node->getValue(i);
+          cvt_CovMat_rho2[i] = CVT_Cov_rho2_node->getValue(i);
+          cvt_CovMat_z02[i] = CVT_Cov_z02_node->getValue(i);
+          cvt_CovMat_tandip2[i] = CVT_Cov_tandip2_node->getValue(i);
+        }
       }
-      
     }
-    
+
     clas12->Fill();
-    /*
-      std::cout << "del" << '\n';
-    run.clear();
-    event.clear();
-    torus.clear();
-    solenoid.clear();
-    crate.clear();
-    slot.clear();
-    channel.clear();
-    helicity.clear();
-    quartet.clear();
-    value.clear();
-    NRUN.clear();
-    NEVENT.clear();
-    EVNTime.clear();
-    TYPE.clear();
-    TRG.clear();
-    BCG.clear();
-    STTime.clear();
-    RFTime.clear();
-    Helic.clear();
-
-    pid.clear();
-    particle.clear();
-    mass.clear();
-    energy.clear();
-    p.clear();
-    p2.clear();
-    px.clear();
-    py.clear();
-    pz.clear();
-    vx.clear();
-    vy.clear();
-    vz.clear();
-    charge.clear();
-    beta.clear();
-    chi2pid.clear();
-    status.clear();
-
-    cal_pindex.clear();
-    cal_detector.clear();
-    cal_sector.clear();
-    cal_layer.clear();
-    cal_energy.clear();
-    cal_time.clear();
-    cal_path.clear();
-    cal_x.clear();
-    cal_y.clear();
-    cal_z.clear();
-    cal_lu.clear();
-    cal_lv.clear();
-    cal_lw.clear();
-
-    chern_pindex.clear();
-    chern_detector.clear();
-    chern_sector.clear();
-    chern_nphe.clear();
-    chern_time.clear();
-    chern_path.clear();
-    chern_theta.clear();
-    chern_phi.clear();
-
-    fortag_pindex.clear();
-    fortag_detector.clear();
-    fortag_energy.clear();
-    fortag_time.clear();
-    fortag_path.clear();
-    fortag_x.clear();
-    fortag_y.clear();
-    fortag_z.clear();
-    fortag_dx.clear();
-    fortag_dy.clear();
-    fortag_radius.clear();
-    fortag_size.clear();
-
-    ec_tot_energy.clear();
-    ec_pcal_energy.clear();
-    ec_pcal_sec.clear();
-    ec_pcal_time.clear();
-    ec_pcal_path.clear();
-    ec_pcal_x.clear();
-    ec_pcal_y.clear();
-    ec_pcal_z.clear();
-    ec_pcal_lu.clear();
-    ec_pcal_lv.clear();
-    ec_pcal_lw.clear();
-    ec_ecin_energy.clear();
-    ec_ecin_sec.clear();
-    ec_ecin_time.clear();
-    ec_ecin_path.clear();
-    ec_ecin_x.clear();
-    ec_ecin_y.clear();
-    ec_ecin_z.clear();
-    ec_ecin_lu.clear();
-    ec_ecin_lv.clear();
-    ec_ecin_lw.clear();
-    ec_ecout_energy.clear();
-    ec_ecin_sec.clear();
-    ec_ecin_time.clear();
-    ec_ecin_path.clear();
-    ec_ecin_x.clear();
-    ec_ecin_y.clear();
-    ec_ecin_z.clear();
-    ec_ecin_lu.clear();
-    ec_ecin_lv.clear();
-    ec_ecin_lw.clear();
-
-    cc_nphe_tot.clear();
-    cc_ltcc_sec.clear();
-    cc_ltcc_nphe.clear();
-    cc_ltcc_time.clear();
-    cc_ltcc_path.clear();
-    cc_ltcc_theta.clear();
-    cc_ltcc_phi.clear();
-    cc_htcc_sec.clear();
-    cc_htcc_nphe.clear();
-    cc_htcc_time.clear();
-    cc_htcc_path.clear();
-    cc_htcc_theta.clear();
-    cc_htcc_phi.clear();
-
-    sc_ftof_sec.clear();
-    sc_ftof_time.clear();
-    sc_ftof_path.clear();
-    sc_ftof_layer.clear();
-    sc_ftof_energy.clear();
-
-    sc_ctof_time.clear();
-    sc_ctof_path.clear();
-    sc_ctof_energy.clear();
-
-    ft_cal_energy.clear();
-    ft_cal_time.clear();
-    ft_cal_path.clear();
-    ft_cal_x.clear();
-    ft_cal_y.clear();
-    ft_cal_z.clear();
-    ft_cal_dx.clear();
-    ft_cal_dy.clear();
-    ft_cal_radius.clear();
-
-    ft_hodo_energy.clear();
-    ft_hodo_time.clear();
-    ft_hodo_path.clear();
-    ft_hodo_x.clear();
-    ft_hodo_y.clear();
-    ft_hodo_z.clear();
-    ft_hodo_dx.clear();
-    ft_hodo_dy.clear();
-    ft_hodo_radius.clear();
-
-    dc_sector.clear();
-    dc_px.clear();
-    dc_py.clear();
-    dc_pz.clear();
-    dc_vx.clear();
-    dc_vy.clear();
-    dc_vz.clear();
-
-    cvt_px.clear();
-    cvt_py.clear();
-    cvt_pz.clear();
-    cvt_vx.clear();
-    cvt_vy.clear();
-    cvt_vz.clear();
-
-    if (cov) {
-      CovMat_11.clear();
-      CovMat_12.clear();
-      CovMat_13.clear();
-      CovMat_14.clear();
-      CovMat_15.clear();
-      CovMat_22.clear();
-      CovMat_23.clear();
-      CovMat_24.clear();
-      CovMat_25.clear();
-      CovMat_33.clear();
-      CovMat_34.clear();
-      CovMat_35.clear();
-      CovMat_44.clear();
-      CovMat_45.clear();
-      CovMat_55.clear();
-    }
-
-    if (is_mc) {
-      MC_helicity.clear();
-      MC_pid.clear();
-      MC_px.clear();
-      MC_py.clear();
-      MC_pz.clear();
-      MC_vx.clear();
-      MC_vy.clear();
-      MC_vz.clear();
-      MC_vt.clear();
-      Lund_pid.clear();
-      Lund_px.clear();
-      Lund_py.clear();
-      Lund_pz.clear();
-      Lund_E.clear();
-      Lund_vx.clear();
-      Lund_vy.clear();
-      Lund_vz.clear();
-      Lund_ltime.clear();
-    }
-    */
   }
 
   OutputFile->cd();
