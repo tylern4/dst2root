@@ -1445,42 +1445,64 @@ int main(int argc, char **argv) {
 
     if (cvt) {
       len_pid = CVT_pid_node->getLength();
+      l = CVT_pid_node->getLength();
 
-      if (len_pid != 0) {
-        l = CVT_pid_node->getLength();
-        cvt_pid.resize(l);
-        cvt_q.resize(l);
-        cvt_p.resize(l);
-        cvt_pt.resize(l);
-        cvt_phi0.resize(l);
-        cvt_tandip.resize(l);
-        cvt_z0.resize(l);
-        cvt_d0.resize(l);
-        cvt_CovMat_d02.resize(l);
-        cvt_CovMat_d0phi0.resize(l);
-        cvt_CovMat_d0rho.resize(l);
-        cvt_CovMat_phi02.resize(l);
-        cvt_CovMat_phi0rho.resize(l);
-        cvt_CovMat_rho2.resize(l);
-        cvt_CovMat_z02.resize(l);
-        cvt_CovMat_tandip2.resize(l);
+      cvt_pid.resize(len_pid);
+      cvt_q.resize(len_pid);
+      cvt_p.resize(len_pid);
+      cvt_pt.resize(len_pid);
+      cvt_phi0.resize(len_pid);
+      cvt_tandip.resize(len_pid);
+      cvt_z0.resize(len_pid);
+      cvt_d0.resize(len_pid);
+      cvt_CovMat_d02.resize(len_pid);
+      cvt_CovMat_d0phi0.resize(len_pid);
+      cvt_CovMat_d0rho.resize(len_pid);
+      cvt_CovMat_phi02.resize(len_pid);
+      cvt_CovMat_phi0rho.resize(len_pid);
+      cvt_CovMat_rho2.resize(len_pid);
+      cvt_CovMat_z02.resize(len_pid);
+      cvt_CovMat_tandip2.resize(len_pid);
 
-        for (int i = 0; i < l; i++) {
-          cvt_pid[i] = CVT_pid_node->getValue(i);
-          cvt_q[i] = CVT_q_node->getValue(i);
-          cvt_p[i] = CVT_p_node->getValue(i);
-          cvt_phi0[i] = CVT_phi0_node->getValue(i);
-          cvt_tandip[i] = CVT_tandip_node->getValue(i);
-          cvt_z0[i] = CVT_z0_node->getValue(i);
-          cvt_d0[i] = CVT_d0_node->getValue(i);
-          cvt_CovMat_d02[i] = CVT_Cov_d02_node->getValue(i);
-          cvt_CovMat_d0phi0[i] = CVT_Cov_d0phi0_node->getValue(i);
-          cvt_CovMat_d0rho[i] = CVT_Cov_d0rho_node->getValue(i);
-          cvt_CovMat_phi02[i] = CVT_Cov_phi02_node->getValue(i);
-          cvt_CovMat_phi0rho[i] = CVT_Cov_phi0rho_node->getValue(i);
-          cvt_CovMat_rho2[i] = CVT_Cov_rho2_node->getValue(i);
-          cvt_CovMat_z02[i] = CVT_Cov_z02_node->getValue(i);
-          cvt_CovMat_tandip2[i] = CVT_Cov_tandip2_node->getValue(i);
+      for (int i = 0; i < len_pid; i++) {
+        cvt_pid[i] = NaN;
+        cvt_q[i] = NaN;
+        cvt_p[i] = NaN;
+        cvt_pt[i] = NaN;
+        cvt_phi0[i] = NaN;
+        cvt_tandip[i] = NaN;
+        cvt_z0[i] = NaN;
+        cvt_d0[i] = NaN;
+        cvt_CovMat_d02[i] = NaN;
+        cvt_CovMat_d0phi0[i] = NaN;
+        cvt_CovMat_d0rho[i] = NaN;
+        cvt_CovMat_phi02[i] = NaN;
+        cvt_CovMat_phi0rho[i] = NaN;
+        cvt_CovMat_rho2[i] = NaN;
+        cvt_CovMat_z02[i] = NaN;
+        cvt_CovMat_tandip2[i] = NaN;
+      }
+
+      for (int i = 0; i < len_pid; i++) {
+        for (int k = 0; k < len_pindex; ++k) {
+          int pindex = CovMat_pindex_node->getValue(k);
+          if (pindex == i) {
+            cvt_pid[i] = CVT_pid_node->getValue(k);
+            cvt_q[i] = CVT_q_node->getValue(k);
+            cvt_p[i] = CVT_p_node->getValue(k);
+            cvt_phi0[i] = CVT_phi0_node->getValue(k);
+            cvt_tandip[i] = CVT_tandip_node->getValue(k);
+            cvt_z0[i] = CVT_z0_node->getValue(k);
+            cvt_d0[i] = CVT_d0_node->getValue(k);
+            cvt_CovMat_d02[i] = CVT_Cov_d02_node->getValue(k);
+            cvt_CovMat_d0phi0[i] = CVT_Cov_d0phi0_node->getValue(k);
+            cvt_CovMat_d0rho[i] = CVT_Cov_d0rho_node->getValue(k);
+            cvt_CovMat_phi02[i] = CVT_Cov_phi02_node->getValue(k);
+            cvt_CovMat_phi0rho[i] = CVT_Cov_phi0rho_node->getValue(k);
+            cvt_CovMat_rho2[i] = CVT_Cov_rho2_node->getValue(k);
+            cvt_CovMat_z02[i] = CVT_Cov_z02_node->getValue(k);
+            cvt_CovMat_tandip2[i] = CVT_Cov_tandip2_node->getValue(k);
+          }
         }
       }
     }
