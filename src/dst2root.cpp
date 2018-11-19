@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
        clipp::option("-r", "--rec").set(good_rec) % "Only save events where number of partilces in the event > 0",
        clipp::option("-e", "--elec").set(elec_first) % "Only save events with good electron as first particle",
        clipp::option("-c", "--cov").set(cov) % "Save Covariant Matrix for kinematic fitting",
-       clipp::option("-cvt", "-centralDetector").set(cvt) % "Save CVT information for kinematic fitting",
+       clipp::option("-cvt", "--CVTDetector").set(cvt) % "Save CVT information for kinematic fitting",
        clipp::value("inputFile.hipo", InFileName), clipp::opt_value("outputFile.root", OutFileName));
 
   clipp::parse(argc, argv, cli);
