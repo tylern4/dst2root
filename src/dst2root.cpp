@@ -372,6 +372,12 @@ int main(int argc, char **argv) {
   std::vector<float> cc_htcc_path;
   std::vector<float> cc_htcc_theta;
   std::vector<float> cc_htcc_phi;
+  std::vector<int> cc_rich_sec;
+  std::vector<float> cc_rich_nphe;
+  std::vector<float> cc_rich_time;
+  std::vector<float> cc_rich_path;
+  std::vector<float> cc_rich_theta;
+  std::vector<float> cc_rich_phi;
 
   std::vector<int> sc_ftof_1a_sec;
   std::vector<float> sc_ftof_1a_time;
@@ -620,6 +626,13 @@ int main(int argc, char **argv) {
   clas12->Branch("cc_htcc_path", &cc_htcc_path);
   clas12->Branch("cc_htcc_theta", &cc_htcc_theta);
   clas12->Branch("cc_htcc_phi", &cc_htcc_phi);
+
+  clas12->Branch("cc_rich_sec", &cc_rich_sec);
+  clas12->Branch("cc_rich_nphe", &cc_rich_nphe);
+  clas12->Branch("cc_rich_time", &cc_rich_time);
+  clas12->Branch("cc_rich_path", &cc_rich_path);
+  clas12->Branch("cc_rich_theta", &cc_rich_theta);
+  clas12->Branch("cc_rich_phi", &cc_rich_phi);
 
   clas12->Branch("sc_ftof_1a_sec", &sc_ftof_1a_sec);
   clas12->Branch("sc_ftof_1a_time", &sc_ftof_1a_time);
@@ -1012,6 +1025,13 @@ int main(int argc, char **argv) {
     cc_htcc_theta.resize(len_pid);
     cc_htcc_phi.resize(len_pid);
 
+    cc_rich_sec.resize(len_pid);
+    cc_rich_nphe.resize(len_pid);
+    cc_rich_time.resize(len_pid);
+    cc_rich_path.resize(len_pid);
+    cc_rich_theta.resize(len_pid);
+    cc_rich_phi.resize(len_pid);
+
     for (int i = 0; i < len_pid; i++) {
       cc_nphe_tot[i] = NaN;
       cc_ltcc_sec[i] = -1;
@@ -1026,6 +1046,12 @@ int main(int argc, char **argv) {
       cc_htcc_path[i] = NaN;
       cc_htcc_theta[i] = NaN;
       cc_htcc_phi[i] = NaN;
+      cc_rich_sec[i] = -1;
+      cc_rich_nphe[i] = NaN;
+      cc_rich_time[i] = NaN;
+      cc_rich_path[i] = NaN;
+      cc_rich_theta[i] = NaN;
+      cc_rich_phi[i] = NaN;
     }
 
     float nphe_tot = 0.0;
@@ -1035,7 +1061,8 @@ int main(int argc, char **argv) {
         int pindex = chern_pindex_node->getValue(k);
         int detector = chern_detector_node->getValue(k);
 
-        if (pindex == i && (detector == HTCC || detector == LTCC)) nphe_tot += chern_nphe_node->getValue(k);
+        if (pindex == i && (detector == HTCC || detector == LTCC || detector == RICH))
+          nphe_tot += chern_nphe_node->getValue(k);
 
         if (pindex == i && detector == HTCC) {
           cc_htcc_nphe[i] = chern_nphe_node->getValue(k);
@@ -1044,7 +1071,6 @@ int main(int argc, char **argv) {
           cc_htcc_path[i] = chern_path_node->getValue(k);
           cc_htcc_theta[i] = chern_theta_node->getValue(k);
           cc_htcc_phi[i] = chern_phi_node->getValue(k);
-
         } else if (pindex == i && detector == LTCC) {
           cc_ltcc_nphe[i] = chern_nphe_node->getValue(k);
           cc_ltcc_sec[i] = chern_sector_node->getValue(k);
@@ -1052,6 +1078,13 @@ int main(int argc, char **argv) {
           cc_ltcc_path[i] = chern_path_node->getValue(k);
           cc_ltcc_theta[i] = chern_theta_node->getValue(k);
           cc_ltcc_phi[i] = chern_phi_node->getValue(k);
+        } else if (pindex == i && detector == RICH) {
+          cc_rich_nphe[i] = chern_nphe_node->getValue(k);
+          cc_rich_sec[i] = chern_sector_node->getValue(k);
+          cc_rich_time[i] = chern_time_node->getValue(k);
+          cc_rich_path[i] = chern_path_node->getValue(k);
+          cc_rich_theta[i] = chern_theta_node->getValue(k);
+          cc_rich_phi[i] = chern_phi_node->getValue(k);
         }
       }
       if (cc_nphe_tot[i] != cc_nphe_tot[i]) cc_nphe_tot[i] = ((nphe_tot != 0.0) ? nphe_tot : NaN);
