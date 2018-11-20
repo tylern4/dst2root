@@ -6,8 +6,17 @@ std::vector<int> *pid;
 std::vector<float> *p;
 std::vector<int> *charge;
 
-std::vector<float> *sc_ftof_time;
-std::vector<float> *sc_ftof_path;
+std::vector<float> *sc_ftof_1a_time;
+std::vector<float> *sc_ftof_1a_path;
+
+std::vector<float> *sc_ftof_1b_time;
+std::vector<float> *sc_ftof_1b_path;
+
+std::vector<float> *sc_ftof_2_time;
+std::vector<float> *sc_ftof_2_path;
+
+std::vector<float> *sc_ctof_time;
+std::vector<float> *sc_ctof_path;
 
 static const double MASS_P = 0.93827203;
 static const double MASS_PIP = 0.13957018;
@@ -18,9 +27,21 @@ double vertex_time(double sc_time, double sc_pathlength, double relatavistic_bet
 }
 
 int deltat() {
-  TH2D *deltaT_prot = new TH2D("deltaT_prot", "#Deltat Proton", 500, 0, 7.0, 500, -10, 10);
-  TH2D *deltaT_pip = new TH2D("deltaT_pion", "#Deltat #pi^{+}", 500, 0, 7.0, 500, -10, 10);
-  TH2D *deltaT_pim = new TH2D("deltaT_pion_m", "#Deltat #pi^{-}", 500, 0, 7.0, 500, -10, 10);
+  TH2D *deltaT_1a_prot = new TH2D("deltaT_1a_prot", "#Deltat Proton", 500, 0, 7.0, 500, -10, 10);
+  TH2D *deltaT_1a_pip = new TH2D("deltaT_1a_pion", "#Deltat #pi^{+}", 500, 0, 7.0, 500, -10, 10);
+  TH2D *deltaT_1a_pim = new TH2D("deltaT_1a_pion_m", "#Deltat #pi^{-}", 500, 0, 7.0, 500, -10, 10);
+
+  TH2D *deltaT_1b_prot = new TH2D("deltaT_1b_prot", "#Deltat Proton", 500, 0, 7.0, 500, -10, 10);
+  TH2D *deltaT_1b_pip = new TH2D("deltaT_1b_pion", "#Deltat #pi^{+}", 500, 0, 7.0, 500, -10, 10);
+  TH2D *deltaT_1b_pim = new TH2D("deltaT_1b_pion_m", "#Deltat #pi^{-}", 500, 0, 7.0, 500, -10, 10);
+
+  TH2D *deltaT_2_prot = new TH2D("deltaT_2_prot", "#Deltat Proton", 500, 0, 7.0, 500, -10, 10);
+  TH2D *deltaT_2_pip = new TH2D("deltaT_2_pion", "#Deltat #pi^{+}", 500, 0, 7.0, 500, -10, 10);
+  TH2D *deltaT_2_pim = new TH2D("deltaT_2_pion_m", "#Deltat #pi^{-}", 500, 0, 7.0, 500, -10, 10);
+
+  TH2D *deltaT_ctof_prot = new TH2D("deltaT_ctof_prot", "#Deltat Proton", 500, 0, 7.0, 500, -10, 10);
+  TH2D *deltaT_ctof_pip = new TH2D("deltaT_ctof_pion", "#Deltat #pi^{+}", 500, 0, 7.0, 500, -10, 10);
+  TH2D *deltaT_ctof_pim = new TH2D("deltaT_ctof_pion_m", "#Deltat #pi^{-}", 500, 0, 7.0, 500, -10, 10);
 
   TChain *clas12 = new TChain("clas12", "clas12");
 
@@ -29,8 +50,15 @@ int deltat() {
   clas12->SetBranchAddress("p", &p);
   clas12->SetBranchAddress("charge", &charge);
 
-  clas12->SetBranchAddress("sc_ftof_time", &sc_ftof_time);
-  clas12->SetBranchAddress("sc_ftof_path", &sc_ftof_path);
+  clas12->SetBranchAddress("sc_ftof_1a_time", &sc_ftof_1a_time);
+  clas12->SetBranchAddress("sc_ftof_1a_path", &sc_ftof_1a_path);
+  clas12->SetBranchAddress("sc_ftof_1b_time", &sc_ftof_1b_time);
+  clas12->SetBranchAddress("sc_ftof_1b_path", &sc_ftof_1b_path);
+  clas12->SetBranchAddress("sc_ftof_2_time", &sc_ftof_2_time);
+  clas12->SetBranchAddress("sc_ftof_2_path", &sc_ftof_2_path);
+
+  clas12->SetBranchAddress("sc_ctof_time", &sc_ctof_time);
+  clas12->SetBranchAddress("sc_ctof_path", &sc_ctof_path);
 
   int num_of_events = (int)clas12->GetEntries();
   auto start_full = std::chrono::high_resolution_clock::now();
@@ -39,20 +67,70 @@ int deltat() {
   for (int current_event = 0; current_event < num_of_events; current_event++) {
     clas12->GetEntry(current_event);
     if (pid->size() == 0) continue;
-    double vertex = vertex_time(sc_ftof_time->at(0), sc_ftof_path->at(0), 1.0);
+    double vertex = 0.0;
+
+    if (sc_ftof_1a_time->at(0) == sc_ftof_1a_time->at(0)) {
+      vertex = vertex_time(sc_ftof_1a_time->at(0), sc_ftof_1a_path->at(0), 1.0);
+    } else if (sc_ftof_1b_time->at(0) == sc_ftof_1b_time->at(0)) {
+      vertex = vertex_time(sc_ftof_1b_time->at(0), sc_ftof_1b_path->at(0), 1.0);
+    } else {
+      continue;
+    }
+
     for (size_t part = 0; part < pid->size(); part++) {
       if (p->at(part) == 0) continue;
       if (charge->at(part) == 1) {
         beta = 1.0 / sqrt(1.0 + (MASS_P / p->at(part)) * (MASS_P / p->at(part)));
-        dt_P = vertex - vertex_time(sc_ftof_time->at(part), sc_ftof_path->at(part), beta);
-        deltaT_prot->Fill(p->at(part), dt_P);
+        dt_P = vertex - vertex_time(sc_ftof_1a_time->at(part), sc_ftof_1a_path->at(part), beta);
+        if (dt_P == dt_P) deltaT_1a_prot->Fill(p->at(part), dt_P);
         beta = 1.0 / sqrt(1.0 + (MASS_PIP / p->at(part)) * (MASS_PIP / p->at(part)));
-        dt_PIP = vertex - vertex_time(sc_ftof_time->at(part), sc_ftof_path->at(part), beta);
-        deltaT_pip->Fill(p->at(part), dt_PIP);
+        dt_PIP = vertex - vertex_time(sc_ftof_1a_time->at(part), sc_ftof_1a_path->at(part), beta);
+        if (dt_PIP == dt_PIP) deltaT_1a_pip->Fill(p->at(part), dt_PIP);
+
+        beta = 1.0 / sqrt(1.0 + (MASS_P / p->at(part)) * (MASS_P / p->at(part)));
+        dt_P = vertex - vertex_time(sc_ftof_1b_time->at(part), sc_ftof_1b_path->at(part), beta);
+        if (dt_P == dt_P) deltaT_1b_prot->Fill(p->at(part), dt_P);
+        beta = 1.0 / sqrt(1.0 + (MASS_PIP / p->at(part)) * (MASS_PIP / p->at(part)));
+        dt_PIP = vertex - vertex_time(sc_ftof_1b_time->at(part), sc_ftof_1b_path->at(part), beta);
+        if (dt_PIP == dt_PIP) deltaT_1b_pip->Fill(p->at(part), dt_PIP);
+
+        beta = 1.0 / sqrt(1.0 + (MASS_P / p->at(part)) * (MASS_P / p->at(part)));
+        dt_P = vertex - vertex_time(sc_ftof_1b_time->at(part), sc_ftof_1b_path->at(part), beta);
+        if (dt_P == dt_P) deltaT_1b_prot->Fill(p->at(part), dt_P);
+        beta = 1.0 / sqrt(1.0 + (MASS_PIP / p->at(part)) * (MASS_PIP / p->at(part)));
+        dt_PIP = vertex - vertex_time(sc_ftof_1b_time->at(part), sc_ftof_1b_path->at(part), beta);
+        if (dt_PIP == dt_PIP) deltaT_1b_pip->Fill(p->at(part), dt_PIP);
+
+        beta = 1.0 / sqrt(1.0 + (MASS_P / p->at(part)) * (MASS_P / p->at(part)));
+        dt_P = vertex - vertex_time(sc_ftof_2_time->at(part), sc_ftof_2_path->at(part), beta);
+        if (dt_P == dt_P) deltaT_2_prot->Fill(p->at(part), dt_P);
+        beta = 1.0 / sqrt(1.0 + (MASS_PIP / p->at(part)) * (MASS_PIP / p->at(part)));
+        dt_PIP = vertex - vertex_time(sc_ftof_2_time->at(part), sc_ftof_2_path->at(part), beta);
+        if (dt_PIP == dt_PIP) deltaT_2_pip->Fill(p->at(part), dt_PIP);
+
+        beta = 1.0 / sqrt(1.0 + (MASS_P / p->at(part)) * (MASS_P / p->at(part)));
+        dt_P = vertex - vertex_time(sc_ctof_time->at(part), sc_ctof_path->at(part), beta);
+        if (dt_P == dt_P) deltaT_ctof_prot->Fill(p->at(part), dt_P);
+        beta = 1.0 / sqrt(1.0 + (MASS_PIP / p->at(part)) * (MASS_PIP / p->at(part)));
+        dt_PIP = vertex - vertex_time(sc_ctof_time->at(part), sc_ctof_path->at(part), beta);
+        if (dt_PIP == dt_PIP) deltaT_ctof_pip->Fill(p->at(part), dt_PIP);
+
       } else if (charge->at(part) == -1) {
         beta = 1.0 / sqrt(1.0 + (MASS_PIP / p->at(part)) * (MASS_PIP / p->at(part)));
-        dt_PIP = vertex - vertex_time(sc_ftof_time->at(part), sc_ftof_path->at(part), beta);
-        deltaT_pip->Fill(p->at(part), dt_PIP);
+        dt_PIP = vertex - vertex_time(sc_ftof_1a_time->at(part), sc_ftof_1a_path->at(part), beta);
+        if (dt_PIP == dt_PIP) deltaT_1a_pim->Fill(p->at(part), dt_PIP);
+
+        beta = 1.0 / sqrt(1.0 + (MASS_PIP / p->at(part)) * (MASS_PIP / p->at(part)));
+        dt_PIP = vertex - vertex_time(sc_ftof_1b_time->at(part), sc_ftof_1b_path->at(part), beta);
+        if (dt_PIP == dt_PIP) deltaT_1b_pim->Fill(p->at(part), dt_PIP);
+
+        beta = 1.0 / sqrt(1.0 + (MASS_PIP / p->at(part)) * (MASS_PIP / p->at(part)));
+        dt_PIP = vertex - vertex_time(sc_ftof_2_time->at(part), sc_ftof_2_path->at(part), beta);
+        if (dt_PIP == dt_PIP) deltaT_2_pim->Fill(p->at(part), dt_PIP);
+
+        beta = 1.0 / sqrt(1.0 + (MASS_PIP / p->at(part)) * (MASS_PIP / p->at(part)));
+        dt_PIP = vertex - vertex_time(sc_ctof_time->at(part), sc_ctof_path->at(part), beta);
+        if (dt_PIP == dt_PIP) deltaT_ctof_pim->Fill(p->at(part), dt_PIP);
       }
     }
   }
@@ -61,17 +139,35 @@ int deltat() {
   std::cout << "Elapsed time for " << num_of_events << " events: " << elapsed_full.count() << " s" << std::endl;
   std::cout << "Events/Sec: " << num_of_events / elapsed_full.count() << " Hz" << std::endl;
 
-  TCanvas *c1 = new TCanvas("c1", "c1");
-  c1->cd();
-  deltaT_prot->Draw("colz");
+  TCanvas *c1 = new TCanvas("c1", "c1", 10, 10, 900, 600);
+  c1->Divide(3, 3);
+  c1->cd(1);
+  deltaT_1a_prot->Draw("colz");
+  c1->cd(2);
+  deltaT_1a_pip->Draw("colz");
+  c1->cd(3);
+  deltaT_1a_pim->Draw("colz");
+  c1->cd(4);
+  deltaT_1b_prot->Draw("colz");
+  c1->cd(5);
+  deltaT_1b_pip->Draw("colz");
+  c1->cd(6);
+  deltaT_1b_pim->Draw("colz");
+  c1->cd(7);
+  deltaT_2_prot->Draw("colz");
+  c1->cd(8);
+  deltaT_2_pip->Draw("colz");
+  c1->cd(9);
+  deltaT_2_pim->Draw("colz");
 
-  TCanvas *c2 = new TCanvas("c2", "c2");
-  c2->cd();
-  deltaT_pip->Draw("colz");
-
-  TCanvas *c3 = new TCanvas("c3", "c3");
-  c3->cd();
-  deltaT_pim->Draw("colz");
+  TCanvas *c2 = new TCanvas("c2", "c2", 910, 10, 900, 600);
+  c2->Divide(3);
+  c2->cd(1);
+  deltaT_ctof_prot->Draw("colz");
+  c2->cd(2);
+  deltaT_ctof_pip->Draw("colz");
+  c2->cd(3);
+  deltaT_ctof_pim->Draw("colz");
 
   return 0;
 }

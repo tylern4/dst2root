@@ -377,6 +377,7 @@ int main(int argc, char **argv) {
   std::vector<float> sc_ftof_1a_time;
   std::vector<float> sc_ftof_1a_path;
   std::vector<float> sc_ftof_1a_energy;
+  std::vector<int> sc_ftof_1a_component;
   std::vector<float> sc_ftof_1a_x;
   std::vector<float> sc_ftof_1a_y;
   std::vector<float> sc_ftof_1a_z;
@@ -388,6 +389,7 @@ int main(int argc, char **argv) {
   std::vector<float> sc_ftof_1b_time;
   std::vector<float> sc_ftof_1b_path;
   std::vector<float> sc_ftof_1b_energy;
+  std::vector<int> sc_ftof_1b_component;
   std::vector<float> sc_ftof_1b_x;
   std::vector<float> sc_ftof_1b_y;
   std::vector<float> sc_ftof_1b_z;
@@ -399,6 +401,7 @@ int main(int argc, char **argv) {
   std::vector<float> sc_ftof_2_time;
   std::vector<float> sc_ftof_2_path;
   std::vector<float> sc_ftof_2_energy;
+  std::vector<int> sc_ftof_2_component;
   std::vector<float> sc_ftof_2_x;
   std::vector<float> sc_ftof_2_y;
   std::vector<float> sc_ftof_2_z;
@@ -409,6 +412,7 @@ int main(int argc, char **argv) {
   std::vector<float> sc_ctof_time;
   std::vector<float> sc_ctof_path;
   std::vector<float> sc_ctof_energy;
+  std::vector<int> sc_ctof_component;
   std::vector<float> sc_ctof_x;
   std::vector<float> sc_ctof_y;
   std::vector<float> sc_ctof_z;
@@ -419,6 +423,7 @@ int main(int argc, char **argv) {
   std::vector<float> sc_cnd_time;
   std::vector<float> sc_cnd_path;
   std::vector<float> sc_cnd_energy;
+  std::vector<int> sc_cnd_component;
   std::vector<float> sc_cnd_x;
   std::vector<float> sc_cnd_y;
   std::vector<float> sc_cnd_z;
@@ -529,40 +534,6 @@ int main(int argc, char **argv) {
   clas12->Branch("beta", &beta);
   clas12->Branch("chi2pid", &chi2pid);
   clas12->Branch("status", &status);
-  if (cov) {
-    clas12->Branch("CovMat_11", &CovMat_11);
-    clas12->Branch("CovMat_12", &CovMat_12);
-    clas12->Branch("CovMat_13", &CovMat_13);
-    clas12->Branch("CovMat_14", &CovMat_14);
-    clas12->Branch("CovMat_15", &CovMat_15);
-    clas12->Branch("CovMat_22", &CovMat_22);
-    clas12->Branch("CovMat_23", &CovMat_23);
-    clas12->Branch("CovMat_24", &CovMat_24);
-    clas12->Branch("CovMat_25", &CovMat_25);
-    clas12->Branch("CovMat_33", &CovMat_33);
-    clas12->Branch("CovMat_34", &CovMat_34);
-    clas12->Branch("CovMat_35", &CovMat_35);
-    clas12->Branch("CovMat_44", &CovMat_44);
-    clas12->Branch("CovMat_45", &CovMat_45);
-    clas12->Branch("CovMat_55", &CovMat_55);
-  }
-  if (cvt) {
-    clas12->Branch("cvt_pid", &cvt_pid);
-    clas12->Branch("cvt_q", &cvt_q);
-    clas12->Branch("cvt_p", &cvt_p);
-    clas12->Branch("cvt_pt", &cvt_pt);
-    clas12->Branch("cvt_phi0", &cvt_phi0);
-    clas12->Branch("cvt_tandip", &cvt_tandip);
-    clas12->Branch("cvt_z0", &cvt_z0);
-    clas12->Branch("cvt_d0", &cvt_d0);
-    clas12->Branch("cvt_CovMat_d02", &cvt_CovMat_d02);
-    clas12->Branch("cvt_CovMat_d0rho", &cvt_CovMat_d0rho);
-    clas12->Branch("cvt_CovMat_phi02", &cvt_CovMat_phi02);
-    clas12->Branch("cvt_CovMat_phi0rho", &cvt_CovMat_phi0rho);
-    clas12->Branch("cvt_CovMat_rho2", &cvt_CovMat_rho2);
-    clas12->Branch("cvt_CovMat_z02", &cvt_CovMat_z02);
-    clas12->Branch("cvt_CovMat_tandip2", &cvt_CovMat_tandip2);
-  }
   if (is_mc) {
     clas12->Branch("mc_pid", &MC_pid);
     clas12->Branch("mc_px", &MC_px);
@@ -654,6 +625,7 @@ int main(int argc, char **argv) {
   clas12->Branch("sc_ftof_1a_time", &sc_ftof_1a_time);
   clas12->Branch("sc_ftof_1a_path", &sc_ftof_1a_path);
   clas12->Branch("sc_ftof_1a_energy", &sc_ftof_1a_energy);
+  clas12->Branch("sc_ftof_1a_component", &sc_ftof_1a_component);
   clas12->Branch("sc_ftof_1a_x", &sc_ftof_1a_x);
   clas12->Branch("sc_ftof_1a_y", &sc_ftof_1a_y);
   clas12->Branch("sc_ftof_1a_z", &sc_ftof_1a_z);
@@ -665,6 +637,7 @@ int main(int argc, char **argv) {
   clas12->Branch("sc_ftof_1b_time", &sc_ftof_1b_time);
   clas12->Branch("sc_ftof_1b_path", &sc_ftof_1b_path);
   clas12->Branch("sc_ftof_1b_energy", &sc_ftof_1b_energy);
+  clas12->Branch("sc_ftof_1b_component", &sc_ftof_1b_component);
   clas12->Branch("sc_ftof_1b_x", &sc_ftof_1b_x);
   clas12->Branch("sc_ftof_1b_y", &sc_ftof_1b_y);
   clas12->Branch("sc_ftof_1b_z", &sc_ftof_1b_z);
@@ -676,6 +649,7 @@ int main(int argc, char **argv) {
   clas12->Branch("sc_ftof_2_time", &sc_ftof_2_time);
   clas12->Branch("sc_ftof_2_path", &sc_ftof_2_path);
   clas12->Branch("sc_ftof_2_energy", &sc_ftof_2_energy);
+  clas12->Branch("sc_ftof_2_component", &sc_ftof_2_component);
   clas12->Branch("sc_ftof_2_x", &sc_ftof_2_x);
   clas12->Branch("sc_ftof_2_y", &sc_ftof_2_y);
   clas12->Branch("sc_ftof_2_z", &sc_ftof_2_z);
@@ -686,6 +660,7 @@ int main(int argc, char **argv) {
   clas12->Branch("sc_ctof_time", &sc_ctof_time);
   clas12->Branch("sc_ctof_path", &sc_ctof_path);
   clas12->Branch("sc_ctof_energy", &sc_ctof_energy);
+  clas12->Branch("sc_ctof_component", &sc_ctof_component);
   clas12->Branch("sc_ctof_x", &sc_ctof_x);
   clas12->Branch("sc_ctof_y", &sc_ctof_y);
   clas12->Branch("sc_ctof_z", &sc_ctof_z);
@@ -696,6 +671,7 @@ int main(int argc, char **argv) {
   clas12->Branch("sc_cnd_time", &sc_cnd_time);
   clas12->Branch("sc_cnd_path", &sc_cnd_path);
   clas12->Branch("sc_cnd_energy", &sc_cnd_energy);
+  clas12->Branch("sc_cnd_component", &sc_cnd_component);
   clas12->Branch("sc_cnd_x", &sc_cnd_x);
   clas12->Branch("sc_cnd_y", &sc_cnd_y);
   clas12->Branch("sc_cnd_z", &sc_cnd_z);
@@ -722,6 +698,41 @@ int main(int argc, char **argv) {
   clas12->Branch("ft_hodo_dx", &ft_hodo_dx);
   clas12->Branch("ft_hodo_dy", &ft_hodo_dy);
   clas12->Branch("ft_hodo_radius", &ft_hodo_radius);
+
+  if (cov) {
+    clas12->Branch("CovMat_11", &CovMat_11);
+    clas12->Branch("CovMat_12", &CovMat_12);
+    clas12->Branch("CovMat_13", &CovMat_13);
+    clas12->Branch("CovMat_14", &CovMat_14);
+    clas12->Branch("CovMat_15", &CovMat_15);
+    clas12->Branch("CovMat_22", &CovMat_22);
+    clas12->Branch("CovMat_23", &CovMat_23);
+    clas12->Branch("CovMat_24", &CovMat_24);
+    clas12->Branch("CovMat_25", &CovMat_25);
+    clas12->Branch("CovMat_33", &CovMat_33);
+    clas12->Branch("CovMat_34", &CovMat_34);
+    clas12->Branch("CovMat_35", &CovMat_35);
+    clas12->Branch("CovMat_44", &CovMat_44);
+    clas12->Branch("CovMat_45", &CovMat_45);
+    clas12->Branch("CovMat_55", &CovMat_55);
+  }
+  if (cvt) {
+    clas12->Branch("cvt_pid", &cvt_pid);
+    clas12->Branch("cvt_q", &cvt_q);
+    clas12->Branch("cvt_p", &cvt_p);
+    clas12->Branch("cvt_pt", &cvt_pt);
+    clas12->Branch("cvt_phi0", &cvt_phi0);
+    clas12->Branch("cvt_tandip", &cvt_tandip);
+    clas12->Branch("cvt_z0", &cvt_z0);
+    clas12->Branch("cvt_d0", &cvt_d0);
+    clas12->Branch("cvt_CovMat_d02", &cvt_CovMat_d02);
+    clas12->Branch("cvt_CovMat_d0rho", &cvt_CovMat_d0rho);
+    clas12->Branch("cvt_CovMat_phi02", &cvt_CovMat_phi02);
+    clas12->Branch("cvt_CovMat_phi0rho", &cvt_CovMat_phi0rho);
+    clas12->Branch("cvt_CovMat_rho2", &cvt_CovMat_rho2);
+    clas12->Branch("cvt_CovMat_z02", &cvt_CovMat_z02);
+    clas12->Branch("cvt_CovMat_tandip2", &cvt_CovMat_tandip2);
+  }
 
   int entry = 0;
   int l = 0;
@@ -1003,14 +1014,12 @@ int main(int argc, char **argv) {
 
     for (int i = 0; i < len_pid; i++) {
       cc_nphe_tot[i] = NaN;
-
       cc_ltcc_sec[i] = -1;
       cc_ltcc_nphe[i] = NaN;
       cc_ltcc_time[i] = NaN;
       cc_ltcc_path[i] = NaN;
       cc_ltcc_theta[i] = NaN;
       cc_ltcc_phi[i] = NaN;
-
       cc_htcc_sec[i] = -1;
       cc_htcc_nphe[i] = NaN;
       cc_htcc_time[i] = NaN;
@@ -1026,50 +1035,24 @@ int main(int argc, char **argv) {
         int pindex = chern_pindex_node->getValue(k);
         int detector = chern_detector_node->getValue(k);
 
-        int _ltcc_sec = -1;
-        float _ltcc_t = NaN;
-        float _ltcc_r = NaN;
-        float _ltcc_theta = NaN;
-        float _ltcc_phi = NaN;
-        float _ltcc_nphe = NaN;
-
-        int _htcc_sec = -1;
-        float _htcc_t = NaN;
-        float _htcc_r = NaN;
-        float _htcc_theta = NaN;
-        float _htcc_phi = NaN;
-        float _htcc_nphe = NaN;
         if (pindex == i && (detector == HTCC || detector == LTCC)) nphe_tot += chern_nphe_node->getValue(k);
 
         if (pindex == i && detector == HTCC) {
-          _htcc_sec = chern_sector_node->getValue(k);
-          _htcc_t = chern_time_node->getValue(k);
-          _htcc_r = chern_path_node->getValue(k);
-          _htcc_theta = chern_theta_node->getValue(k);
-          _htcc_phi = chern_phi_node->getValue(k);
-          _htcc_nphe = chern_nphe_node->getValue(k);
+          cc_htcc_nphe[i] = chern_nphe_node->getValue(k);
+          cc_htcc_sec[i] = chern_sector_node->getValue(k);
+          cc_htcc_time[i] = chern_time_node->getValue(k);
+          cc_htcc_path[i] = chern_path_node->getValue(k);
+          cc_htcc_theta[i] = chern_theta_node->getValue(k);
+          cc_htcc_phi[i] = chern_phi_node->getValue(k);
+
         } else if (pindex == i && detector == LTCC) {
-          _ltcc_sec = chern_sector_node->getValue(k);
-          _ltcc_t = chern_time_node->getValue(k);
-          _ltcc_r = chern_path_node->getValue(k);
-          _ltcc_theta = chern_theta_node->getValue(k);
-          _ltcc_phi = chern_phi_node->getValue(k);
-          _ltcc_nphe = chern_nphe_node->getValue(k);
+          cc_ltcc_nphe[i] = chern_nphe_node->getValue(k);
+          cc_ltcc_sec[i] = chern_sector_node->getValue(k);
+          cc_ltcc_time[i] = chern_time_node->getValue(k);
+          cc_ltcc_path[i] = chern_path_node->getValue(k);
+          cc_ltcc_theta[i] = chern_theta_node->getValue(k);
+          cc_ltcc_phi[i] = chern_phi_node->getValue(k);
         }
-
-        if (cc_htcc_sec[i] == -1) cc_htcc_sec[i] = _htcc_sec;
-        if (cc_htcc_time[i] != cc_htcc_time[i]) cc_htcc_time[i] = _htcc_t;
-        if (cc_htcc_path[i] != cc_htcc_path[i]) cc_htcc_path[i] = _htcc_r;
-        if (cc_htcc_theta[i] != cc_htcc_theta[i]) cc_htcc_theta[i] = _htcc_theta;
-        if (cc_htcc_phi[i] != cc_htcc_phi[i]) cc_htcc_phi[i] = _htcc_phi;
-        if (cc_htcc_nphe[i] != cc_htcc_nphe[i]) cc_htcc_nphe[i] = _htcc_nphe;
-
-        if (cc_ltcc_sec[i] == -1) cc_ltcc_sec[i] = _ltcc_sec;
-        if (cc_ltcc_time[i] != cc_ltcc_time[i]) cc_ltcc_time[i] = _ltcc_t;
-        if (cc_ltcc_path[i] != cc_ltcc_path[i]) cc_ltcc_path[i] = _ltcc_r;
-        if (cc_ltcc_theta[i] != cc_ltcc_theta[i]) cc_ltcc_theta[i] = _ltcc_theta;
-        if (cc_ltcc_phi[i] != cc_ltcc_phi[i]) cc_ltcc_phi[i] = _ltcc_phi;
-        if (cc_ltcc_nphe[i] != cc_ltcc_nphe[i]) cc_ltcc_nphe[i] = _ltcc_nphe;
       }
       if (cc_nphe_tot[i] != cc_nphe_tot[i]) cc_nphe_tot[i] = ((nphe_tot != 0.0) ? nphe_tot : NaN);
     }
@@ -1081,6 +1064,7 @@ int main(int argc, char **argv) {
     sc_ftof_1a_time.resize(len_pid);
     sc_ftof_1a_path.resize(len_pid);
     sc_ftof_1a_energy.resize(len_pid);
+    sc_ftof_1a_component.resize(len_pid);
     sc_ftof_1a_x.resize(len_pid);
     sc_ftof_1a_y.resize(len_pid);
     sc_ftof_1a_z.resize(len_pid);
@@ -1092,6 +1076,7 @@ int main(int argc, char **argv) {
     sc_ftof_1b_time.resize(len_pid);
     sc_ftof_1b_path.resize(len_pid);
     sc_ftof_1b_energy.resize(len_pid);
+    sc_ftof_1b_component.resize(len_pid);
     sc_ftof_1b_x.resize(len_pid);
     sc_ftof_1b_y.resize(len_pid);
     sc_ftof_1b_z.resize(len_pid);
@@ -1103,6 +1088,7 @@ int main(int argc, char **argv) {
     sc_ftof_2_time.resize(len_pid);
     sc_ftof_2_path.resize(len_pid);
     sc_ftof_2_energy.resize(len_pid);
+    sc_ftof_2_component.resize(len_pid);
     sc_ftof_2_x.resize(len_pid);
     sc_ftof_2_y.resize(len_pid);
     sc_ftof_2_z.resize(len_pid);
@@ -1113,6 +1099,7 @@ int main(int argc, char **argv) {
     sc_ctof_time.resize(len_pid);
     sc_ctof_path.resize(len_pid);
     sc_ctof_energy.resize(len_pid);
+    sc_ctof_component.resize(len_pid);
     sc_ctof_x.resize(len_pid);
     sc_ctof_y.resize(len_pid);
     sc_ctof_z.resize(len_pid);
@@ -1123,6 +1110,7 @@ int main(int argc, char **argv) {
     sc_cnd_time.resize(len_pid);
     sc_cnd_path.resize(len_pid);
     sc_cnd_energy.resize(len_pid);
+    sc_cnd_component.resize(len_pid);
     sc_cnd_x.resize(len_pid);
     sc_cnd_y.resize(len_pid);
     sc_cnd_z.resize(len_pid);
@@ -1135,6 +1123,7 @@ int main(int argc, char **argv) {
       sc_ftof_1a_time[i] = NaN;
       sc_ftof_1a_path[i] = NaN;
       sc_ftof_1a_energy[i] = NaN;
+      sc_ftof_1a_component[i] = -1;
       sc_ftof_1a_x[i] = NaN;
       sc_ftof_1a_y[i] = NaN;
       sc_ftof_1a_z[i] = NaN;
@@ -1146,6 +1135,7 @@ int main(int argc, char **argv) {
       sc_ftof_1b_time[i] = NaN;
       sc_ftof_1b_path[i] = NaN;
       sc_ftof_1b_energy[i] = NaN;
+      sc_ftof_1b_component[i] = -1;
       sc_ftof_1b_x[i] = NaN;
       sc_ftof_1b_y[i] = NaN;
       sc_ftof_1b_z[i] = NaN;
@@ -1157,6 +1147,7 @@ int main(int argc, char **argv) {
       sc_ftof_2_time[i] = NaN;
       sc_ftof_2_path[i] = NaN;
       sc_ftof_2_energy[i] = NaN;
+      sc_ftof_2_component[i] = -1;
       sc_ftof_2_x[i] = NaN;
       sc_ftof_2_y[i] = NaN;
       sc_ftof_2_z[i] = NaN;
@@ -1167,6 +1158,7 @@ int main(int argc, char **argv) {
       sc_ctof_time[i] = NaN;
       sc_ctof_path[i] = NaN;
       sc_ctof_energy[i] = NaN;
+      sc_ctof_component[i] = -1;
       sc_ctof_x[i] = NaN;
       sc_ctof_y[i] = NaN;
       sc_ctof_z[i] = NaN;
@@ -1177,6 +1169,7 @@ int main(int argc, char **argv) {
       sc_cnd_time[i] = NaN;
       sc_cnd_path[i] = NaN;
       sc_cnd_energy[i] = NaN;
+      sc_cnd_component[i] = -1;
       sc_cnd_x[i] = NaN;
       sc_cnd_y[i] = NaN;
       sc_cnd_z[i] = NaN;
@@ -1195,6 +1188,7 @@ int main(int argc, char **argv) {
           sc_ftof_1a_time[i] = scint_time_node->getValue(k);
           sc_ftof_1a_path[i] = scint_path_node->getValue(k);
           sc_ftof_1a_energy[i] = scint_energy_node->getValue(k);
+          sc_ftof_1a_component[i] = scint_component_node->getValue(k);
           sc_ftof_1a_x[i] = scint_x_node->getValue(k);
           sc_ftof_1a_y[i] = scint_y_node->getValue(k);
           sc_ftof_1a_z[i] = scint_z_node->getValue(k);
@@ -1206,6 +1200,7 @@ int main(int argc, char **argv) {
           sc_ftof_1b_time[i] = scint_time_node->getValue(k);
           sc_ftof_1b_path[i] = scint_path_node->getValue(k);
           sc_ftof_1b_energy[i] = scint_energy_node->getValue(k);
+          sc_ftof_1b_component[i] = scint_component_node->getValue(k);
           sc_ftof_1b_x[i] = scint_x_node->getValue(k);
           sc_ftof_1b_y[i] = scint_y_node->getValue(k);
           sc_ftof_1b_z[i] = scint_z_node->getValue(k);
@@ -1217,6 +1212,7 @@ int main(int argc, char **argv) {
           sc_ftof_2_time[i] = scint_time_node->getValue(k);
           sc_ftof_2_path[i] = scint_path_node->getValue(k);
           sc_ftof_2_energy[i] = scint_energy_node->getValue(k);
+          sc_ftof_2_component[i] = scint_component_node->getValue(k);
           sc_ftof_2_x[i] = scint_x_node->getValue(k);
           sc_ftof_2_y[i] = scint_y_node->getValue(k);
           sc_ftof_2_z[i] = scint_z_node->getValue(k);
@@ -1227,6 +1223,7 @@ int main(int argc, char **argv) {
           sc_ctof_time[i] = scint_time_node->getValue(k);
           sc_ctof_path[i] = scint_path_node->getValue(k);
           sc_ctof_energy[i] = scint_energy_node->getValue(k);
+          sc_ctof_component[i] = scint_component_node->getValue(k);
           sc_ctof_x[i] = scint_x_node->getValue(k);
           sc_ctof_y[i] = scint_y_node->getValue(k);
           sc_ctof_z[i] = scint_z_node->getValue(k);
@@ -1237,6 +1234,7 @@ int main(int argc, char **argv) {
           sc_cnd_time[i] = scint_time_node->getValue(k);
           sc_cnd_path[i] = scint_path_node->getValue(k);
           sc_cnd_energy[i] = scint_energy_node->getValue(k);
+          sc_cnd_component[i] = scint_component_node->getValue(k);
           sc_cnd_x[i] = scint_x_node->getValue(k);
           sc_cnd_y[i] = scint_y_node->getValue(k);
           sc_cnd_z[i] = scint_z_node->getValue(k);
