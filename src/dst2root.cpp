@@ -1496,8 +1496,8 @@ int main(int argc, char **argv) {
       cvt_CovMat_tandip2.resize(len_pid);
 
       for (int i = 0; i < len_pid; i++) {
-        cvt_pid[i] = NaN;
-        cvt_q[i] = NaN;
+        cvt_pid[i] = -1;
+        cvt_q[i] = -1;
         cvt_p[i] = NaN;
         cvt_pt[i] = NaN;
         cvt_phi0[i] = NaN;
