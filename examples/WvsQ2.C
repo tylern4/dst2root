@@ -62,6 +62,7 @@ int WvsQ2(std::string file = "test.root", double BEAM = 2.2) {
   int num_of_events = (int)clas12->GetEntries();
   auto start_full = std::chrono::high_resolution_clock::now();
   for (int current_event = 0; current_event < num_of_events; current_event++) {
+    if (current_event % 10000 == 0) std::cout << "\t" << (current_event * 100 / num_of_events) << "%\r\r" << std::flush;
     clas12->GetEntry(current_event);
     if (pid->size() == 0 || pid->at(0) != 11) continue;
 
