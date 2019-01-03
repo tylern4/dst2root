@@ -5,6 +5,7 @@
 std::vector<int> *pid;
 std::vector<float> *p;
 std::vector<int> *charge;
+std::vector<float> *STTime;
 
 std::vector<float> *sc_ftof_1a_time;
 std::vector<float> *sc_ftof_1a_path;
@@ -26,7 +27,13 @@ double vertex_time(double sc_time, double sc_pathlength, double relatavistic_bet
   return sc_time - sc_pathlength / (relatavistic_beta * c_special_units);
 }
 
-int deltat() {
+double delta_t_calc(double vertex, double momentum, double sc_time, double sc_pathlength, double mass) {
+  double beta = 1.0 / sqrt(1.0 + (mass / momentum) * (mass / momentum));
+  double dt = vertex - vertex_time(sc_time, sc_pathlength, beta);
+  return dt;
+}
+
+int deltat(std::string file = "test.root") {
   TH2D *deltaT_1a_prot = new TH2D("deltaT_1a_prot", "#Deltat Proton", 500, 0, 7.0, 500, -10, 10);
   TH2D *deltaT_1a_pip = new TH2D("deltaT_1a_pion", "#Deltat #pi^{+}", 500, 0, 7.0, 500, -10, 10);
   TH2D *deltaT_1a_pim = new TH2D("deltaT_1a_pion_m", "#Deltat #pi^{-}", 500, 0, 7.0, 500, -10, 10);
@@ -45,7 +52,8 @@ int deltat() {
 
   TChain *clas12 = new TChain("clas12", "clas12");
 
-  clas12->Add("test.root");
+  clas12->Add(file.c_str());
+
   clas12->SetBranchAddress("pid", &pid);
   clas12->SetBranchAddress("p", &p);
   clas12->SetBranchAddress("charge", &charge);
@@ -62,17 +70,16 @@ int deltat() {
 
   int num_of_events = (int)clas12->GetEntries();
   auto start_full = std::chrono::high_resolution_clock::now();
-  double beta = 0.0;
   double dt_P, dt_PIP;
   for (int current_event = 0; current_event < num_of_events; current_event++) {
     clas12->GetEntry(current_event);
     if (pid->size() == 0) continue;
     double vertex = 0.0;
 
-    if (sc_ftof_1a_time->at(0) == sc_ftof_1a_time->at(0)) {
-      vertex = vertex_time(sc_ftof_1a_time->at(0), sc_ftof_1a_path->at(0), 1.0);
-    } else if (sc_ftof_1b_time->at(0) == sc_ftof_1b_time->at(0)) {
+    if (sc_ftof_1b_time->at(0) == sc_ftof_1b_time->at(0)) {
       vertex = vertex_time(sc_ftof_1b_time->at(0), sc_ftof_1b_path->at(0), 1.0);
+    } else if (sc_ftof_1a_time->at(0) == sc_ftof_1a_time->at(0)) {
+      vertex = vertex_time(sc_ftof_1a_time->at(0), sc_ftof_1a_path->at(0), 1.0);
     } else {
       continue;
     }
@@ -80,57 +87,38 @@ int deltat() {
     for (size_t part = 0; part < pid->size(); part++) {
       if (p->at(part) == 0) continue;
       if (charge->at(part) == 1) {
-        beta = 1.0 / sqrt(1.0 + (MASS_P / p->at(part)) * (MASS_P / p->at(part)));
-        dt_P = vertex - vertex_time(sc_ftof_1a_time->at(part), sc_ftof_1a_path->at(part), beta);
-        if (dt_P == dt_P) deltaT_1a_prot->Fill(p->at(part), dt_P);
-        beta = 1.0 / sqrt(1.0 + (MASS_PIP / p->at(part)) * (MASS_PIP / p->at(part)));
-        dt_PIP = vertex - vertex_time(sc_ftof_1a_time->at(part), sc_ftof_1a_path->at(part), beta);
-        if (dt_PIP == dt_PIP) deltaT_1a_pip->Fill(p->at(part), dt_PIP);
+        deltaT_1a_prot->Fill(p->at(part), delta_t_calc(vertex, p->at(part), sc_ftof_1a_time->at(part),
+                                                       sc_ftof_1a_path->at(part), MASS_P));
+        deltaT_1a_pip->Fill(p->at(part), delta_t_calc(vertex, p->at(part), sc_ftof_1a_time->at(part),
+                                                      sc_ftof_1a_path->at(part), MASS_PIP));
 
-        beta = 1.0 / sqrt(1.0 + (MASS_P / p->at(part)) * (MASS_P / p->at(part)));
-        dt_P = vertex - vertex_time(sc_ftof_1b_time->at(part), sc_ftof_1b_path->at(part), beta);
-        if (dt_P == dt_P) deltaT_1b_prot->Fill(p->at(part), dt_P);
-        beta = 1.0 / sqrt(1.0 + (MASS_PIP / p->at(part)) * (MASS_PIP / p->at(part)));
-        dt_PIP = vertex - vertex_time(sc_ftof_1b_time->at(part), sc_ftof_1b_path->at(part), beta);
-        if (dt_PIP == dt_PIP) deltaT_1b_pip->Fill(p->at(part), dt_PIP);
+        deltaT_1b_prot->Fill(p->at(part), delta_t_calc(vertex, p->at(part), sc_ftof_1b_time->at(part),
+                                                       sc_ftof_1b_path->at(part), MASS_P));
+        deltaT_1b_pip->Fill(p->at(part), delta_t_calc(vertex, p->at(part), sc_ftof_1b_time->at(part),
+                                                      sc_ftof_1b_path->at(part), MASS_PIP));
 
-        beta = 1.0 / sqrt(1.0 + (MASS_P / p->at(part)) * (MASS_P / p->at(part)));
-        dt_P = vertex - vertex_time(sc_ftof_1b_time->at(part), sc_ftof_1b_path->at(part), beta);
-        if (dt_P == dt_P) deltaT_1b_prot->Fill(p->at(part), dt_P);
-        beta = 1.0 / sqrt(1.0 + (MASS_PIP / p->at(part)) * (MASS_PIP / p->at(part)));
-        dt_PIP = vertex - vertex_time(sc_ftof_1b_time->at(part), sc_ftof_1b_path->at(part), beta);
-        if (dt_PIP == dt_PIP) deltaT_1b_pip->Fill(p->at(part), dt_PIP);
+        deltaT_2_prot->Fill(
+            p->at(part), delta_t_calc(vertex, p->at(part), sc_ftof_2_time->at(part), sc_ftof_2_path->at(part), MASS_P));
+        deltaT_2_pip->Fill(p->at(part), delta_t_calc(vertex, p->at(part), sc_ftof_2_time->at(part),
+                                                     sc_ftof_2_path->at(part), MASS_PIP));
 
-        beta = 1.0 / sqrt(1.0 + (MASS_P / p->at(part)) * (MASS_P / p->at(part)));
-        dt_P = vertex - vertex_time(sc_ftof_2_time->at(part), sc_ftof_2_path->at(part), beta);
-        if (dt_P == dt_P) deltaT_2_prot->Fill(p->at(part), dt_P);
-        beta = 1.0 / sqrt(1.0 + (MASS_PIP / p->at(part)) * (MASS_PIP / p->at(part)));
-        dt_PIP = vertex - vertex_time(sc_ftof_2_time->at(part), sc_ftof_2_path->at(part), beta);
-        if (dt_PIP == dt_PIP) deltaT_2_pip->Fill(p->at(part), dt_PIP);
-
-        beta = 1.0 / sqrt(1.0 + (MASS_P / p->at(part)) * (MASS_P / p->at(part)));
-        dt_P = vertex - vertex_time(sc_ctof_time->at(part), sc_ctof_path->at(part), beta);
-        if (dt_P == dt_P) deltaT_ctof_prot->Fill(p->at(part), dt_P);
-        beta = 1.0 / sqrt(1.0 + (MASS_PIP / p->at(part)) * (MASS_PIP / p->at(part)));
-        dt_PIP = vertex - vertex_time(sc_ctof_time->at(part), sc_ctof_path->at(part), beta);
-        if (dt_PIP == dt_PIP) deltaT_ctof_pip->Fill(p->at(part), dt_PIP);
+        deltaT_ctof_prot->Fill(
+            p->at(part), delta_t_calc(vertex, p->at(part), sc_ctof_time->at(part), sc_ctof_path->at(part), MASS_P));
+        deltaT_ctof_pip->Fill(
+            p->at(part), delta_t_calc(vertex, p->at(part), sc_ctof_time->at(part), sc_ctof_path->at(part), MASS_PIP));
 
       } else if (charge->at(part) == -1) {
-        beta = 1.0 / sqrt(1.0 + (MASS_PIP / p->at(part)) * (MASS_PIP / p->at(part)));
-        dt_PIP = vertex - vertex_time(sc_ftof_1a_time->at(part), sc_ftof_1a_path->at(part), beta);
-        if (dt_PIP == dt_PIP) deltaT_1a_pim->Fill(p->at(part), dt_PIP);
+        deltaT_1a_pim->Fill(p->at(part), delta_t_calc(vertex, p->at(part), sc_ftof_1a_time->at(part),
+                                                      sc_ftof_1a_path->at(part), MASS_PIP));
 
-        beta = 1.0 / sqrt(1.0 + (MASS_PIP / p->at(part)) * (MASS_PIP / p->at(part)));
-        dt_PIP = vertex - vertex_time(sc_ftof_1b_time->at(part), sc_ftof_1b_path->at(part), beta);
-        if (dt_PIP == dt_PIP) deltaT_1b_pim->Fill(p->at(part), dt_PIP);
+        deltaT_1b_pim->Fill(p->at(part), delta_t_calc(vertex, p->at(part), sc_ftof_1b_time->at(part),
+                                                      sc_ftof_1b_path->at(part), MASS_PIP));
 
-        beta = 1.0 / sqrt(1.0 + (MASS_PIP / p->at(part)) * (MASS_PIP / p->at(part)));
-        dt_PIP = vertex - vertex_time(sc_ftof_2_time->at(part), sc_ftof_2_path->at(part), beta);
-        if (dt_PIP == dt_PIP) deltaT_2_pim->Fill(p->at(part), dt_PIP);
+        deltaT_2_pim->Fill(p->at(part), delta_t_calc(vertex, p->at(part), sc_ftof_2_time->at(part),
+                                                     sc_ftof_2_path->at(part), MASS_PIP));
 
-        beta = 1.0 / sqrt(1.0 + (MASS_PIP / p->at(part)) * (MASS_PIP / p->at(part)));
-        dt_PIP = vertex - vertex_time(sc_ctof_time->at(part), sc_ctof_path->at(part), beta);
-        if (dt_PIP == dt_PIP) deltaT_ctof_pim->Fill(p->at(part), dt_PIP);
+        deltaT_ctof_pim->Fill(
+            p->at(part), delta_t_calc(vertex, p->at(part), sc_ctof_time->at(part), sc_ctof_path->at(part), MASS_PIP));
       }
     }
   }
