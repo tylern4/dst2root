@@ -38,10 +38,10 @@ TH1D *w = new TH1D("w", "W", 500, 0, 3.5);
 
 TChain *clas12 = new TChain("clas12", "clas12");
 
-int WvsQ2(double BEAM = 2.2) {
+int WvsQ2(std::string file = "test.root", double BEAM = 2.2) {
   TLorentzVector e_mu(0.0, 0.0, BEAM, BEAM);
   TLorentzVector e_mu_prime;
-  clas12->Add("test.root");
+  clas12->Add(file.c_str());
   clas12->SetBranchAddress("pid", &pid);
   clas12->SetBranchAddress("p", &p);
   clas12->SetBranchAddress("px", &px);

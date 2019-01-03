@@ -10,8 +10,8 @@ TH2D *MomVsBeta = new TH2D("MomVsBeta", "Momentum vs Beta", 500, 0, 3.5, 500, 0,
 
 TChain *clas12 = new TChain("clas12", "clas12");
 
-int pvsb() {
-  clas12->Add("test.root");
+int pvsb(std::string file = "test.root") {
+  clas12->Add(file.c_str());
   clas12->SetBranchAddress("pid", &pid);
   clas12->SetBranchAddress("p", &p);
   clas12->SetBranchAddress("beta", &beta);

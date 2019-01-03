@@ -9,8 +9,8 @@ TH2D *sf_hist = new TH2D("sf_hist", "Electron Sampling Fraction", 500, 0, 3.5, 5
 
 TChain *clas12 = new TChain("clas12", "clas12");
 
-int samplingFraction() {
-  clas12->Add("test.root");
+int samplingFraction(std::string file = "test.root") {
+  clas12->Add(file.c_str());
 
   clas12->SetBranchAddress("pid", &pid);
   clas12->SetBranchAddress("p", &p);

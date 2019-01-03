@@ -24,8 +24,8 @@ std::vector<float> *CovMat_55;
 
 TChain *clas12 = new TChain("clas12", "clas12");
 
-int CovMat() {
-  clas12->Add("test.root");
+int CovMat(std::string file = "test.root") {
+  clas12->Add(file.c_str());
 
   clas12->SetBranchAddress("pid", &pid);
   clas12->SetBranchAddress("CovMat_11", &CovMat_11);
