@@ -5,7 +5,7 @@ std::vector<int> *pid;
 std::vector<float> *p;
 std::vector<float> *ec_tot_energy;
 
-TH2D *sf_hist = new TH2D("sf_hist", "Electron Sampling Fraction", 500, 0, 3.5, 500, 0, 0.5);
+TH2D *sf_hist = new TH2D("sf_hist", "Electron Sampling Fraction", 500, 0, 5.5, 500, 0, 0.5);
 
 TChain *clas12 = new TChain("clas12", "clas12");
 
