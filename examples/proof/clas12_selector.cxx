@@ -43,7 +43,7 @@ void clas12_selector::SlaveBegin(TTree* /*tree*/) {
   TString option = GetOption();
 
   for (size_t i = 0; i < 6; i++) {
-    fWq2[i] = new TH2D(Form("wq2_%zu", i), Form("W vs Q^{2} Sector: %zu", i + 1), 500, 0, 3.5, 500, 0, 6.0);
+    fWq2[i] = new TH2D(Form("wq2_%zu", i), Form("W vs Q^{2} Sector: %zu", i + 1), 500, 0, 3.5, 500, 0, 4.0);
     fWq2[i]->SetDirectory(0);
     fWq2[i]->GetXaxis()->SetTitle("W");
     fWq2[i]->GetYaxis()->SetTitle("Q^{2}");
