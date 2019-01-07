@@ -23,7 +23,7 @@ TChain *clas12 = new TChain("clas12", "clas12");
 
 TH1D *deltaP[8];
 
-int MonteCarlo(double BEAM = 2.2) {
+int MonteCarlo(std::string file = "test.root", double BEAM = 2.2) {
   gStyle->SetOptStat(1111);
   gStyle->SetOptFit(1111);
 
@@ -37,7 +37,7 @@ int MonteCarlo(double BEAM = 2.2) {
   deltaP[6] = new TH1D("delta_pz_p", "#Delta P_{z}/P Particles", 100, -2, 2);
   deltaP[7] = new TH1D("delta_p_p", "#Delta P/P Particles", 100, -2, 2);
 
-  clas12->Add("test.root");
+  clas12->Add(file.c_str());
   clas12->SetBranchAddress("particle", &particle);
   clas12->SetBranchAddress("pid", &pid);
   clas12->SetBranchAddress("p", &p);
