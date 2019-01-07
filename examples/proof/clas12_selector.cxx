@@ -95,7 +95,7 @@ void clas12_selector::Terminate() {
   // The Terminate() function is the last function to be called during
   // a query. It always runs on the client, it can be used to present
   // the results graphically or save the results to file.
-
+  gStyle->SetOptFit(1111);
   TCanvas* c1 = new TCanvas("c1", "WvsQ2 Canvas", 1600, 900);
   c1->Divide(3, 2);
   for (size_t i = 0; i < 6; i++) {
@@ -109,6 +109,7 @@ void clas12_selector::Terminate() {
   for (size_t i = 0; i < 6; i++) {
     TH1D* hf_w = dynamic_cast<TH1D*>(fOutput->FindObject(Form("w_%zu", i)));
     c2->cd(i + 1);
+    hf_w->Fit("gaus", "QMR+", "", 0.5, 1.05);
     hf_w->Draw();
   }
 }

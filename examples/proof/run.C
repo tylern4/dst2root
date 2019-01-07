@@ -5,6 +5,6 @@ void run(std::string files = "files.root") {
 
   auto plite = TProof::Open("");
   ch->SetProof();
-  ch->Process("clas12_selector.cxx+");
+  ch->Process("clas12_selector.cxx++");
   // gROOT->ProcessLine(".q;");
 }

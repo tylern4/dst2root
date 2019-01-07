@@ -27,7 +27,12 @@
 //	Gotten from t channel
 // -q^mu^2 = -(e^mu - e^mu')^2 = Q^2
 double Q2_calc(TLorentzVector e_mu_prime) {
-  TLorentzVector e_mu(0.0, 0.0, 7.5, 7.5);
+  double beam = 10.6;
+  if (getenv("BEAM") != NULL) {
+    beam = atof(getenv("BEAM"));
+  }
+
+  TLorentzVector e_mu(0.0, 0.0, beam, beam);
   TLorentzVector q_mu = (e_mu - e_mu_prime);
   return -q_mu.Mag2();
 }
@@ -35,7 +40,11 @@ double Q2_calc(TLorentzVector e_mu_prime) {
 //	Gotten from s channel [(gamma + P)^2 == s == w^2]
 //	Sqrt√[M_p^2 - Q^2 + 2 M_p gamma]
 double W_calc(TLorentzVector e_mu_prime) {
-  TLorentzVector e_mu(0.0, 0.0, 7.5, 7.5);
+  double beam = 10.6;
+  if (getenv("BEAM") != NULL) {
+    beam = atof(getenv("BEAM"));
+  }
+  TLorentzVector e_mu(0.0, 0.0, beam, beam);
   TLorentzVector q_mu = (e_mu - e_mu_prime);
   TLorentzVector p_mu(0.0, 0.0, 0.0, 0.93827203);
   return (p_mu + q_mu).Mag();
