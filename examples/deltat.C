@@ -23,13 +23,13 @@ static const double MASS_P = 0.93827203;
 static const double MASS_PIP = 0.13957018;
 const double c_special_units = 29.9792458;
 
-double vertex_time(double sc_time, double sc_pathlength, double relatavistic_beta) {
-  return sc_time - sc_pathlength / (relatavistic_beta * c_special_units);
+double vertex_time(double sc_time, double sc_pathlength, double relatavistic_b) {
+  return sc_time - sc_pathlength / (relatavistic_b * c_special_units);
 }
 
 double delta_t_calc(double vertex, double momentum, double sc_time, double sc_pathlength, double mass) {
-  double beta = 1.0 / sqrt(1.0 + (mass / momentum) * (mass / momentum));
-  double dt = vertex - vertex_time(sc_time, sc_pathlength, beta);
+  double b = 1.0 / sqrt(1.0 + (mass / momentum) * (mass / momentum));
+  double dt = vertex - vertex_time(sc_time, sc_pathlength, b);
   return dt;
 }
 

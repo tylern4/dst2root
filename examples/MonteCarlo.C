@@ -10,7 +10,7 @@ std::vector<float> *p;
 std::vector<float> *px;
 std::vector<float> *py;
 std::vector<float> *pz;
-std::vector<float> *beta;
+std::vector<float> *b;
 std::vector<int> *charge;
 
 std::vector<int> *MC_pid;
@@ -44,7 +44,7 @@ int MonteCarlo(double BEAM = 2.2) {
   clas12->SetBranchAddress("px", &px);
   clas12->SetBranchAddress("py", &py);
   clas12->SetBranchAddress("pz", &pz);
-  clas12->SetBranchAddress("beta", &beta);
+  clas12->SetBranchAddress("beta", &b);
   clas12->SetBranchAddress("charge", &charge);
   clas12->SetBranchAddress("mc_pid", &MC_pid);
   clas12->SetBranchAddress("mc_px", &MC_px);
