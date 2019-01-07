@@ -35,3 +35,4 @@
 dst2root
 *.root
 build
+*.pcm
