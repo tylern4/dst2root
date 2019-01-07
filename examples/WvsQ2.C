@@ -33,8 +33,8 @@ double W_calc(TLorentzVector e_mu, TLorentzVector e_mu_prime) {
   return (p_mu + q_mu).Mag();
 }
 
-TH2D *wq2 = new TH2D("wq2", "W vs Q^{2}", 500, 0, 3.5, 500, 0, 6.0);
-TH1D *w = new TH1D("w", "W", 500, 0, 3.5);
+TH2D *wq2 = new TH2D("wq2", "W vs Q^{2} no Sector", 500, 0, 3.5, 500, 0, 6.0);
+TH1D *w = new TH1D("w", "W no Sector", 500, 0, 3.5);
 
 TH2D *wq2_s[6];
 TH1D *w_s[6];
@@ -67,12 +67,14 @@ int WvsQ2(std::string file = "test.root", double BEAM = 2.2) {
     if (pid->size() == 0 || pid->at(0) != 11) continue;
 
     e_mu_prime.SetXYZM(px->at(0), py->at(0), pz->at(0), MASS_E);
-    wq2->Fill(W_calc(e_mu, e_mu_prime), Q2_calc(e_mu, e_mu_prime));
-    w->Fill(W_calc(e_mu, e_mu_prime));
+
     if (ec_pcal_sec->at(0) > 0) {
       int sector = ec_pcal_sec->at(0) - 1;
       w_s[sector]->Fill(W_calc(e_mu, e_mu_prime));
       wq2_s[sector]->Fill(W_calc(e_mu, e_mu_prime), Q2_calc(e_mu, e_mu_prime));
+    } else {
+      wq2->Fill(W_calc(e_mu, e_mu_prime), Q2_calc(e_mu, e_mu_prime));
+      w->Fill(W_calc(e_mu, e_mu_prime));
     }
   }
 
