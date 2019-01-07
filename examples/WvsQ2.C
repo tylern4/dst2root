@@ -99,10 +99,10 @@ int WvsQ2(std::string file = "test.root", double BEAM = 2.2) {
     w_s[i]->Fit("gaus", "QMR+", "", 0.5, 1.05);
   }
 
-  TCanvas *c4 = new TCanvas("c4", "c4", 1600, 900);
-  c4->Divide(3, 2);
+  TCanvas *c2 = new TCanvas("c2", "c2", 1600, 900);
+  c2->Divide(3, 2);
   for (size_t i = 0; i < 6; i++) {
-    c4->cd(i + 1);
+    c2->cd(i + 1);
     wq2_s[i]->Draw("samecolor");
   }
 

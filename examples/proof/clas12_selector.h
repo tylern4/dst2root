@@ -49,6 +49,18 @@ double W_calc(TLorentzVector e_mu_prime) {
   TLorentzVector p_mu(0.0, 0.0, 0.0, 0.93827203);
   return (p_mu + q_mu).Mag();
 }
+const double c_special_units = 29.9792458;
+static const double MASS_P = 0.93827203;
+static const double MASS_PIP = 0.13957018;
+double vertex_time(double sc_time, double sc_pathlength, double relatavistic_b) {
+  return sc_time - sc_pathlength / (relatavistic_b * c_special_units);
+}
+
+double delta_t_calc(double vertex, double momentum, double sc_time, double sc_pathlength, double mass) {
+  double b = 1.0 / sqrt(1.0 + (mass / momentum) * (mass / momentum));
+  double dt = vertex - vertex_time(sc_time, sc_pathlength, b);
+  return dt;
+}
 
 class clas12_selector : public TSelector {
  public:
@@ -56,6 +68,21 @@ class clas12_selector : public TSelector {
   TTree *fChain = 0;    //! pointer to the analyzed TTree or TChain
   TH2D *fWq2[6];
   TH1D *fW[6];
+  TH2D *fDeltaT_1a_prot;
+  TH2D *fDeltaT_1a_pip;
+  TH2D *fDeltaT_1a_pim;
+
+  TH2D *fDeltaT_1b_prot;
+  TH2D *fDeltaT_1b_pip;
+  TH2D *fDeltaT_1b_pim;
+
+  TH2D *fDeltaT_2_prot;
+  TH2D *fDeltaT_2_pip;
+  TH2D *fDeltaT_2_pim;
+
+  TH2D *fDeltaT_ctof_prot;
+  TH2D *fDeltaT_ctof_pip;
+  TH2D *fDeltaT_ctof_pim;
 
   // Readers to access the data (delete the ones you do not need).
   TTreeReaderArray<int> run = {fReader, "run"};
@@ -225,6 +252,18 @@ class clas12_selector : public TSelector {
   TTreeReaderArray<float> ft_hodo_radius = {fReader, "ft_hodo_radius"};
 
   clas12_selector(TTree * /*tree*/ = 0) {
+    fDeltaT_1a_prot = 0;
+    fDeltaT_1a_pip = 0;
+    fDeltaT_1a_pim = 0;
+    fDeltaT_1b_prot = 0;
+    fDeltaT_1b_pip = 0;
+    fDeltaT_1b_pim = 0;
+    fDeltaT_2_prot = 0;
+    fDeltaT_2_pip = 0;
+    fDeltaT_2_pim = 0;
+    fDeltaT_ctof_prot = 0;
+    fDeltaT_ctof_pip = 0;
+    fDeltaT_ctof_pim = 0;
     for (size_t i = 0; i < 6; i++) {
       fWq2[i] = 0;
       fW[i] = 0;
