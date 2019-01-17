@@ -10,6 +10,6 @@ matrix:
         - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
         - docker build -t tylern4/dst2root . -f Dockerfile
         - docker images -a
-        - wget -q http://userweb.jlab.org/\~gavalian/software/physics_data_0.hipo
-        - docker run -v $PWD:/tmp tylern4/dst2root physics_data_0.hipo
+        - wget -q http://userweb.jlab.org/~gavalian/software/clasrun_2475.hipo.2
+        - docker run -v $PWD:/tmp tylern4/dst2root clasrun_2475.hipo.2
         - docker push tylern4/dst2root
