@@ -2,7 +2,7 @@
 // This class has been automatically generated on
 // Mon Jan  7 11:52:42 2019 by ROOT version 6.15/01
 // from TTree clas12/clas12
-// found on file: /Users/tylern/Data/hipo/run_5771.root
+// found on file: run_5771.root
 //////////////////////////////////////////////////////////
 
 #ifndef clas12_selector_h

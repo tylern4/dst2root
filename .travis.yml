@@ -1,0 +1,13 @@
+matrix:
+  include:
+    - os: linux
+      sudo: false
+      dist: trusty
+      language: cpp
+      services:
+        - docker
+      script:
+        - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+        - docker build -t tylern4/dst2root . -f Dockerfile
+        - docker images -a
+        - docker push tylern4/dst2root

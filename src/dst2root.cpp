@@ -47,8 +47,8 @@
 #define FTOF_1B 2
 #define FTOF_2 3
 #define PCAL 1
-#define EC_Inner 4
-#define EC_Outer 7
+#define EC_INNER 4
+#define EC_OUTER 7
 
 int main(int argc, char **argv) {
   std::string InFileName = "";
@@ -975,7 +975,7 @@ int main(int argc, char **argv) {
             ec_pcal_lu[i] = cal_lu_node->getValue(k);
             ec_pcal_lv[i] = cal_lv_node->getValue(k);
             ec_pcal_lw[i] = cal_lw_node->getValue(k);
-          } else if (layer == EC_Inner) {
+          } else if (layer == EC_INNER) {
             einner += energy;
             ec_ecin_sec[i] = cal_sector_node->getValue(k);
             ec_ecin_time[i] = cal_time_node->getValue(k);
@@ -986,7 +986,7 @@ int main(int argc, char **argv) {
             ec_ecin_lu[i] = cal_lu_node->getValue(k);
             ec_ecin_lv[i] = cal_lv_node->getValue(k);
             ec_ecin_lw[i] = cal_lw_node->getValue(k);
-          } else if (layer == EC_Outer) {
+          } else if (layer == EC_OUTER) {
             eouter += energy;
             ec_ecout_sec[i] = cal_sector_node->getValue(k);
             ec_ecout_time[i] = cal_time_node->getValue(k);
