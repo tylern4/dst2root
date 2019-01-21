@@ -18,6 +18,7 @@ std::vector<float> *sc_ftof_2_path;
 
 std::vector<float> *sc_ctof_time;
 std::vector<float> *sc_ctof_path;
+std::vector<int> *sc_ctof_component;
 
 static const double MASS_P = 0.93827203;
 static const double MASS_PIP = 0.13957018;
@@ -50,6 +51,15 @@ int deltat(std::string file = "test.root") {
   TH2D *deltaT_ctof_pip = new TH2D("deltaT_ctof_pion", "#Deltat #pi^{+}", 500, 0, 7.0, 500, -10, 10);
   TH2D *deltaT_ctof_pim = new TH2D("deltaT_ctof_pion_m", "#Deltat #pi^{-}", 500, 0, 7.0, 500, -10, 10);
 
+  TH2D *deltaT_ctof_prot_component =
+      new TH2D("deltaT_ctof_prot_component", "#Deltat Proton vs Component", 50, 0, 50, 500, -10, 10);
+  TH2D *deltaT_ctof_pip_component =
+      new TH2D("deltaT_ctof_pion_component", "#Deltat #pi^{+} vs Component", 50, 0, 50, 500, -10, 10);
+  TH2D *deltaT_ctof_pim_component =
+      new TH2D("deltaT_ctof_pion_m_component", "#Deltat #pi^{-} vs Component", 50, 0, 50, 500, -10, 10);
+
+  TH2D *deltaT_component = new TH2D("deltaT_component", "#Deltat vs Component", 50, 0, 50, 500, -10, 10);
+
   TChain *clas12 = new TChain("clas12", "clas12");
 
   clas12->Add(file.c_str());
@@ -67,6 +77,7 @@ int deltat(std::string file = "test.root") {
 
   clas12->SetBranchAddress("sc_ctof_time", &sc_ctof_time);
   clas12->SetBranchAddress("sc_ctof_path", &sc_ctof_path);
+  clas12->SetBranchAddress("sc_ctof_component", &sc_ctof_component);
 
   int num_of_events = (int)clas12->GetEntries();
   auto start_full = std::chrono::high_resolution_clock::now();
@@ -86,6 +97,10 @@ int deltat(std::string file = "test.root") {
 
     for (size_t part = 0; part < pid->size(); part++) {
       if (p->at(part) == 0) continue;
+      deltaT_component->Fill(sc_ctof_component->at(part),
+                             delta_t_calc(vertex, p->at(part), sc_ctof_time->at(part), sc_ctof_path->at(part), MASS_P));
+      deltaT_component->Fill(sc_ctof_component->at(part), delta_t_calc(vertex, p->at(part), sc_ctof_time->at(part),
+                                                                       sc_ctof_path->at(part), MASS_PIP));
       if (charge->at(part) == 1) {
         deltaT_1a_prot->Fill(p->at(part), delta_t_calc(vertex, p->at(part), sc_ftof_1a_time->at(part),
                                                        sc_ftof_1a_path->at(part), MASS_P));
@@ -107,6 +122,13 @@ int deltat(std::string file = "test.root") {
         deltaT_ctof_pip->Fill(
             p->at(part), delta_t_calc(vertex, p->at(part), sc_ctof_time->at(part), sc_ctof_path->at(part), MASS_PIP));
 
+        deltaT_ctof_prot_component->Fill(
+            sc_ctof_component->at(part),
+            delta_t_calc(vertex, p->at(part), sc_ctof_time->at(part), sc_ctof_path->at(part), MASS_P));
+        deltaT_ctof_pip_component->Fill(
+            sc_ctof_component->at(part),
+            delta_t_calc(vertex, p->at(part), sc_ctof_time->at(part), sc_ctof_path->at(part), MASS_PIP));
+
       } else if (charge->at(part) == -1) {
         deltaT_1a_pim->Fill(p->at(part), delta_t_calc(vertex, p->at(part), sc_ftof_1a_time->at(part),
                                                       sc_ftof_1a_path->at(part), MASS_PIP));
@@ -119,6 +141,10 @@ int deltat(std::string file = "test.root") {
 
         deltaT_ctof_pim->Fill(
             p->at(part), delta_t_calc(vertex, p->at(part), sc_ctof_time->at(part), sc_ctof_path->at(part), MASS_PIP));
+
+        deltaT_ctof_pim_component->Fill(
+            sc_ctof_component->at(part),
+            delta_t_calc(vertex, p->at(part), sc_ctof_time->at(part), sc_ctof_path->at(part), MASS_PIP));
       }
     }
   }
@@ -157,5 +183,16 @@ int deltat(std::string file = "test.root") {
   c2->cd(3);
   deltaT_ctof_pim->Draw("colz");
 
+  TCanvas *c3 = new TCanvas("c3", "c3", 910, 10, 900, 600);
+  c3->Divide(2, 2);
+  c3->cd(1);
+  deltaT_ctof_prot_component->Draw("colz");
+  c3->cd(2);
+  deltaT_ctof_pip_component->Draw("colz");
+  c3->cd(3);
+  deltaT_ctof_pim_component->Draw("colz");
+  c3->cd(4);
+  deltaT_component->Draw("colz");
+  c3->SaveAs("delta_t_components.pdf");
   return 0;
 }
