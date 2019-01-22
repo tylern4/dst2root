@@ -70,6 +70,18 @@ void clas12_selector::SlaveBegin(TTree * /*tree*/) {
   fDeltaT_ctof_pim = new TH2D("fDeltaT_ctof_pion_m", "#Deltat #pi^{-}", 500, 0, 7.0, 500, -10, 10);
   fOutput->Add(fDeltaT_ctof_pim);
 
+  fDeltaT_ctof_prot_component =
+      new TH2D("fDeltaT_ctof_prot_component", "#Deltat Proton vs Component", 50, 0, 50, 500, -10, 10);
+  fOutput->Add(fDeltaT_ctof_prot_component);
+  fDeltaT_ctof_pip_component =
+      new TH2D("fDeltaT_ctof_pion_component", "#Deltat #pi^{+} vs Component", 50, 0, 50, 500, -10, 10);
+  fOutput->Add(fDeltaT_ctof_pip_component);
+  fDeltaT_ctof_pim_component =
+      new TH2D("fDeltaT_ctof_pion_m_component", "#Deltat #pi^{-} vs Component", 50, 0, 50, 500, -10, 10);
+  fOutput->Add(fDeltaT_ctof_pim_component);
+  fDeltaT_ctof_component = new TH2D("fDeltaT_ctof_component", "#Deltat vs Component", 50, 0, 50, 500, -10, 10);
+  fOutput->Add(fDeltaT_ctof_component);
+
   for (size_t i = 0; i < 6; i++) {
     fWq2[i] = new TH2D(Form("wq2_%zu", i), Form("W vs Q^{2} Sector: %zu", i + 1), 500, 0, 3.5, 500, 0, 4.0);
     fWq2[i]->SetDirectory(0);
@@ -126,6 +138,10 @@ Bool_t clas12_selector::Process(Long64_t entry) {
 
   for (size_t l = 1; l < len; l++) {
     if (p[l] == 0) continue;
+    fDeltaT_ctof_component->Fill(sc_ctof_component[l],
+                                 delta_t_calc(vertex, p[l], sc_ctof_time[l], sc_ctof_path[l], MASS_P));
+    fDeltaT_ctof_component->Fill(sc_ctof_component[l],
+                                 delta_t_calc(vertex, p[l], sc_ctof_time[l], sc_ctof_path[l], MASS_PIP));
     if (charge[l] == 1) {
       fDeltaT_1a_prot->Fill(p[l], delta_t_calc(vertex, p[l], sc_ftof_1a_time[l], sc_ftof_1a_path[l], MASS_P));
       fDeltaT_1a_pip->Fill(p[l], delta_t_calc(vertex, p[l], sc_ftof_1a_time[l], sc_ftof_1a_path[l], MASS_PIP));
@@ -139,11 +155,17 @@ Bool_t clas12_selector::Process(Long64_t entry) {
       fDeltaT_ctof_prot->Fill(p[l], delta_t_calc(vertex, p[l], sc_ctof_time[l], sc_ctof_path[l], MASS_P));
       fDeltaT_ctof_pip->Fill(p[l], delta_t_calc(vertex, p[l], sc_ctof_time[l], sc_ctof_path[l], MASS_PIP));
 
+      fDeltaT_ctof_prot_component->Fill(sc_ctof_component[l],
+                                        delta_t_calc(vertex, p[l], sc_ctof_time[l], sc_ctof_path[l], MASS_P));
+      fDeltaT_ctof_pip_component->Fill(sc_ctof_component[l],
+                                       delta_t_calc(vertex, p[l], sc_ctof_time[l], sc_ctof_path[l], MASS_PIP));
     } else if (charge[l] == -1) {
       fDeltaT_1a_pim->Fill(p[l], delta_t_calc(vertex, p[l], sc_ftof_1a_time[l], sc_ftof_1a_path[l], MASS_PIP));
       fDeltaT_1b_pim->Fill(p[l], delta_t_calc(vertex, p[l], sc_ftof_1b_time[l], sc_ftof_1b_path[l], MASS_PIP));
       fDeltaT_2_pim->Fill(p[l], delta_t_calc(vertex, p[l], sc_ftof_2_time[l], sc_ftof_2_path[l], MASS_PIP));
       fDeltaT_ctof_pim->Fill(p[l], delta_t_calc(vertex, p[l], sc_ctof_time[l], sc_ctof_path[l], MASS_PIP));
+      fDeltaT_ctof_pim_component->Fill(sc_ctof_component[l],
+                                       delta_t_calc(vertex, p[l], sc_ctof_time[l], sc_ctof_path[l], MASS_PIP));
     }
   }
 
@@ -194,6 +216,11 @@ void clas12_selector::Terminate() {
   TH2D *f_ctof_pip = dynamic_cast<TH2D *>(fOutput->FindObject("fDeltaT_ctof_pion"));
   TH2D *f_ctof_pim = dynamic_cast<TH2D *>(fOutput->FindObject("fDeltaT_ctof_pion_m"));
 
+  TH2D *f_ctof_prot_component = dynamic_cast<TH2D *>(fOutput->FindObject("fDeltaT_ctof_prot_component"));
+  TH2D *f_ctof_pip_component = dynamic_cast<TH2D *>(fOutput->FindObject("fDeltaT_ctof_pion_component"));
+  TH2D *f_ctof_pim_component = dynamic_cast<TH2D *>(fOutput->FindObject("fDeltaT_ctof_pion_m_component"));
+  TH2D *f_ctof_component = dynamic_cast<TH2D *>(fOutput->FindObject("fDeltaT_ctof_component"));
+
   TCanvas *c3 = new TCanvas("c3", "Delta_t Canvas", 1600, 900);
   c3->Divide(3, 3);
   int can3 = 1;
@@ -225,4 +252,15 @@ void clas12_selector::Terminate() {
   f_ctof_pip->Draw("colz");
   c4->cd(can4++);
   f_ctof_pim->Draw("colz");
+
+  TCanvas *c5 = new TCanvas("c5", "c5", 1600, 900);
+  c5->Divide(2, 2);
+  c5->cd(1);
+  f_ctof_prot_component->Draw("colz");
+  c5->cd(2);
+  f_ctof_pip_component->Draw("colz");
+  c5->cd(3);
+  f_ctof_pim_component->Draw("colz");
+  c5->cd(4);
+  f_ctof_component->Draw("colz");
 }

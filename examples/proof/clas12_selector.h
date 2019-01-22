@@ -84,6 +84,11 @@ class clas12_selector : public TSelector {
   TH2D *fDeltaT_ctof_pip;
   TH2D *fDeltaT_ctof_pim;
 
+  TH2D *fDeltaT_ctof_prot_component;
+  TH2D *fDeltaT_ctof_pip_component;
+  TH2D *fDeltaT_ctof_pim_component;
+  TH2D *fDeltaT_ctof_component;
+
   // Readers to access the data (delete the ones you do not need).
   TTreeReaderArray<int> run = {fReader, "run"};
   TTreeReaderArray<int> event = {fReader, "event"};
@@ -264,6 +269,10 @@ class clas12_selector : public TSelector {
     fDeltaT_ctof_prot = 0;
     fDeltaT_ctof_pip = 0;
     fDeltaT_ctof_pim = 0;
+    fDeltaT_ctof_prot_component = 0;
+    fDeltaT_ctof_pip_component = 0;
+    fDeltaT_ctof_pim_component = 0;
+    fDeltaT_ctof_component = 0;
     for (size_t i = 0; i < 6; i++) {
       fWq2[i] = 0;
       fW[i] = 0;

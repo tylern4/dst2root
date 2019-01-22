@@ -9,12 +9,15 @@ std::vector<float> *STTime;
 
 std::vector<float> *sc_ftof_1a_time;
 std::vector<float> *sc_ftof_1a_path;
+std::vector<int> *sc_ftof_1a_component;
 
 std::vector<float> *sc_ftof_1b_time;
 std::vector<float> *sc_ftof_1b_path;
+std::vector<int> *sc_ftof_1b_component;
 
 std::vector<float> *sc_ftof_2_time;
 std::vector<float> *sc_ftof_2_path;
+std::vector<int> *sc_ftof_2_component;
 
 std::vector<float> *sc_ctof_time;
 std::vector<float> *sc_ctof_path;
@@ -57,7 +60,6 @@ int deltat(std::string file = "test.root") {
       new TH2D("deltaT_ctof_pion_component", "#Deltat #pi^{+} vs Component", 50, 0, 50, 500, -10, 10);
   TH2D *deltaT_ctof_pim_component =
       new TH2D("deltaT_ctof_pion_m_component", "#Deltat #pi^{-} vs Component", 50, 0, 50, 500, -10, 10);
-
   TH2D *deltaT_component = new TH2D("deltaT_component", "#Deltat vs Component", 50, 0, 50, 500, -10, 10);
 
   TChain *clas12 = new TChain("clas12", "clas12");
@@ -70,10 +72,15 @@ int deltat(std::string file = "test.root") {
 
   clas12->SetBranchAddress("sc_ftof_1a_time", &sc_ftof_1a_time);
   clas12->SetBranchAddress("sc_ftof_1a_path", &sc_ftof_1a_path);
+  clas12->SetBranchAddress("sc_ftof_1a_component", &sc_ftof_1a_component);
+
   clas12->SetBranchAddress("sc_ftof_1b_time", &sc_ftof_1b_time);
   clas12->SetBranchAddress("sc_ftof_1b_path", &sc_ftof_1b_path);
+  clas12->SetBranchAddress("sc_ftof_1b_component", &sc_ftof_1b_component);
+
   clas12->SetBranchAddress("sc_ftof_2_time", &sc_ftof_2_time);
   clas12->SetBranchAddress("sc_ftof_2_path", &sc_ftof_2_path);
+  clas12->SetBranchAddress("sc_ftof_2_component", &sc_ftof_2_component);
 
   clas12->SetBranchAddress("sc_ctof_time", &sc_ctof_time);
   clas12->SetBranchAddress("sc_ctof_path", &sc_ctof_path);
@@ -194,5 +201,6 @@ int deltat(std::string file = "test.root") {
   c3->cd(4);
   deltaT_component->Draw("colz");
   c3->SaveAs("delta_t_components.pdf");
+
   return 0;
 }
