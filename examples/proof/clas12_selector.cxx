@@ -182,22 +182,27 @@ void clas12_selector::Terminate() {
   // The Terminate() function is the last function to be called during
   // a query. It always runs on the client, it can be used to present
   // the results graphically or save the results to file.
+  auto out = new TFile("out.root", "RECREATE");
+  out->cd();
   gStyle->SetOptFit(1111);
-  TCanvas *c1 = new TCanvas("c1", "WvsQ2 Canvas", 1600, 900);
+  TCanvas *c1 = new TCanvas("WvsQ2_canvas", "WvsQ2 Canvas", 1600, 900);
   c1->Divide(3, 2);
   for (size_t i = 0; i < 6; i++) {
     TH2D *hf_wq2 = dynamic_cast<TH2D *>(fOutput->FindObject(Form("wq2_%zu", i)));
     c1->cd(i + 1);
     hf_wq2->Draw("colz");
+    hf_wq2->SetOption("colz");
+    hf_wq2->Write();
   }
 
-  TCanvas *c2 = new TCanvas("c2", "W Canvas", 1600, 900);
+  TCanvas *c2 = new TCanvas("W_canvas", "W Canvas", 1600, 900);
   c2->Divide(3, 2);
   for (size_t i = 0; i < 6; i++) {
     TH1D *hf_w = dynamic_cast<TH1D *>(fOutput->FindObject(Form("w_%zu", i)));
     c2->cd(i + 1);
     hf_w->Fit("gaus", "QMR+", "", 0.5, 1.05);
     hf_w->Draw();
+    hf_w->Write();
   }
 
   TH2D *f_1a_prot = dynamic_cast<TH2D *>(fOutput->FindObject("fDeltaT_1a_prot"));
@@ -221,7 +226,7 @@ void clas12_selector::Terminate() {
   TH2D *f_ctof_pim_component = dynamic_cast<TH2D *>(fOutput->FindObject("fDeltaT_ctof_pion_m_component"));
   TH2D *f_ctof_component = dynamic_cast<TH2D *>(fOutput->FindObject("fDeltaT_ctof_component"));
 
-  TCanvas *c3 = new TCanvas("c3", "Delta_t Canvas", 1600, 900);
+  TCanvas *c3 = new TCanvas("delta_t_canvas", "Delta_t Canvas", 1600, 900);
   c3->Divide(3, 3);
   int can3 = 1;
   c3->cd(can3++);
@@ -243,7 +248,7 @@ void clas12_selector::Terminate() {
   c3->cd(can3++);
   f_2_pim->Draw("colz");
 
-  TCanvas *c4 = new TCanvas("c4", "Delta_t Canvas", 1600, 900);
+  TCanvas *c4 = new TCanvas("ctof_canvas", "Delta_t Canvas", 1600, 900);
   c4->Divide(3);
   int can4 = 1;
   c4->cd(can4++);
@@ -253,7 +258,7 @@ void clas12_selector::Terminate() {
   c4->cd(can4++);
   f_ctof_pim->Draw("colz");
 
-  TCanvas *c5 = new TCanvas("c5", "c5", 1600, 900);
+  TCanvas *c5 = new TCanvas("ctof_vs_component", "Ctof vs Component", 1600, 900);
   c5->Divide(2, 2);
   c5->cd(1);
   f_ctof_prot_component->Draw("colz");
@@ -263,4 +268,47 @@ void clas12_selector::Terminate() {
   f_ctof_pim_component->Draw("colz");
   c5->cd(4);
   f_ctof_component->Draw("colz");
+
+  f_1a_prot->SetOption("colz");
+  f_1a_prot->Write();
+  f_1a_pip->SetOption("colz");
+  f_1a_pip->Write();
+  f_1a_pim->SetOption("colz");
+  f_1a_pim->Write();
+
+  f_1b_prot->SetOption("colz");
+  f_1b_prot->Write();
+  f_1b_pip->SetOption("colz");
+  f_1b_pip->Write();
+  f_1b_pim->SetOption("colz");
+  f_1b_pim->Write();
+
+  f_2_prot->SetOption("colz");
+  f_2_prot->Write();
+  f_2_pip->SetOption("colz");
+  f_2_pip->Write();
+  f_2_pim->SetOption("colz");
+  f_2_pim->Write();
+
+  f_ctof_prot->SetOption("colz");
+  f_ctof_prot->Write();
+  f_ctof_pip->SetOption("colz");
+  f_ctof_pip->Write();
+  f_ctof_pim->SetOption("colz");
+  f_ctof_pim->Write();
+
+  f_ctof_prot_component->SetOption("colz");
+  f_ctof_prot_component->Write();
+  f_ctof_pip_component->SetOption("colz");
+  f_ctof_pip_component->Write();
+  f_ctof_pim_component->SetOption("colz");
+  f_ctof_pim_component->Write();
+  f_ctof_component->SetOption("colz");
+  f_ctof_component->Write();
+
+  c1->Write();
+  c2->Write();
+  c3->Write();
+  c4->Write();
+  c5->Write();
 }
