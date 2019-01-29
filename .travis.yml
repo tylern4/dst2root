@@ -1,19 +1,19 @@
-matrix:
-  include:
-    - os: linux
-      sudo: false
-      dist: trusty
-      language: cpp
-      services:
-        - docker
-      - stage: "Build"
-        script:
+jobs:
+include:
+    sudo: false
+    dist: trusty
+    language: cpp
+    services: docker
+        - stage: "Build"
+          script:
           - docker build -t tylern4/dst2root . -f Dockerfile
-      - stage: "Test"
-        - wget -q http://stash.osgconnect.net/~tylern/clas12/hipo/v1/5bp6p1/skim4_4020.hipo
-        - docker run -v $PWD:/tmp tylern4/dst2root skim4_4020.hipo
-        - du -sh skim4_4020.*
-      - stage: "Deploy"
-        - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-        - docker images -a
-        - docker push tylern4/dst2root
+        - stage: "Test"
+          script:
+          - wget -q http://stash.osgconnect.net/~tylern/clas12/hipo/v1/5bp6p1/skim4_4020.hipo
+          - docker run -v $PWD:/tmp tylern4/dst2root skim4_4020.hipo
+          - du -sh skim4_4020.*
+        - stage: "Deploy"
+          script:
+          - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+          - docker images -a
+          - docker push tylern4/dst2root
