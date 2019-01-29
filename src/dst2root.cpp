@@ -9,7 +9,6 @@
 #include <iostream>
 #include <vector>
 // ROOT libs
-#include "Math/Vector4D.h"
 #include "TFile.h"
 #include "TTree.h"
 // Hipo libs
@@ -18,7 +17,7 @@
 #include "clipp.h"
 #include "constants.h"
 
-#define NaN std::nanf("-9999")
+//#define NAN std::nanf("-9999")
 
 // Detector
 #define BMT 1
@@ -258,9 +257,6 @@ int main(int argc, char **argv) {
   std::vector<int> Helic;
 
   std::vector<int> pid;
-  std::vector<ROOT::Math::XYZTVector> particle;
-  std::vector<float> mass;
-  std::vector<float> energy;
   std::vector<float> p;
   std::vector<float> p2;
   std::vector<float> px;
@@ -468,7 +464,6 @@ int main(int argc, char **argv) {
   std::vector<float> MC_vt;
 
   std::vector<int> Lund_pid;
-  std::vector<ROOT::Math::XYZTVector> Lund_particle;
   std::vector<float> Lund_px;
   std::vector<float> Lund_py;
   std::vector<float> Lund_pz;
@@ -525,7 +520,6 @@ int main(int argc, char **argv) {
   clas12->Branch("RFTime", &RFTime);
 
   clas12->Branch("pid", &pid);
-  clas12->Branch("particle", &particle);
   clas12->Branch("p", &p);
   clas12->Branch("p2", &p2);
   clas12->Branch("px", &px);
@@ -534,8 +528,6 @@ int main(int argc, char **argv) {
   clas12->Branch("vx", &vx);
   clas12->Branch("vy", &vy);
   clas12->Branch("vz", &vz);
-  clas12->Branch("mass_pid", &mass);
-  clas12->Branch("energy_pid", &energy);
   clas12->Branch("charge", &charge);
   clas12->Branch("beta", &beta);
   clas12->Branch("chi2pid", &chi2pid);
@@ -552,7 +544,6 @@ int main(int argc, char **argv) {
     clas12->Branch("mc_helicity", &MC_helicity);
 
     clas12->Branch("lund_pid", &Lund_pid);
-    clas12->Branch("lund_particle", &Lund_particle);
     clas12->Branch("lund_px", &Lund_px);
     clas12->Branch("lund_py", &Lund_py);
     clas12->Branch("lund_pz", &Lund_pz);
@@ -799,9 +790,6 @@ int main(int argc, char **argv) {
     }
 
     l = pid_node->getLength();
-    mass.resize(l);
-    energy.resize(l);
-    particle.resize(l);
     pid.resize(l);
     p.resize(l);
     p2.resize(l);
@@ -828,13 +816,9 @@ int main(int argc, char **argv) {
       vy[i] = vy_node->getValue(i);
       vz[i] = vz_node->getValue(i);
       charge[i] = charge_node->getValue(i);
-      beta[i] = ((beta_node->getValue(i) != -9999) ? beta_node->getValue(i) : NaN);
+      beta[i] = ((beta_node->getValue(i) != -9999) ? beta_node->getValue(i) : NAN);
       chi2pid[i] = chi2pid_node->getValue(i);
       status[i] = status_node->getValue(i);
-      mass[i] = massFromPID(pid[i]);
-      energy[i] = ROOT::Math::sqrt(p2[i] + mass[i]);
-
-      particle[i].SetPxPyPzE(px[i], py[i], pz[i], energy[i]);
     }
 
     if (is_mc) {
@@ -848,7 +832,6 @@ int main(int argc, char **argv) {
       MC_vy.resize(l);
       MC_vz.resize(l);
       MC_vt.resize(l);
-      Lund_particle.resize(l);
       Lund_pid.resize(l);
       Lund_px.resize(l);
       Lund_py.resize(l);
@@ -874,7 +857,6 @@ int main(int argc, char **argv) {
         Lund_py[i] = MC_Lund_py_node->getValue(i);
         Lund_pz[i] = MC_Lund_pz_node->getValue(i);
         Lund_E[i] = MC_Lund_E_node->getValue(i);
-        Lund_particle[i].SetPxPyPzE(Lund_px[i], Lund_py[i], Lund_pz[i], Lund_E[i]);
         Lund_vx[i] = MC_Lund_vx_node->getValue(i);
         Lund_vy[i] = MC_Lund_vy_node->getValue(i);
         Lund_vz[i] = MC_Lund_vz_node->getValue(i);
@@ -917,37 +899,37 @@ int main(int argc, char **argv) {
     ec_ecout_lw.resize(len_pid);
 
     for (int i = 0; i < len_pid; i++) {
-      ec_tot_energy[i] = NaN;
-      ec_pcal_energy[i] = NaN;
+      ec_tot_energy[i] = NAN;
+      ec_pcal_energy[i] = NAN;
       ec_pcal_sec[i] = -1;
-      ec_pcal_time[i] = NaN;
-      ec_pcal_path[i] = NaN;
-      ec_pcal_x[i] = NaN;
-      ec_pcal_y[i] = NaN;
-      ec_pcal_z[i] = NaN;
-      ec_pcal_lu[i] = NaN;
-      ec_pcal_lv[i] = NaN;
-      ec_pcal_lw[i] = NaN;
-      ec_ecin_energy[i] = NaN;
+      ec_pcal_time[i] = NAN;
+      ec_pcal_path[i] = NAN;
+      ec_pcal_x[i] = NAN;
+      ec_pcal_y[i] = NAN;
+      ec_pcal_z[i] = NAN;
+      ec_pcal_lu[i] = NAN;
+      ec_pcal_lv[i] = NAN;
+      ec_pcal_lw[i] = NAN;
+      ec_ecin_energy[i] = NAN;
       ec_ecin_sec[i] = -1;
-      ec_ecin_time[i] = NaN;
-      ec_ecin_path[i] = NaN;
-      ec_ecin_x[i] = NaN;
-      ec_ecin_y[i] = NaN;
-      ec_ecin_z[i] = NaN;
-      ec_ecin_lu[i] = NaN;
-      ec_ecin_lv[i] = NaN;
-      ec_ecin_lw[i] = NaN;
-      ec_ecout_energy[i] = NaN;
+      ec_ecin_time[i] = NAN;
+      ec_ecin_path[i] = NAN;
+      ec_ecin_x[i] = NAN;
+      ec_ecin_y[i] = NAN;
+      ec_ecin_z[i] = NAN;
+      ec_ecin_lu[i] = NAN;
+      ec_ecin_lv[i] = NAN;
+      ec_ecin_lw[i] = NAN;
+      ec_ecout_energy[i] = NAN;
       ec_ecout_sec[i] = -1;
-      ec_ecout_time[i] = NaN;
-      ec_ecout_path[i] = NaN;
-      ec_ecout_x[i] = NaN;
-      ec_ecout_y[i] = NaN;
-      ec_ecout_z[i] = NaN;
-      ec_ecout_lu[i] = NaN;
-      ec_ecout_lv[i] = NaN;
-      ec_ecout_lw[i] = NaN;
+      ec_ecout_time[i] = NAN;
+      ec_ecout_path[i] = NAN;
+      ec_ecout_x[i] = NAN;
+      ec_ecout_y[i] = NAN;
+      ec_ecout_z[i] = NAN;
+      ec_ecout_lu[i] = NAN;
+      ec_ecout_lv[i] = NAN;
+      ec_ecout_lw[i] = NAN;
     }
 
     float pcal = 0.0;
@@ -1000,10 +982,10 @@ int main(int argc, char **argv) {
           }
         }
       }
-      if (ec_pcal_energy[i] != ec_pcal_energy[i]) ec_pcal_energy[i] = ((pcal != 0.0) ? pcal : NaN);
-      if (ec_ecin_energy[i] != ec_ecin_energy[i]) ec_ecin_energy[i] = ((einner != 0.0) ? einner : NaN);
-      if (ec_ecout_energy[i] != ec_ecout_energy[i]) ec_ecout_energy[i] = ((eouter != 0.0) ? eouter : NaN);
-      if (ec_tot_energy[i] != ec_tot_energy[i]) ec_tot_energy[i] = ((etot != 0.0) ? etot : NaN);
+      if (ec_pcal_energy[i] != ec_pcal_energy[i]) ec_pcal_energy[i] = ((pcal != 0.0) ? pcal : NAN);
+      if (ec_ecin_energy[i] != ec_ecin_energy[i]) ec_ecin_energy[i] = ((einner != 0.0) ? einner : NAN);
+      if (ec_ecout_energy[i] != ec_ecout_energy[i]) ec_ecout_energy[i] = ((eouter != 0.0) ? eouter : NAN);
+      if (ec_tot_energy[i] != ec_tot_energy[i]) ec_tot_energy[i] = ((etot != 0.0) ? etot : NAN);
     }
 
     len_pid = pid_node->getLength();
@@ -1033,25 +1015,25 @@ int main(int argc, char **argv) {
     cc_rich_phi.resize(len_pid);
 
     for (int i = 0; i < len_pid; i++) {
-      cc_nphe_tot[i] = NaN;
+      cc_nphe_tot[i] = NAN;
       cc_ltcc_sec[i] = -1;
-      cc_ltcc_nphe[i] = NaN;
-      cc_ltcc_time[i] = NaN;
-      cc_ltcc_path[i] = NaN;
-      cc_ltcc_theta[i] = NaN;
-      cc_ltcc_phi[i] = NaN;
+      cc_ltcc_nphe[i] = NAN;
+      cc_ltcc_time[i] = NAN;
+      cc_ltcc_path[i] = NAN;
+      cc_ltcc_theta[i] = NAN;
+      cc_ltcc_phi[i] = NAN;
       cc_htcc_sec[i] = -1;
-      cc_htcc_nphe[i] = NaN;
-      cc_htcc_time[i] = NaN;
-      cc_htcc_path[i] = NaN;
-      cc_htcc_theta[i] = NaN;
-      cc_htcc_phi[i] = NaN;
+      cc_htcc_nphe[i] = NAN;
+      cc_htcc_time[i] = NAN;
+      cc_htcc_path[i] = NAN;
+      cc_htcc_theta[i] = NAN;
+      cc_htcc_phi[i] = NAN;
       cc_rich_sec[i] = -1;
-      cc_rich_nphe[i] = NaN;
-      cc_rich_time[i] = NaN;
-      cc_rich_path[i] = NaN;
-      cc_rich_theta[i] = NaN;
-      cc_rich_phi[i] = NaN;
+      cc_rich_nphe[i] = NAN;
+      cc_rich_time[i] = NAN;
+      cc_rich_path[i] = NAN;
+      cc_rich_theta[i] = NAN;
+      cc_rich_phi[i] = NAN;
     }
 
     float nphe_tot = 0.0;
@@ -1087,7 +1069,7 @@ int main(int argc, char **argv) {
           cc_rich_phi[i] = chern_phi_node->getValue(k);
         }
       }
-      if (cc_nphe_tot[i] != cc_nphe_tot[i]) cc_nphe_tot[i] = ((nphe_tot != 0.0) ? nphe_tot : NaN);
+      if (cc_nphe_tot[i] != cc_nphe_tot[i]) cc_nphe_tot[i] = ((nphe_tot != 0.0) ? nphe_tot : NAN);
     }
 
     len_pid = pid_node->getLength();
@@ -1153,62 +1135,62 @@ int main(int argc, char **argv) {
 
     for (int i = 0; i < len_pid; i++) {
       sc_ftof_1a_sec[i] = -1;
-      sc_ftof_1a_time[i] = NaN;
-      sc_ftof_1a_path[i] = NaN;
-      sc_ftof_1a_energy[i] = NaN;
+      sc_ftof_1a_time[i] = NAN;
+      sc_ftof_1a_path[i] = NAN;
+      sc_ftof_1a_energy[i] = NAN;
       sc_ftof_1a_component[i] = -1;
-      sc_ftof_1a_x[i] = NaN;
-      sc_ftof_1a_y[i] = NaN;
-      sc_ftof_1a_z[i] = NaN;
-      sc_ftof_1a_hx[i] = NaN;
-      sc_ftof_1a_hy[i] = NaN;
-      sc_ftof_1a_hz[i] = NaN;
+      sc_ftof_1a_x[i] = NAN;
+      sc_ftof_1a_y[i] = NAN;
+      sc_ftof_1a_z[i] = NAN;
+      sc_ftof_1a_hx[i] = NAN;
+      sc_ftof_1a_hy[i] = NAN;
+      sc_ftof_1a_hz[i] = NAN;
 
       sc_ftof_1b_sec[i] = -1;
-      sc_ftof_1b_time[i] = NaN;
-      sc_ftof_1b_path[i] = NaN;
-      sc_ftof_1b_energy[i] = NaN;
+      sc_ftof_1b_time[i] = NAN;
+      sc_ftof_1b_path[i] = NAN;
+      sc_ftof_1b_energy[i] = NAN;
       sc_ftof_1b_component[i] = -1;
-      sc_ftof_1b_x[i] = NaN;
-      sc_ftof_1b_y[i] = NaN;
-      sc_ftof_1b_z[i] = NaN;
-      sc_ftof_1b_hx[i] = NaN;
-      sc_ftof_1b_hy[i] = NaN;
-      sc_ftof_1b_hz[i] = NaN;
+      sc_ftof_1b_x[i] = NAN;
+      sc_ftof_1b_y[i] = NAN;
+      sc_ftof_1b_z[i] = NAN;
+      sc_ftof_1b_hx[i] = NAN;
+      sc_ftof_1b_hy[i] = NAN;
+      sc_ftof_1b_hz[i] = NAN;
 
       sc_ftof_2_sec[i] = -1;
-      sc_ftof_2_time[i] = NaN;
-      sc_ftof_2_path[i] = NaN;
-      sc_ftof_2_energy[i] = NaN;
+      sc_ftof_2_time[i] = NAN;
+      sc_ftof_2_path[i] = NAN;
+      sc_ftof_2_energy[i] = NAN;
       sc_ftof_2_component[i] = -1;
-      sc_ftof_2_x[i] = NaN;
-      sc_ftof_2_y[i] = NaN;
-      sc_ftof_2_z[i] = NaN;
-      sc_ftof_2_hx[i] = NaN;
-      sc_ftof_2_hy[i] = NaN;
-      sc_ftof_2_hz[i] = NaN;
+      sc_ftof_2_x[i] = NAN;
+      sc_ftof_2_y[i] = NAN;
+      sc_ftof_2_z[i] = NAN;
+      sc_ftof_2_hx[i] = NAN;
+      sc_ftof_2_hy[i] = NAN;
+      sc_ftof_2_hz[i] = NAN;
 
-      sc_ctof_time[i] = NaN;
-      sc_ctof_path[i] = NaN;
-      sc_ctof_energy[i] = NaN;
+      sc_ctof_time[i] = NAN;
+      sc_ctof_path[i] = NAN;
+      sc_ctof_energy[i] = NAN;
       sc_ctof_component[i] = -1;
-      sc_ctof_x[i] = NaN;
-      sc_ctof_y[i] = NaN;
-      sc_ctof_z[i] = NaN;
-      sc_ctof_hx[i] = NaN;
-      sc_ctof_hy[i] = NaN;
-      sc_ctof_hz[i] = NaN;
+      sc_ctof_x[i] = NAN;
+      sc_ctof_y[i] = NAN;
+      sc_ctof_z[i] = NAN;
+      sc_ctof_hx[i] = NAN;
+      sc_ctof_hy[i] = NAN;
+      sc_ctof_hz[i] = NAN;
 
-      sc_cnd_time[i] = NaN;
-      sc_cnd_path[i] = NaN;
-      sc_cnd_energy[i] = NaN;
+      sc_cnd_time[i] = NAN;
+      sc_cnd_path[i] = NAN;
+      sc_cnd_energy[i] = NAN;
       sc_cnd_component[i] = -1;
-      sc_cnd_x[i] = NaN;
-      sc_cnd_y[i] = NaN;
-      sc_cnd_z[i] = NaN;
-      sc_cnd_hx[i] = NaN;
-      sc_cnd_hy[i] = NaN;
-      sc_cnd_hz[i] = NaN;
+      sc_cnd_x[i] = NAN;
+      sc_cnd_y[i] = NAN;
+      sc_cnd_z[i] = NAN;
+      sc_cnd_hx[i] = NAN;
+      sc_cnd_hy[i] = NAN;
+      sc_cnd_hz[i] = NAN;
     }
 
     for (int i = 0; i < len_pid; i++) {
@@ -1298,19 +1280,19 @@ int main(int argc, char **argv) {
 
     for (int i = 0; i < len_pid; i++) {
       dc_sec[i] = -1;
-      dc_px[i] = NaN;
-      dc_py[i] = NaN;
-      dc_pz[i] = NaN;
-      dc_vx[i] = NaN;
-      dc_vy[i] = NaN;
-      dc_vz[i] = NaN;
+      dc_px[i] = NAN;
+      dc_py[i] = NAN;
+      dc_pz[i] = NAN;
+      dc_vx[i] = NAN;
+      dc_vy[i] = NAN;
+      dc_vz[i] = NAN;
 
-      cvt_px[i] = NaN;
-      cvt_py[i] = NaN;
-      cvt_pz[i] = NaN;
-      cvt_vx[i] = NaN;
-      cvt_vy[i] = NaN;
-      cvt_vz[i] = NaN;
+      cvt_px[i] = NAN;
+      cvt_py[i] = NAN;
+      cvt_pz[i] = NAN;
+      cvt_vx[i] = NAN;
+      cvt_vy[i] = NAN;
+      cvt_vz[i] = NAN;
     }
 
     for (int i = 0; i < len_pid; i++) {
@@ -1362,25 +1344,25 @@ int main(int argc, char **argv) {
     ft_hodo_radius.resize(len_pid);
 
     for (int i = 0; i < len_pid; i++) {
-      ft_cal_energy[i] = NaN;
-      ft_cal_time[i] = NaN;
-      ft_cal_path[i] = NaN;
-      ft_cal_x[i] = NaN;
-      ft_cal_y[i] = NaN;
-      ft_cal_z[i] = NaN;
-      ft_cal_dx[i] = NaN;
-      ft_cal_dy[i] = NaN;
-      ft_cal_radius[i] = NaN;
+      ft_cal_energy[i] = NAN;
+      ft_cal_time[i] = NAN;
+      ft_cal_path[i] = NAN;
+      ft_cal_x[i] = NAN;
+      ft_cal_y[i] = NAN;
+      ft_cal_z[i] = NAN;
+      ft_cal_dx[i] = NAN;
+      ft_cal_dy[i] = NAN;
+      ft_cal_radius[i] = NAN;
 
-      ft_hodo_energy[i] = NaN;
-      ft_hodo_time[i] = NaN;
-      ft_hodo_path[i] = NaN;
-      ft_hodo_x[i] = NaN;
-      ft_hodo_y[i] = NaN;
-      ft_hodo_z[i] = NaN;
-      ft_hodo_dx[i] = NaN;
-      ft_hodo_dy[i] = NaN;
-      ft_hodo_radius[i] = NaN;
+      ft_hodo_energy[i] = NAN;
+      ft_hodo_time[i] = NAN;
+      ft_hodo_path[i] = NAN;
+      ft_hodo_x[i] = NAN;
+      ft_hodo_y[i] = NAN;
+      ft_hodo_z[i] = NAN;
+      ft_hodo_dx[i] = NAN;
+      ft_hodo_dy[i] = NAN;
+      ft_hodo_radius[i] = NAN;
     }
 
     for (int i = 0; i < len_pid; i++) {
@@ -1433,21 +1415,21 @@ int main(int argc, char **argv) {
       CovMat_55.resize(len_pid);
 
       for (int i = 0; i < len_pid; i++) {
-        CovMat_11[i] = NaN;
-        CovMat_12[i] = NaN;
-        CovMat_13[i] = NaN;
-        CovMat_14[i] = NaN;
-        CovMat_15[i] = NaN;
-        CovMat_22[i] = NaN;
-        CovMat_23[i] = NaN;
-        CovMat_24[i] = NaN;
-        CovMat_25[i] = NaN;
-        CovMat_33[i] = NaN;
-        CovMat_34[i] = NaN;
-        CovMat_35[i] = NaN;
-        CovMat_44[i] = NaN;
-        CovMat_45[i] = NaN;
-        CovMat_55[i] = NaN;
+        CovMat_11[i] = NAN;
+        CovMat_12[i] = NAN;
+        CovMat_13[i] = NAN;
+        CovMat_14[i] = NAN;
+        CovMat_15[i] = NAN;
+        CovMat_22[i] = NAN;
+        CovMat_23[i] = NAN;
+        CovMat_24[i] = NAN;
+        CovMat_25[i] = NAN;
+        CovMat_33[i] = NAN;
+        CovMat_34[i] = NAN;
+        CovMat_35[i] = NAN;
+        CovMat_44[i] = NAN;
+        CovMat_45[i] = NAN;
+        CovMat_55[i] = NAN;
       }
 
       for (int i = 0; i < len_pid; i++) {
@@ -1498,20 +1480,20 @@ int main(int argc, char **argv) {
       for (int i = 0; i < len_pid; i++) {
         cvt_pid[i] = -1;
         cvt_q[i] = -1;
-        cvt_p[i] = NaN;
-        cvt_pt[i] = NaN;
-        cvt_phi0[i] = NaN;
-        cvt_tandip[i] = NaN;
-        cvt_z0[i] = NaN;
-        cvt_d0[i] = NaN;
-        cvt_CovMat_d02[i] = NaN;
-        cvt_CovMat_d0phi0[i] = NaN;
-        cvt_CovMat_d0rho[i] = NaN;
-        cvt_CovMat_phi02[i] = NaN;
-        cvt_CovMat_phi0rho[i] = NaN;
-        cvt_CovMat_rho2[i] = NaN;
-        cvt_CovMat_z02[i] = NaN;
-        cvt_CovMat_tandip2[i] = NaN;
+        cvt_p[i] = NAN;
+        cvt_pt[i] = NAN;
+        cvt_phi0[i] = NAN;
+        cvt_tandip[i] = NAN;
+        cvt_z0[i] = NAN;
+        cvt_d0[i] = NAN;
+        cvt_CovMat_d02[i] = NAN;
+        cvt_CovMat_d0phi0[i] = NAN;
+        cvt_CovMat_d0rho[i] = NAN;
+        cvt_CovMat_phi02[i] = NAN;
+        cvt_CovMat_phi0rho[i] = NAN;
+        cvt_CovMat_rho2[i] = NAN;
+        cvt_CovMat_z02[i] = NAN;
+        cvt_CovMat_tandip2[i] = NAN;
       }
 
       for (int i = 0; i < len_pid; i++) {

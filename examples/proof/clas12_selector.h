@@ -103,10 +103,6 @@ class clas12_selector : public TSelector {
   TTreeReaderArray<float> STTime = {fReader, "STTime"};
   TTreeReaderArray<float> RFTime = {fReader, "RFTime"};
   TTreeReaderArray<int> pid = {fReader, "pid"};
-  TTreeReaderArray<Double_t> particle_fCoordinates_fX = {fReader, "particle.fCoordinates.fX"};
-  TTreeReaderArray<Double_t> particle_fCoordinates_fY = {fReader, "particle.fCoordinates.fY"};
-  TTreeReaderArray<Double_t> particle_fCoordinates_fZ = {fReader, "particle.fCoordinates.fZ"};
-  TTreeReaderArray<Double_t> particle_fCoordinates_fT = {fReader, "particle.fCoordinates.fT"};
   TTreeReaderArray<float> p = {fReader, "p"};
   TTreeReaderArray<float> p2 = {fReader, "p2"};
   TTreeReaderArray<float> px = {fReader, "px"};
@@ -115,8 +111,6 @@ class clas12_selector : public TSelector {
   TTreeReaderArray<float> vx = {fReader, "vx"};
   TTreeReaderArray<float> vy = {fReader, "vy"};
   TTreeReaderArray<float> vz = {fReader, "vz"};
-  TTreeReaderArray<float> mass_pid = {fReader, "mass_pid"};
-  TTreeReaderArray<float> energy_pid = {fReader, "energy_pid"};
   TTreeReaderArray<int> charge = {fReader, "charge"};
   TTreeReaderArray<float> beta = {fReader, "beta"};
   TTreeReaderArray<float> chi2pid = {fReader, "chi2pid"};

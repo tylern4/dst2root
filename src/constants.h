@@ -7,11 +7,6 @@
 #ifndef CONSTANTS_H_GUARD
 #define CONSTANTS_H_GUARD
 
-static const double PI = ROOT::Math::Pi();
-static const double D2R = PI / 180.0;
-static const int POSITIVE = 1;
-static const int NEGATIVE = -1;
-
 // particle codes
 static const int PROTON = 2212;
 static const int NEUTRON = 2112;
@@ -34,30 +29,5 @@ static const double MASS_KP = 0.493677;
 static const double MASS_KM = 0.493677;
 static const double MASS_G = 0.0;
 static const double MASS_OMEGA = 0.78265;
-
-double massFromPID(int pid) {
-  switch (pid) {
-    case PROTON:
-      return MASS_P;
-    case NEUTRON:
-      return MASS_N;
-    case PIP:
-      return MASS_PIP;
-    case PIM:
-      return MASS_PIM;
-    case PI0:
-      return MASS_PI0;
-    case KP:
-      return MASS_KP;
-    case KM:
-      return MASS_KM;
-    case PHOTON:
-      return MASS_G;
-    case ELECTRON:
-      return MASS_E;
-    default:
-      return std::nanf("-9999");
-  }
-}
 
 #endif
