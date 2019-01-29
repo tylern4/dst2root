@@ -35,7 +35,7 @@ OPTIONS
 
 ## Performance
 
-Taking a skimmed dst file and converting it on Ubuntu 17.10, Intel(R) i7-3770 CPU @ 3.40GHz, reading and writing to an ssd.
+Taking a skimmed dst file and converting it on Ubuntu 17.10, Intel(R) i7-3770 CPU @ 3.40GHz, reading and writing to a ssd.
 
 | hipo   	| root    |
 |:------:	|:------: |
