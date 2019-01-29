@@ -1,5 +1,6 @@
 # dst2root
 [![Build Status](https://travis-ci.org/tylern4/dst2root.svg?branch=master)](https://travis-ci.org/tylern4/dst2root)
+
 Conversion program from hipo to root format for dst and skimmed files. This program also reindexes the detector banks and places them into their own banks so it is easier to read the files. See examples for how the files can now be read.
 
 ## To build:
@@ -13,7 +14,10 @@ Conversion program from hipo to root format for dst and skimmed files. This prog
 
 ## Running with Docker
 When in the same directory as the input file:
-    docker run -v $PWD:/tmp tylern4/dst2root infile.hipo outfile.root
+
+```
+docker run -v $PWD:/tmp tylern4/dst2root infile.hipo outfile.root
+```
 
 ## Help
 ```
