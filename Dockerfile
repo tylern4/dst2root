@@ -1,4 +1,4 @@
-FROM rootproject/root-ubuntu16
+FROM rootproject/root-ubuntu16:6.10
 
 USER root
 RUN apt-get update \
@@ -10,9 +10,9 @@ WORKDIR /usr/local/dst2root
 
 RUN mkdir build \
     && cd build \
-    && cmake .. \
+    && cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local \
     && make \
-    && cp dst2root /usr/local/bin
+    && make install
 
 WORKDIR /tmp
 ENTRYPOINT ["/usr/local/bin/dst2root"]
