@@ -6,10 +6,14 @@ matrix:
       language: cpp
       services:
         - docker
-      script:
+      - stage: "Build"
+        script:
+          - docker build -t tylern4/dst2root . -f Dockerfile
+      - stage: "Test"
+        - wget -q http://stash.osgconnect.net/~tylern/clas12/hipo/v1/5bp6p1/skim4_4020.hipo
+        - docker run -v $PWD:/tmp tylern4/dst2root skim4_4020.hipo
+        - du -sh skim4_4020.*
+      - stage: "Deploy"
         - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-        - docker build -t tylern4/dst2root . -f Dockerfile
         - docker images -a
-        - wget -q http://userweb.jlab.org/~gavalian/software/clasrun_2475.hipo.2
-        - docker run -v $PWD:/tmp tylern4/dst2root clasrun_2475.hipo.2
         - docker push tylern4/dst2root
