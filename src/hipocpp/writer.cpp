@@ -21,7 +21,6 @@ writer::~writer() {
 }
 
 void writer::open(const char *filename) {
-  utils::printLogo();
   outputStream.open(filename, std::ios::out | std::ios::binary);
   std::vector<char> headerVec(72, 0);
   char *header = &headerVec[0];
@@ -63,7 +62,8 @@ void writer::writeRecord(hipo::record &record) {
     outputStream.write(&recordVec[0],recordVec.size());*/
 }
 
-void writer::writeEvent(hipo::event &event) { /*writerRecord.addEvent(event);*/ }
+void writer::writeEvent(hipo::event &event) { /*writerRecord.addEvent(event);*/
+}
 
 void writer::writeEvent(std::vector<char> &event) {
   /*  writerRecord.addEvent(event);

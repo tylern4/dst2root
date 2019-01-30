@@ -16,6 +16,7 @@ add_library(hipocpp STATIC
       utils.cpp
       wrapper.cpp
       writer.cpp
+      bank.cpp
 )
 
 

@@ -32,13 +32,6 @@ class utils {
   static std::string substring(const std::string &str, const char *start_delim, const char *end_delim, int order);
 
   static int findposition(const std::string &str, const char *delim, int order);
-
-  static void printLogo();
-
-  static std::string getHeader();
-  static std::string getFileHeader();
-  static std::string getFileTrailer(const char *code);
-  static std::string getSConstruct();
 };
 
 }  // namespace hipo

@@ -39,6 +39,37 @@ void bank::show() {
 
 int bank::getSize() { return bankNodes[0]->length(); }
 
+template <class T>
+T bank::getValue(int item, int order) {
+  generic_node *ptr = bankNodes[item];
+  int type = ptr->type();
+  switch (type) {
+    case 1: {
+      uint8_t *__ptr8 = reinterpret_cast<uint8_t *>(ptr->getAddress());
+      return (int)(__ptr8[order]);
+    } break;
+    case 2: {
+      uint16_t *__ptr16 = reinterpret_cast<uint16_t *>(ptr->getAddress());
+      return (int)(__ptr16[order]);
+    } break;
+    case 3: {
+      uint32_t *__ptr32 = reinterpret_cast<uint32_t *>(ptr->getAddress());
+      return (int)(__ptr32[order]);
+    } break;
+    case 4: {
+      float *__ptr8 = reinterpret_cast<float *>(ptr->getAddress());
+      return (__ptr8[order]);
+    } break;
+    default:
+      std::cerr << "wrong type" << '\n';
+  }
+
+  if (std::is_same<T, int>::value)
+    return (int)NULL;
+  else
+    return NAN;
+}
+
 int bank::getInt(int item, int order) {
   generic_node *ptr = bankNodes[item];
   int type = ptr->type();
@@ -58,7 +89,7 @@ int bank::getInt(int item, int order) {
     default:
       printf("wrong type");
   }
-  return 0;
+  return (int)NULL;
 }
 
 float bank::getFloat(int item, int order) {
@@ -72,7 +103,7 @@ float bank::getFloat(int item, int order) {
     default:
       printf("wrong type");
   }
-  return 0.0;
+  return NAN;
 }
 
 }  // namespace hipo

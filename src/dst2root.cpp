@@ -17,8 +17,6 @@
 #include "clipp.h"
 #include "constants.h"
 
-//#define NAN std::nanf("-9999")
-
 // Detector
 #define BMT 1
 #define BST 2
@@ -84,7 +82,7 @@ int main(int argc, char **argv) {
 
   TTree *clas12 = new TTree("clas12", "clas12");
   hipo::reader *reader = new hipo::reader(InFileName.c_str());
-  int tot_hipo_events = reader->numEvents();
+  size_t tot_hipo_events = reader->numEvents();
 
   hipo::node<int32_t> *run_node = reader->getBranch<int32_t>(11, 1);
   hipo::node<int32_t> *event_node = reader->getBranch<int32_t>(11, 2);
@@ -742,10 +740,11 @@ int main(int argc, char **argv) {
   int l = 0;
   int len_pid = 0;
   int len_pindex = 0;
+#pragma omp parallel {
   while (reader->next() == true) {
     // entry++;
     if (!is_batch && (++entry % 1000) == 0)
-      std::cout << "\t" << int(100 * entry / tot_hipo_events) << "%\r\r" << std::flush;
+      std::cout << "\t" << floor(100 * entry / tot_hipo_events) << "%\r\r" << std::flush;
 
     if (good_rec && pid_node->getLength() == 0) continue;
     if (elec_first && pid_node->getValue(0) != 11) continue;
@@ -1522,16 +1521,17 @@ int main(int argc, char **argv) {
 
     clas12->Fill();
   }
+}
 
-  OutputFile->cd();
-  clas12->Write();
-  OutputFile->Close();
+OutputFile->cd();
+clas12->Write();
+OutputFile->Close();
 
-  if (!is_batch) {
-    std::chrono::duration<double> elapsed_full = (std::chrono::high_resolution_clock::now() - start_full);
-    std::cout << "Elapsed time: " << elapsed_full.count() << " s" << std::endl;
-    std::cout << "Events/Sec: " << entry / elapsed_full.count() << " Hz" << std::endl;
-  }
+if (!is_batch) {
+  std::chrono::duration<double> elapsed_full = (std::chrono::high_resolution_clock::now() - start_full);
+  std::cout << "Elapsed time: " << elapsed_full.count() << " s" << std::endl;
+  std::cout << "Events/Sec: " << entry / elapsed_full.count() << " Hz" << std::endl;
+}
 
-  return 0;
+return 0;
 }

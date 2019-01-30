@@ -163,7 +163,7 @@ void reader::readDictionary() {
 
 std::vector<std::string> reader::getDictionary() { return fileDictionary; }
 
-int reader::numEvents() {
+size_t reader::numEvents() {
   readRecordIndex();
   return inReaderIndex.getMaxEvents();
 }

@@ -232,7 +232,7 @@ class reader {
   bool isOpen();
   void showInfo();
   void printWarning();
-  int numEvents();
+  size_t numEvents();
   bool next();
   hipo::event *getEvent() { return &inEventStream; }
   template <class T>

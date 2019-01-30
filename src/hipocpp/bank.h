@@ -13,6 +13,7 @@
 
 #ifndef HIPO_BANK_H
 #define HIPO_BANK_H
+#include <math.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,8 +25,6 @@
 #include "reader.h"
 
 namespace hipo {
-
-// typedef std::auto_ptr<hipo::generic_node> node_pointer;
 
 class bank {
  private:
@@ -41,6 +40,9 @@ class bank {
   int getSize();
   int getInt(int item, int order);
   float getFloat(int item, int order);
+
+  template <class T>
+  T getValue(int item, int order);
 };
 
 }  // namespace hipo
