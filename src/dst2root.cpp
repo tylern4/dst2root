@@ -740,7 +740,7 @@ int main(int argc, char **argv) {
   int l = 0;
   int len_pid = 0;
   int len_pindex = 0;
-#pragma omp parallel {
+
   while (reader->next() == true) {
     // entry++;
     if (!is_batch && (++entry % 1000) == 0)
@@ -1521,17 +1521,16 @@ int main(int argc, char **argv) {
 
     clas12->Fill();
   }
-}
 
-OutputFile->cd();
-clas12->Write();
-OutputFile->Close();
+  OutputFile->cd();
+  clas12->Write();
+  OutputFile->Close();
 
-if (!is_batch) {
-  std::chrono::duration<double> elapsed_full = (std::chrono::high_resolution_clock::now() - start_full);
-  std::cout << "Elapsed time: " << elapsed_full.count() << " s" << std::endl;
-  std::cout << "Events/Sec: " << entry / elapsed_full.count() << " Hz" << std::endl;
-}
+  if (!is_batch) {
+    std::chrono::duration<double> elapsed_full = (std::chrono::high_resolution_clock::now() - start_full);
+    std::cout << "Elapsed time: " << elapsed_full.count() << " s" << std::endl;
+    std::cout << "Events/Sec: " << entry / elapsed_full.count() << " Hz" << std::endl;
+  }
 
-return 0;
+  return 0;
 }
