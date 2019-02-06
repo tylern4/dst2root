@@ -14,91 +14,72 @@
 #ifndef HIPO_EVENT_H
 #define HIPO_EVENT_H
 
+#include <iostream>
+#include <vector>
+#include <cstring>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <cstring>
-#include <iostream>
 #include <map>
-#include <vector>
-#include "node.h"
+#include "bank.h"
+
+// if the library is compiled with C++11
+// support we will use unordered map which
+// is faster than standard map
+#if __cplusplus > 199711L
+#include <unordered_map>
+#endif
+
 
 namespace hipo {
 
-// typedef std::auto_ptr<hipo::generic_node> node_pointer;
+  //typedef std::auto_ptr<hipo::generic_node> node_pointer;
 
-class event {
- private:
-  std::vector<char> dataBuffer;
-  std::map<int, int> eventNodes;
 
-  std::map<int, int> registeredNodes;
-  std::vector<hipo::generic_node *> nodes;
-  // std::vector<std::auto_ptr<hipo::generic_node>> regiteredNodesPtr;
+  class event {
 
-  // void scanEvent();
-  void resetNodes();
+    private:
 
- public:
-  event();
-  ~event();
+        std::vector<char> dataBuffer;
 
-  void showInfo();
-  void init(std::vector<char> &buffer);
-  void init(const char *buffer, int size);
+    public:
 
-  int getEventNode(int group, int item);
+        event();
+        event(int size);
+        virtual ~event();
 
-  void appendNode(int group, int item, std::vector<int> &vec);
-  void appendNode(int group, int item, std::vector<int16_t> &vec);
-  void appendNode(int group, int item, std::vector<int8_t> &vec);
-  void appendNode(int group, int item, std::vector<float> &vec);
-  void appendNode(int group, int item, std::string &vec);
+        void show();
+        void init(std::vector<char> &buffer);
+        void init(const char *buffer, int size);
+        void                getStructure(hipo::structure &str, int group, int item);
+        void                getStructure(hipo::bank &b);
+        void                addStructure(hipo::structure &str);
 
-  int getNodeAddress(int group, int item);
-  int getNodeType(int address);
-  int getNodeLength(int address);
-  int getNodeSize(int address);
-  char *getNodePtr(int address);
+        std::pair<int,int>  getStructurePosition(int group, int item);
+        std::vector<char>  &getEventBuffer();
+        int                 getSize();
+        void                reset();
+    };
+    /*
+    template<class T>   node<T> event::getNode(){
+        node<T> en;
+        en.setLength(4);
+        en.setAddress(NULL);
+        return en;
+    } */
 
-  std::vector<long> getLong(int group, int item);
-  std::vector<int> getInt(int group, int item);
-  std::vector<float> getFloat(int group, int item);
-  std::string getString(int group, int item);
-
-  hipo::node<int> *getIntNode(int group, int item);
-
-  template <class T>
-  hipo::node<T> *getBranch(int group, int item);
-  hipo::generic_node *getEventGenericBranch(int group, int item);
-
-  std::vector<hipo::generic_node *> *getAllBranches() { return &nodes; }
-  // template<class T>   node<T> getNode();
-  void scanEvent();
-  void scanEventMap();
-  std::vector<char> getEventBuffer();
-  void reset();
-};
-/*
-template<class T>   node<T> event::getNode(){
-    node<T> en;
-    en.setLength(4);
-    en.setAddress(NULL);
-    return en;
-} */
-}  // namespace hipo
-
-namespace hipo {
-
-template <class T>
-hipo::node<T> *event::getBranch(int group, int item) {
-  int size = nodes.size();
-  int key = ((0x00000000 | group) << 16) | ((0x00000000 | item) << 8);
-  registeredNodes[key] = size;
-  hipo::node<T> *type = new hipo::node<T>(group, item);
-  nodes.push_back(type);
-  return type;
 }
-}  // namespace hipo
+/*
+namespace hipo {
+
+   template<class T> hipo::node<T> *event::getBranch(int group, int item){
+     int size = nodes.size();
+     int key  =  ((0x00000000|group)<<16)  | ( (0x00000000|item)<<8);
+     registeredNodes[key] = size;
+     hipo::node<T> *type = new hipo::node<T>(group,item);
+     nodes.push_back(type);
+     return type;
+   }
+}*/
 
 #endif /* EVENT_H */

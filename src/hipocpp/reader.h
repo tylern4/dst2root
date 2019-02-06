@@ -84,22 +84,10 @@
 #include <iostream>
 #include <memory>
 #include <vector>
-#include "dictionary.h"
 #include "record.h"
 #include "utils.h"
 
 namespace hipo {
-
-typedef struct {
-  long recordPosition;
-  int recordLength;
-  int recordEvents;
-  int recordDataOffset;
-  int recordDataLengthCompressed;
-  int recordDataLengthUncompressed;
-  int startEvent;
-  int endEvent;
-} recordIndex_t;
 
 typedef struct {
   int uniqueid;
@@ -115,6 +103,7 @@ typedef struct {
   long trailerPosition;
   long firstRecordPosition;
 } fileHeader_t;
+
 /**
  * READER index class is used to construct entire events
  * sequence from all records, and provides ability to canAdvance
@@ -122,20 +111,22 @@ typedef struct {
  * and triggers reading of the next record when events in the current
  * record are exhausted.
  */
-class reader_index {
+class readerIndex {
  private:
   std::vector<int> recordEvents;
+  std::vector<long> recordPosition;
+
   int currentRecord;
   int currentEvent;
   int currentRecordEvent;
 
  public:
-  reader_index(){
+  readerIndex(){
 
   };
-  ~reader_index(){};
+  ~readerIndex(){};
 
-  // bool canAdvance();
+  bool canAdvance();
   bool advance();
 
   int getEventNumber() { return currentEvent; }
@@ -143,130 +134,46 @@ class reader_index {
   int getRecordEventNumber() { return currentRecordEvent; }
   int getMaxEvents();
   void addSize(int size);
-
+  void addPosition(long position) { recordPosition.push_back(position); }
+  long getPosition(int index) { return recordPosition[index]; }
+  void rewind() {
+    currentRecord = -1;
+    currentEvent = -1;
+    currentRecordEvent = -1;
+  }
   void reset() {
     currentRecord = 0;
     currentEvent = 0;
     currentRecordEvent = 0;
   }
 };
-/**
- * reader sequence class is used for sequancial readin of the file. When each
- * record is read, the next record pointer is kept in this class to be read
- * when all the events in the current record are exhausted.
- */
-class reader_sequence {
- private:
-  long position;
-  long length;
-  long nextPosition;
-  int currentEvent;
-  int recordEvents;
-
- public:
-  reader_sequence() {}
-  virtual ~reader_sequence() {}
-
-  void setPosition(long pos) { position = pos; }
-  void setLength(long rl) { length = rl; }
-  void setNextPosition(long np) { nextPosition = np; }
-  void setCurrentEvent(int ce) { currentEvent = ce; }
-  void setRecordEvents(int re) { recordEvents = re; }
-
-  int getRecordEvents() { return recordEvents; }
-  long getPosition() { return position; }
-  long getNextPosition() { return nextPosition; }
-  bool hasEvents() { return (currentEvent < recordEvents); }
-  int getCurrentEvent() { return currentEvent; }
-};
 
 class reader {
  private:
-  std::vector<std::string> fileDictionary;
-
-  hipo::dictionary schemaDictionary;
-
-  std::vector<char> headerBuffer;
-  std::ifstream inputStream;
-  std::vector<recordIndex_t> recordIndex;
   fileHeader_t header;
   hipo::utils hipoutils;
-  /**
-   * Internal buffers for record and events to be
-   * read in sequence. When the next() is called on The
-   * reader class;
-   */
-  hipo::record inRecordStream;
-  hipo::event inEventStream;
-  hipo::reader_index inReaderIndex;
-  int inReaderCurrentRecord;
-  reader_sequence sequence;
-
+  std::ifstream inputStream;
   long inputStreamSize;
 
-  long recordsProcessed;
-  long eventsProcessed;
+  hipo::record inputRecord;
+  hipo::readerIndex readerEventIndex;
 
-  bool isRandomAccess;
-
-  bool verifyFile();
   void readHeader();
-  void readRecordIndex();
-  void readDictionary();
+  void readIndex();
 
  public:
   reader();
-  reader(bool ra);
-  reader(const char *infile);
+  reader(std::string filename) { open(filename.c_str()); }
+  reader(const char *filename) { open(filename); }
   ~reader();
 
-  std::vector<std::string> getDictionary();
-
-  hipo::dictionary *getSchemaDictionary();
-
+  void readDictionary(hipo::dictionary &dict);
   void open(const char *filename);
-  void readRecord(int index);
-  void readRecord(hipo::record &record, int index);
-  void readHeaderRecord(hipo::record &record);
-  int getRecordCount();
-  bool isOpen();
-  void showInfo();
-  void printWarning();
-  size_t numEvents();
+  bool hasNext();
   bool next();
-  hipo::event *getEvent() { return &inEventStream; }
-  template <class T>
-  hipo::node<T> *getBranch(int group, int item);
-  hipo::generic_node *getGenericBranch(int group, int item);
-  template <class T>
-  hipo::node<T> *getBranch(const char *group, const char *item);
-  std::vector<generic_node *> *getAllBranches() { return inEventStream.getAllBranches(); }
+  bool next(hipo::event &dataevent);
+  void read(hipo::event &dataevent);
+  void printWarning();
 };
-
-}  // namespace hipo
-
-namespace hipo {
-template <class T>
-hipo::node<T> *reader::getBranch(int group, int item) {
-  return inEventStream.getBranch<T>(group, item);
-}
-
-/*
-  hipo::generic_node    *reader::getGenericBranch(int group, int item){
-       return inEventStream.getEventGenericBranch(group, item);
-  }*/
-
-template <class T>
-hipo::node<T> *reader::getBranch(const char *group, const char *item) {
-  if (schemaDictionary.hasSchema(group) == true) {
-    hipo::schema schema = schemaDictionary.getSchema(group);
-    if (schema.hasEntry(item) == true) {
-      int group_id = schema.getGroup();
-      int item__id = schema.getItem(item);
-      return inEventStream.getBranch<T>(group_id, item__id);
-    }
-  }
-  return NULL;
-}
 }  // namespace hipo
 #endif /* HIPOFILE_H */

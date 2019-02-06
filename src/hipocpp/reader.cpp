@@ -3,8 +3,8 @@
  * (c) 2017.
  */
 
-#include "hipoexceptions.h"
 #include "reader.h"
+#include "hipoexceptions.h"
 #include "record.h"
 
 #include <cstdlib>
@@ -13,377 +13,233 @@
  * files and records.
  */
 namespace hipo {
-/**
- * The constructor for reader, printWarning routine
- * will printout a warning message if the library
- * was not compiled with compression libraries LZ4 or GZIP
- */
-reader::reader() {
-  printWarning();
-  // hipoutils.printLogo();
-  isRandomAccess = false;
-}
-
-reader::reader(bool ra) {
-  printWarning();
-  // hipoutils.printLogo();
-  isRandomAccess = ra;
-}
-
-reader::reader(const char *infile) {
-  printWarning();
-  isRandomAccess = false;
-  this->open(infile);
-}
-/**
- * Default destructor. Does nothing
- */
-reader::~reader() {
-  if (inputStream.is_open() == true) {
-    inputStream.close();
-  }
-}
-/**
- * Open file, if file stream is open, it is closed first.
- * At open time verification of file structure is performed.
- * If the signature does not match EVIO/HIPO template, the
- * file will be closed and warning message is printed.
- */
-void reader::open(const char *filename) {
-  if (inputStream.is_open() == true) {
-    inputStream.close();
+ /**
+  * The constructor for reader, printWarning routine
+  * will printout a warning message if the library
+  * was not compiled with compression libraries LZ4 or GZIP
+  */
+  reader::reader(){
+    printWarning();
+    hipoutils.printLogo();
   }
 
-  inputStream.open(filename, std::ios::binary);
-  inputStream.seekg(0, std::ios_base::end);
-  inputStreamSize = inputStream.tellg();
-  inputStream.seekg(0, std::ios_base::beg);
-  if (inputStream.is_open() == false) {
-    std::cerr << "[ERROR] something went wrong with openning file : " << filename << std::endl;
-    exit(1);
-  }
-
-  recordsProcessed = 0;
-  eventsProcessed = 0;
-
-  readHeader();
-  bool status = verifyFile();
-  if (status == false) {
-    inputStream.close();
-  }
-
-  if (isRandomAccess == true) {
-    readRecordIndex();
-  } else {
-    //--------------------------------------------------------
-    // This part is for sequancial access of the file
-    //--------------------------------------------------------
-    long positionOffset = header.firstRecordPosition;
-    inRecordStream.readRecord(inputStream, positionOffset, 0);
-    int length = inRecordStream.getRecordSizeCompressed() * 4;
-    sequence.setRecordEvents(inRecordStream.getEventCount());
-    sequence.setPosition(positionOffset);
-    sequence.setCurrentEvent(0);
-
-    if ((positionOffset + length) >= (inputStreamSize - 56)) {
-      sequence.setNextPosition(-1);
-    } else {
-      sequence.setNextPosition(positionOffset + length);
+  /**
+   * Default destructor. Does nothing
+   */
+  reader::~reader(){
+    if(inputStream.is_open()==true){
+      inputStream.close();
     }
   }
+  /**
+   * Open file, if file stream is open, it is closed first.
+   * At open time verification of file structure is performed.
+   * If the signature does not match EVIO/HIPO template, the
+   * file will be closed and warning message is printed.
+   */
+  void reader::open(const char *filename){
 
-  // readDictionary();
+    if(inputStream.is_open()==true){
+      inputStream.close();
+    }
+
+    inputStream.open(filename, std::ios::binary);
+    inputStream.seekg(0,std::ios_base::end);
+    inputStreamSize = inputStream.tellg();
+    inputStream.seekg(0,std::ios_base::beg);
+    if(inputStream.is_open()==false){
+      printf("[ERROR] something went wrong with openning file : %s\n",
+            filename);
+      return;
+    }
+    readHeader();
+    readIndex();
 }
 
-hipo::generic_node *reader::getGenericBranch(int group, int item) {
-  return inEventStream.getEventGenericBranch(group, item);
-}
 /**
  * Reads the file header. The endiannes is determined for bytes
  * swap. The header structure will be filled with file parameters.
  */
-void reader::readHeader() {
-  headerBuffer.resize(80);
-  inputStream.read(&headerBuffer[0], 80);
-  header.uniqueid = *(reinterpret_cast<int *>(&headerBuffer[0]));
-  header.filenumber = *(reinterpret_cast<int *>(&headerBuffer[4]));
-  header.headerLength = *(reinterpret_cast<int *>(&headerBuffer[8]));
-  header.recordCount = *(reinterpret_cast<int *>(&headerBuffer[12]));
+ void reader::readHeader(){
 
-  header.indexArrayLength = *(reinterpret_cast<int *>(&headerBuffer[16]));
-  int word_8 = *(reinterpret_cast<int *>(&headerBuffer[20]));
+    std::vector<char>               headerBuffer;
+    headerBuffer.resize(80);
+    inputStream.read(&headerBuffer[0],80);
 
-  header.userHeaderLength = *(reinterpret_cast<int *>(&headerBuffer[24]));
-  header.magicNumber = *(reinterpret_cast<int *>(&headerBuffer[28]));
-  header.userRegister = *(reinterpret_cast<long *>(&headerBuffer[32]));
+    header.uniqueid     = *(reinterpret_cast<int *>(&headerBuffer[0]));
+    header.filenumber   = *(reinterpret_cast<int *>(&headerBuffer[4]));
+    header.headerLength = *(reinterpret_cast<int *>(&headerBuffer[8]));
+    header.recordCount  = *(reinterpret_cast<int *>(&headerBuffer[12]));
 
-  // If magic word is reversed, then the file was written in BIG_ENDIAN
-  // format, the bytes have to be swapped
-  if (header.magicNumber == 0x0001dac0) {
-    printf(" THIS FILE IS BIG ENDIAN: SWAPPING BYTES\n");
-    header.uniqueid = __builtin_bswap32(header.uniqueid);
-    header.filenumber = __builtin_bswap32(header.filenumber);
-    header.headerLength = __builtin_bswap32(header.headerLength);
-    header.recordCount = __builtin_bswap32(header.recordCount);
-    header.userHeaderLength = __builtin_bswap32(header.userHeaderLength);
-    header.indexArrayLength = __builtin_bswap32(header.indexArrayLength);
-    word_8 = __builtin_bswap32(word_8);
-    header.userRegister = __builtin_bswap64(header.userRegister);
+    header.indexArrayLength = *(reinterpret_cast<int *>(&headerBuffer[16]));
+    int word_8 = *(reinterpret_cast<int *>(&headerBuffer[20]));
+
+    header.userHeaderLength = *(reinterpret_cast<int *>(&headerBuffer[24]));
+    header.magicNumber = *(reinterpret_cast<int *>(&headerBuffer[28]));
+    header.userRegister = *(reinterpret_cast<long *>(&headerBuffer[32]));
+    header.trailerPosition = *(reinterpret_cast<long *>(&headerBuffer[40]));
+    // If magic word is reversed, then the file was written in BIG_ENDIAN
+    // format, the bytes have to be swapped
+    if(header.magicNumber==0x0001dac0){
+       printf(" THIS FILE IS BIG ENDIAN: SWAPPING BYTES\n");
+       header.uniqueid  = __builtin_bswap32(header.uniqueid);
+       header.filenumber = __builtin_bswap32(header.filenumber);
+       header.headerLength = __builtin_bswap32(header.headerLength);
+       header.recordCount  = __builtin_bswap32(header.recordCount);
+       header.userHeaderLength = __builtin_bswap32(header.userHeaderLength);
+       header.indexArrayLength = __builtin_bswap32(header.indexArrayLength);
+       word_8 = __builtin_bswap32(word_8);
+       header.userRegister = __builtin_bswap64(header.userRegister);
+       header.trailerPosition = __builtin_bswap64(header.trailerPosition);
+    }
+
+    header.version = word_8&0x000000FF;
+    header.bitInfo = (word_8>>8)&0x00FFFFFF;
+    header.firstRecordPosition = 4*header.headerLength + header.userHeaderLength;
+    printf("----------------------------------------\n");
+    printf("**** reader:: header version   : %d \n",header.version);
+    printf("**** reader:: header length    : %d \n",header.headerLength*4);
+    printf("**** reader:: first record pos : %lu\n",header.firstRecordPosition);
+    printf("**** reader:: trailer position : %lu\n",header.trailerPosition);
+    printf("**** reader:: file size        : %lu\n",inputStreamSize);
+    printf("----------------------------------------\n");
+    //int *signature = reinterpret_cast<int *>(&headerBuffer[0]);
+    //printf("signature = %X\n",(unsigned int) *signature);
+    //std::cout << "signature = " << std::ios::hex << (*signature) << '\n';
+}
+
+void  reader::readIndex(){
+    inputRecord.readRecord(inputStream,header.trailerPosition,0);
+    printf("*** reader:: trailer record event count : %d\n",inputRecord.getEventCount());
+    hipo::event event;
+    inputRecord.readHipoEvent(event,0);
+    event.show();
+    hipo::structure base;
+    event.getStructure(base,32111,1);
+    base.show();
+
+    int rows = base.getSize()/32;
+
+    printf(" number of rows = %d\n",rows);
+    for(int i = 0; i < rows; i++){
+       long position = base.getLongAt( i*8);
+       int  length   = base.getIntAt ( rows*8  + i*4);
+       int  entries  = base.getIntAt ( rows*12 + i*4);
+       long uid1     = base.getLongAt( rows*16 + i*8);
+       long uid2     = base.getLongAt( rows*24 + i*8);
+       //printf("record # %4d POSITION = %12lu , LENGTH = %12d , ENTRIES = %6d , UID = %12lu %12lu\n",
+          //i,position,length,entries, uid1,uid2);
+       readerEventIndex.addSize(entries);
+       readerEventIndex.addPosition(position);
+    }
+    readerEventIndex.rewind();
+}
+
+bool  reader::hasNext(){ return readerEventIndex.canAdvance();}
+
+bool  reader::next(hipo::event &dataevent){
+    int recordNumber = readerEventIndex.getRecordNumber();
+    readerEventIndex.advance();
+    int recordToBeRead = readerEventIndex.getRecordNumber();
+    if(recordToBeRead!=recordNumber){
+      long position = readerEventIndex.getPosition(recordToBeRead);
+      inputRecord.readRecord(inputStream,position,0);
+      /*printf(" record changed from %d to %d at event %d total event # %d\n",
+        recordNumber, recordToBeRead,readerEventIndex.getEventNumber(),
+        readerEventIndex.getMaxEvents());*/
+    }
+    int eventNumberInRecord = readerEventIndex.getRecordEventNumber();
+    inputRecord.readHipoEvent(dataevent,eventNumberInRecord);
+    return true;
+}
+
+void  reader::read(hipo::event &dataevent){
+  int eventNumberInRecord = readerEventIndex.getRecordEventNumber();
+  inputRecord.readHipoEvent(dataevent,eventNumberInRecord);
+}
+
+void  reader::readDictionary(hipo::dictionary &dict){
+  long position = header.headerLength*4;
+  hipo::record  dictRecord;
+  dictRecord.readRecord(inputStream,position,0);
+  int nevents = dictRecord.getEventCount();
+  printf(" reading record at position %8lu, number of entries = %5d\n",
+      position,dictRecord.getEventCount());
+  hipo::structure schemaStructure;
+  hipo::event  event;
+  for(int i = 0; i < nevents; i++){
+    dictRecord.readHipoEvent(event,i);
+    event.getStructure(schemaStructure,120,2);
+    printf("schema : %s\n",schemaStructure.getStringAt(0).c_str());
+    dict.parse(schemaStructure.getStringAt(0).c_str());
+  }
+}
+
+bool  reader::next(){
+    if(readerEventIndex.canAdvance()==false) return false;
+    int recordNumber = readerEventIndex.getRecordNumber();
+    readerEventIndex.advance();
+    int recordToBeRead = readerEventIndex.getRecordNumber();
+    if(recordToBeRead!=recordNumber){
+      long position = readerEventIndex.getPosition(recordToBeRead);
+      inputRecord.readRecord(inputStream,position,0);
+      /*printf(" record changed from %d to %d at event %d total event # %d\n",
+        recordNumber, recordToBeRead,readerEventIndex.getEventNumber(),
+        readerEventIndex.getMaxEvents());*/
+    }
+    return true;
+}
+
+void reader::printWarning(){
+    #ifndef __LZ4__
+      std::cout << "******************************************************" << std::endl;
+      std::cout << "* WARNING:                                           *" << std::endl;
+      std::cout << "*   This library war compiled without LZ4 support.   *" << std::endl;
+      std::cout << "*   Reading and writing compressed buffers will not  *" << std::endl;
+      std::cout << "*   work. However un-compressed file I/O will work.  *" << std::endl;
+      std::cout << "******************************************************" << std::endl;
+    #endif
+  }
+}
+
+
+namespace hipo {
+
+  void readerIndex::addSize(int size){
+    if(recordEvents.size()==0){
+      recordEvents.push_back(0);
+      recordEvents.push_back(size);
+    } else {
+      int cz = recordEvents[recordEvents.size()-1] + size;
+      recordEvents.push_back(cz);
+    }
   }
 
-  header.version = word_8 & 0x000000FF;
-  header.bitInfo = (word_8 >> 8) & 0x00FFFFFF;
-  header.firstRecordPosition = 4 * header.headerLength + header.userHeaderLength;
-  // int *signature = reinterpret_cast<int *>(&headerBuffer[0]);
-  // printf("signature = %X\n",(unsigned int) *signature);
-  // std::cout << "signature = " << std::ios::hex << (*signature) << '\n';
-}
-/**
- * Verify if the file has a proper format, magic word is checked
- * to and endianness is determined. Byte swap is performed if neccessary.
- */
-bool reader::verifyFile() { return true; }
-/**
- * Checks to determine if the file is open.
- */
-bool reader::isOpen() { return inputStream.is_open(); }
-
-void reader::readDictionary() {
-  hipo::record dictionary;
-  hipo::event schema;
-  readHeaderRecord(dictionary);
-  int nentries = dictionary.getEventCount();
-  for (int d = 0; d < nentries; d++) {
-    dictionary.readHipoEvent(schema, d);
-    std::string schemaString = schema.getString(31111, 1);
-    fileDictionary.push_back(schemaString);
-    schemaDictionary.parse(schemaString);
+  bool readerIndex::canAdvance(){
+    return (currentEvent<getMaxEvents()-1);
   }
-}
 
-std::vector<std::string> reader::getDictionary() { return fileDictionary; }
-
-size_t reader::numEvents() {
-  readRecordIndex();
-  return inReaderIndex.getMaxEvents();
-}
-
-bool reader::next() {
-  // printf("random access = %d\n",isRandomAccess);
-  if (isRandomAccess == true) {
-    if (inReaderCurrentRecord < 0) {
-      inReaderCurrentRecord = 0;
-      readRecord(inRecordStream, inReaderCurrentRecord);
-      inRecordStream.readHipoEvent(inEventStream, 0);
+  bool readerIndex::advance(){
+    if(recordEvents.size()==0) return false;
+    if(currentEvent+1<recordEvents[currentRecord+1]){
+      currentEvent++;
+      currentRecordEvent++;
       return true;
     }
 
-    bool status = inReaderIndex.advance();
-    if (status == false) return false;
-    if (inReaderIndex.getRecordNumber() != inReaderCurrentRecord) {
-      inReaderCurrentRecord = inReaderIndex.getRecordNumber();
-      readRecord(inRecordStream, inReaderCurrentRecord);
+    if(recordEvents.size() < currentRecord + 2 + 1){
+      printf("advance(): Warning, reached the limit of events.\n");
+      return false;
     }
-    inRecordStream.readHipoEvent(inEventStream, inReaderIndex.getRecordEventNumber());
-  } else {
-    // int current_event = sequence.getCurrentEvent();
-    // printf("next() : current event %d has event %d\n",current_event,sequence.hasEvents());
-    if (sequence.hasEvents() == false) {
-      // printf(" READING NEXT BANCH \n");
-      if (sequence.getNextPosition() < 0) {
-        return false;
-      }
-      long positionOffset = sequence.getNextPosition();
-      // inRecordStream.readRecord(inputStream,positionOffset,0);
-
-      bool status = inRecordStream.readRecord(inputStream, positionOffset, 0, inputStreamSize);
-      recordsProcessed++;
-      if (status == false) {
-        return false;
-      }
-      int length = inRecordStream.getRecordSizeCompressed() * 4;
-      // printf(" READING DONE %d %d \n",length,inRecordStream.getEventCount());
-      sequence.setRecordEvents(inRecordStream.getEventCount());
-      sequence.setPosition(positionOffset);
-      sequence.setCurrentEvent(0);
-
-      if ((positionOffset + length) >= (inputStreamSize - 56)) {
-        sequence.setNextPosition(-1);
-      } else {
-        sequence.setNextPosition(positionOffset + length);
-      }
-    }
-    int current_event = sequence.getCurrentEvent();
-    // printf("1\n");
-    inRecordStream.readHipoEvent(inEventStream, current_event);
-    eventsProcessed++;
-    // printf("2\n");
-    sequence.setCurrentEvent(current_event + 1);
-    return true;
-  }
-  return true;
-}
-/**
- * Reads records indicies, it hopes through file Reading
- * only header for each records and fills a vector with
- * record header descriptors, identifying the position,
- * and number of events in each record.
- * If it encounters mistake it will preserve all recovered
- * record information.
- */
-void reader::readRecordIndex() {
-  inputStream.seekg(0, std::ios::end);
-  long hipoFileSize = inputStream.tellg();
-  long positionOffset = header.firstRecordPosition;
-  recordIndex.clear();
-  inputStream.seekg(positionOffset, std::ios::beg);
-  std::vector<char> recheader(80);
-  int icounter = 0;
-  int eventCount = 0;
-  inReaderIndex.reset();
-  inReaderCurrentRecord = -1;
-
-  while (positionOffset + 56 < hipoFileSize) {
-    inputStream.read((char *)&recheader[0], 56);
-    recordIndex_t recIndex;
-
-    recIndex.recordPosition = positionOffset;
-    recIndex.recordLength = *(reinterpret_cast<int *>(&recheader[0]));
-    recIndex.recordEvents = *(reinterpret_cast<int *>(&recheader[12]));
-    int compressWord = *(reinterpret_cast<int *>(&recheader[36]));
-    int version = *(reinterpret_cast<int *>(&recheader[20]));
-    int magic_number = *(reinterpret_cast<int *>(&recheader[28]));
-
-    recIndex.recordDataLengthCompressed = compressWord & 0x0FFFFFFF;
-    // recIndex.compressionType            = (compressWord&0xF0000000)>>28;
-
-    if (magic_number == 0x0001dac0) {
-      recIndex.recordLength = __builtin_bswap32(recIndex.recordLength);
-      recIndex.recordEvents = __builtin_bswap32(recIndex.recordEvents);
-      compressWord = __builtin_bswap32(compressWord);
-      version = __builtin_bswap32(version);
-    }
-
-    inReaderIndex.addSize(recIndex.recordEvents);
-
-    version = (version & 0x000000FF);
-    if (version != 6) {
-      std::cerr << "version error : " << version << std::endl;
-      break;
-    }
-    if (magic_number != 0xc0da0100 && magic_number != 0x0001dac0) {
-      std::cerr << "magic number error : " << (unsigned int)magic_number << std::endl;
-      break;
-    }
-
-    positionOffset += recIndex.recordLength * 4;
-    inputStream.seekg(positionOffset, std::ios::beg);
-    recordIndex.push_back(recIndex);
-    icounter++;
-  }
-#ifdef __DEBUG__
-  std::cout << "total records = "<<icounter<<" index array = " << (unsigned int)recordIndex.size()) << std::endl;
-#endif
-}
-
-hipo::dictionary *reader::getSchemaDictionary() { return &schemaDictionary; }
-
-void reader::readHeaderRecord(hipo::record &record) {
-  int offset = header.headerLength * 4;
-  int rlenght = header.userHeaderLength;
-  record.readRecord(inputStream, offset, 0);
-}
-
-void reader::readRecord(hipo::record &record, int index) {
-  long position = recordIndex[index].recordPosition;
-  record.readRecord(inputStream, position, 0);
-}
-void reader::readRecord(int index) {
-  hipo::record rec;
-  long position = recordIndex[index].recordPosition;
-  rec.readRecord(inputStream, position, 0);
-}
-/**
- * Print the file information on the screen.
- */
-void reader::showInfo() {
-  printf("FILE: \n");
-  printf(" %18s : %X\n", "uniqueid", (unsigned int)header.uniqueid);
-  printf(" %18s : %d\n", "file #", header.filenumber);
-  printf(" %18s : %d\n", "header length", header.headerLength);
-  printf(" %18s : %d\n", "record count", header.recordCount);
-  printf(" %18s : %d\n", "index length", header.indexArrayLength);
-  printf(" %18s : %d\n", "version", header.version);
-  printf(" %18s : %X\n", "bit info", (unsigned int)header.bitInfo);
-  printf(" %18s : %d\n", "user header", header.userHeaderLength);
-  printf(" %18s : %X\n", "magic number", (unsigned int)header.magicNumber);
-  printf(" %18s : %ld\n", "first record", header.firstRecordPosition);
-  if (recordIndex.size() < 1) {
-    printf(" there are no records in the file : %d\n", inputStream.is_open());
-    return;
-  }
-  long recordPosition = 1000;  // recordIndex[recordIndex.size()-1].recordPosition;
-  float sizePos = recordPosition / 1024.0 / 1024.0;
-  printf("-------------------------------------\n");
-  // printf("     signature : %X\n", (unsigned int) getSignature());
-  // printf(" header Length : %d bytes\n", (unsigned int) getHeaderLength());
-  printf("   file Length : %.2f MB\n", sizePos);
-  printf("-------------------------------------\n");
-}
-
-int reader::getRecordCount() { return recordIndex.size(); }
-/**
- * Print warning if the library was not compiled with LZ4 library.
- * When this message appears, the compressed files will be unreadable.
- */
-void reader::printWarning() {
-#ifndef __LZ4__
-  std::cout << "******************************************************" << std::endl;
-  std::cout << "* WARNING:                                           *" << std::endl;
-  std::cout << "*   This library war compiled without LZ4 support.   *" << std::endl;
-  std::cout << "*   Reading and writing compressed buffers will not  *" << std::endl;
-  std::cout << "*   work. However un-compressed file I/O will work.  *" << std::endl;
-  std::cout << "******************************************************" << std::endl;
-#endif
-}
-}  // namespace hipo
-
-//*************************************************************************
-// implementation of record_index class
-//*************************************************************************
-namespace hipo {
-
-void reader_index::addSize(int size) {
-  if (recordEvents.size() == 0) {
-    recordEvents.push_back(0);
-    recordEvents.push_back(size);
-  } else {
-    int cz = recordEvents[recordEvents.size() - 1] + size;
-    recordEvents.push_back(cz);
-  }
-}
-
-bool reader_index::advance() {
-  if (recordEvents.size() == 0) return false;
-
-  if (currentEvent + 1 < recordEvents[currentRecord + 1]) {
     currentEvent++;
-    currentRecordEvent++;
+    currentRecord++;
+    currentRecordEvent = 0;
     return true;
   }
 
-  if (recordEvents.size() < currentRecord + 2 + 1) {
-    return false;
+  int readerIndex::getMaxEvents(){
+    if(recordEvents.size()==0) return 0;
+    return recordEvents[recordEvents.size()-1];
   }
 
-  currentEvent++;
-  currentRecord++;
-  currentRecordEvent = 0;
-  return true;
 }
-
-int reader_index::getMaxEvents() {
-  if (recordEvents.size() == 0) return 0;
-  return recordEvents[recordEvents.size() - 1];
-}
-}  // namespace hipo

@@ -14,93 +14,96 @@
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
 
-#include <cstdio>
-#include <cstdlib>
 #include <iostream>
+#include <cstdlib>
+#include <cstdio>
 #include <map>
 #include <string>
 #include <vector>
+
 
 //#include "reader.h"
 
 namespace hipo {
 
+  typedef struct {
+    std::string  name;
+    std::string  type;
+    int          typeId;
+    int          typeSize;
+    int          offset;
+  } schemaEntry_t;
+
 class schema {
- private:
-  std::map<std::string, std::pair<int, int> > schemaEntries;
-  std::vector<std::string> entryNames;
+  private:
 
-  int groupid;
-  std::string schemaName;
+    std::map<std::string, int>    schemaEntriesMap;
+    std::vector<schemaEntry_t>    schemaEntries;
 
-  /* internally used methods */
-  std::string getTypeString(int type);
-  std::string getRootTypeString(int type);
-  std::string getTypeStringSimple(int type);
-  int getMaxStringLength();
-  std::string getBranchVariable(const char* var, int max);
+    int         groupid;
+    int         itemid;
+    int         rowLength;
+    std::string schemaName;
 
- public:
-  schema() { groupid = 0; }
-  schema(const char* name) { schemaName = name; }
 
-  schema(const schema& s) {
-    schemaName = s.schemaName;
-    schemaEntries = s.schemaEntries;
-    entryNames = s.entryNames;
-    groupid = s.groupid;
-  }
+    int  getTypeSize(int id);
+    int  getTypeByString(std::string &typeName);
 
-  virtual ~schema() {}
+  public:
 
-  void setName(const char* name) { schemaName = name; }
-  std::string getName() { return schemaName; }
+    schema(){ groupid = 0; itemid = 0; rowLength = 0;}
+    schema(const char *name, int __group,int __item){
+      schemaName = name; groupid = __group; itemid = __item;
+    }
+    schema(const schema &s) {
+      schemaName    = s.schemaName;
+      schemaEntries = s.schemaEntries;
+      schemaEntriesMap = s.schemaEntriesMap;
+      groupid       = s.groupid;
+      itemid        = s.itemid;
+    }
 
-  void setGroup(int grp) { groupid = grp; }
-  bool hasEntry(const char* entry) { return schemaEntries.count(entry); }
-  void addEntry(const char* name, int id, int type) {
-    schemaEntries[name] = std::make_pair(id, type);
-    // printf(" adding entry %s\n",name);
-    entryNames.push_back(name);
-  }
+    virtual ~schema(){}
 
-  int getGroup() { return groupid; };
-  int getItem(const char* entry);
-  int getType(const char* entry);
-  int getTypeByString(const char* typestring);
-  void ls();
+    void  parse(std::string schString);
+    std::string   getName(){ return schemaName;}
+    int   getGroup(){ return groupid;}
+    int   getItem(){ return itemid;}
+    int   getSizeForRows(int rows);
+    int   getRowLength();
+    int   getEntryOrder(const char *name);
+    int   getOffset(int item, int order, int rows);
+    int   getOffset(const char *name, int order, int rows);
+    int   getEntryType(int item){ return schemaEntries[item].typeId;}
+    std::string getEntryName(int item) { return schemaEntries[item].name;}
+    int   getEntries(){ return schemaEntries.size();}
+    void  show();
 
-  std::vector<std::string> getEntryList();
-  std::vector<std::string> branchesCode();
-  std::vector<std::string> branchesAccessCode();
 
-  std::vector<std::string> getRootBranchesCode();
-  std::vector<std::string> getRootFillCode();
-
-  void operator=(const schema& D) {
-    schemaName = D.schemaName;
-    groupid = D.groupid;
-    schemaEntries = D.schemaEntries;
-    entryNames = D.entryNames;
-  }
+    void operator = (const schema &D ) {
+         schemaName = D.schemaName;
+         groupid    = D.groupid;
+         itemid     = D.itemid;
+         schemaEntries = D.schemaEntries;
+         schemaEntriesMap = D.schemaEntriesMap;
+    }
 };
 
-class dictionary {
- private:
-  std::map<std::string, hipo::schema> mapDict;
+  class dictionary {
+  private:
+    std::map<std::string,schema> factory;
+  public:
+    dictionary(){};
+    virtual ~dictionary(){};
 
- public:
-  dictionary() {}
-  virtual ~dictionary() {}
-  // node(hipo::reader &reader, int group, int item);
-  void ls(int mode = 0);
-  bool hasSchema(const char* name) { return mapDict.count(name) > 0; }
-  bool hasEntry(const char* name, const char* entry);
-  hipo::schema getSchema(const char* name) { return mapDict[name]; }
-  void parse(std::string dictString);
-  std::vector<std::string> getSchemaList();
-};
+    std::vector<std::string> getSchemaList();
+    void    addSchema(schema sc){ factory[sc.getName()] = sc;}
+    bool    hasSchema(const char *name) { return (factory.count(name)!=0);}
+    schema &getSchema(const char *name){ return factory[name];}
+    bool    parse(const char *schemaString);
+    void    show();
+  };
 
-}  // namespace hipo
+}
 
 #endif /* NODE_H */

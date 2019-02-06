@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
   OutputFile->SetCompressionSettings(6);
 
   TTree *clas12 = new TTree("clas12", "clas12");
-  hipo::reader *reader = new hipo::reader(InFileName.c_str());
+  hipo::reader *reader = new hipo::reader(InFileName);
   size_t tot_hipo_events = reader->numEvents();
 
   hipo::node<int32_t> *run_node = reader->getBranch<int32_t>(11, 1);
@@ -741,8 +741,7 @@ int main(int argc, char **argv) {
   int len_pid = 0;
   int len_pindex = 0;
 
-  while (reader->next() == true) {
-    // entry++;
+  while (reader->next()) {
     if (!is_batch && (++entry % 1000) == 0)
       std::cout << "\t" << floor(100 * entry / tot_hipo_events) << "%\r\r" << std::flush;
 
@@ -804,20 +803,21 @@ int main(int argc, char **argv) {
     status.resize(l);
 
     for (int i = 0; i < l; i++) {
-      pid[i] = pid_node->getValue(i);
-      p2[i] = (px_node->getValue(i) * px_node->getValue(i) + py_node->getValue(i) * py_node->getValue(i) +
-               pz_node->getValue(i) * pz_node->getValue(i));
+      pid[i] = particles->getInt("pid", i);
+      p2[i] = (particles->getFloat("px", i) * particles->getFloat("px", i) +
+               particles->getFloat("py", i) * particles->getFloat("py", i) +
+               particles->getFloat("pz", i) * particles->getFloat("pz", i));
       p[i] = sqrt(p2[i]);
-      px[i] = px_node->getValue(i);
-      py[i] = py_node->getValue(i);
-      pz[i] = pz_node->getValue(i);
-      vx[i] = vx_node->getValue(i);
-      vy[i] = vy_node->getValue(i);
-      vz[i] = vz_node->getValue(i);
-      charge[i] = charge_node->getValue(i);
-      beta[i] = ((beta_node->getValue(i) != -9999) ? beta_node->getValue(i) : NAN);
-      chi2pid[i] = chi2pid_node->getValue(i);
-      status[i] = status_node->getValue(i);
+      px[i] = particles->getFloat("px", i);
+      py[i] = particles->getFloat("py", i);
+      pz[i] = particles->getFloat("pz", i);
+      vx[i] = particles->getFloat("vx", i);
+      vy[i] = particles->getFloat("vy", i);
+      vz[i] = particles->getFloat("vz", i);
+      charge[i] = particles->getInt("charge", i);
+      beta[i] = ((particles->getFloat("beta", i) != -9999) ? particles->getFloat("beta", i) : NAN);
+      chi2pid[i] = particles->getFloat("chi2pid", i);
+      status[i] = particles->getInt("status", i);
     }
 
     if (is_mc) {
