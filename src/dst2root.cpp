@@ -65,7 +65,6 @@ int main(int argc, char **argv) {
        clipp::option("-r", "--rec").set(good_rec) % "Only save events where number of partilces in the event > 0",
        clipp::option("-e", "--elec").set(elec_first) % "Only save events with good electron as first particle",
        clipp::option("-c", "--cov").set(cov) % "Save Covariant Matrix for kinematic fitting",
-       clipp::option("-cvt", "--CVTDetector").set(cvt) % "Save CVT information for kinematic fitting",
        clipp::value("inputFile.hipo", InFileName), clipp::opt_value("outputFile.root", OutFileName));
 
   clipp::parse(argc, argv, cli);
@@ -82,7 +81,7 @@ int main(int argc, char **argv) {
 
   TTree *clas12 = new TTree("clas12", "clas12");
   hipo::reader *reader = new hipo::reader(InFileName);
-  // size_t tot_hipo_events = reader->numEvents();
+  size_t tot_hipo_events = reader->numEvents();
 
   hipo::dictionary *dict = new hipo::dictionary();
   reader->readDictionary(*dict);
@@ -605,7 +604,7 @@ int main(int argc, char **argv) {
   int len_pid = 0;
   int len_pindex = 0;
 
-  while (reader->next() && entry < 1000) {
+  while (reader->next()) {
     reader->read(*hipo_event);
     hipo_event->getStructure(*rec_Particle);
     hipo_event->getStructure(*rec_ForwardTagger);
@@ -617,8 +616,8 @@ int main(int argc, char **argv) {
     hipo_event->getStructure(*rec_Calorimeter);
     hipo_event->getStructure(*rec_CovMat);
 
-    if (!is_batch && (++entry % 10000) == 0) std::cout << " " << floor(100 * entry / 1000.0) << "\r\r" << std::flush;
-    //////      std::cout << "\t" << floor(100 * entry / tot_hipo_events) << "%\r\r" << std::flush;
+    if (!is_batch && (++entry % 10000) == 0)
+      std::cout << "\t" << floor(100 * entry / tot_hipo_events) << "%\r\r" << std::flush;
 
     if (good_rec && rec_Particle->getRows() == 0) continue;
     if (elec_first && rec_Particle->getInt("pid", 0) != 11) continue;
@@ -1136,267 +1135,203 @@ int main(int argc, char **argv) {
         }
       }
     }
-    /*
-                len_pid = pid_node->getLength();
-                len_pindex = track_pindex_node->getLength();
 
-                dc_sec.resize(len_pid);
-                dc_px.resize(len_pid);
-                dc_py.resize(len_pid);
-                dc_pz.resize(len_pid);
-                dc_vx.resize(len_pid);
-                dc_vy.resize(len_pid);
-                dc_vz.resize(len_pid);
+    len_pid = rec_Particle->getRows();
+    len_pindex = rec_Track->getRows();
 
-                cvt_px.resize(len_pid);
-                cvt_py.resize(len_pid);
-                cvt_pz.resize(len_pid);
-                cvt_vx.resize(len_pid);
-                cvt_vy.resize(len_pid);
-                cvt_vz.resize(len_pid);
+    dc_sec.resize(len_pid);
+    dc_px.resize(len_pid);
+    dc_py.resize(len_pid);
+    dc_pz.resize(len_pid);
+    dc_vx.resize(len_pid);
+    dc_vy.resize(len_pid);
+    dc_vz.resize(len_pid);
 
-                for (int i = 0; i < len_pid; i++) {
-                  dc_sec[i] = -1;
-                  dc_px[i] = NAN;
-                  dc_py[i] = NAN;
-                  dc_pz[i] = NAN;
-                  dc_vx[i] = NAN;
-                  dc_vy[i] = NAN;
-                  dc_vz[i] = NAN;
+    cvt_px.resize(len_pid);
+    cvt_py.resize(len_pid);
+    cvt_pz.resize(len_pid);
+    cvt_vx.resize(len_pid);
+    cvt_vy.resize(len_pid);
+    cvt_vz.resize(len_pid);
 
-                  cvt_px[i] = NAN;
-                  cvt_py[i] = NAN;
-                  cvt_pz[i] = NAN;
-                  cvt_vx[i] = NAN;
-                  cvt_vy[i] = NAN;
-                  cvt_vz[i] = NAN;
-                }
+    for (int i = 0; i < len_pid; i++) {
+      dc_sec[i] = -1;
+      dc_px[i] = NAN;
+      dc_py[i] = NAN;
+      dc_pz[i] = NAN;
+      dc_vx[i] = NAN;
+      dc_vy[i] = NAN;
+      dc_vz[i] = NAN;
 
-                for (int i = 0; i < len_pid; i++) {
-                  for (int k = 0; k < len_pindex; k++) {
-                    int pindex = track_pindex_node->getValue(k);
-                    int detector = track_detector_node->getValue(k);
+      cvt_px[i] = NAN;
+      cvt_py[i] = NAN;
+      cvt_pz[i] = NAN;
+      cvt_vx[i] = NAN;
+      cvt_vy[i] = NAN;
+      cvt_vz[i] = NAN;
+    }
 
-                    if (pindex == i && detector == CVT) {
-                      cvt_px[i] = track_px_nomm_node->getValue(k);
-                      cvt_py[i] = track_py_nomm_node->getValue(k);
-                      cvt_pz[i] = track_pz_nomm_node->getValue(k);
-                      cvt_vx[i] = track_vx_nomm_node->getValue(k);
-                      cvt_vy[i] = track_vy_nomm_node->getValue(k);
-                      cvt_vz[i] = track_vz_nomm_node->getValue(k);
+    for (int i = 0; i < len_pid; i++) {
+      for (int k = 0; k < len_pindex; k++) {
+        int pindex = rec_Track->getShort("pindex", k);
+        int detector = rec_Track->getByte("detector", k);
 
-                    } else if (pindex == i && detector == DC) {
-                      dc_sec[i] = track_sector_node->getValue(k);
-                      dc_px[i] = track_px_nomm_node->getValue(k);
-                      dc_py[i] = track_py_nomm_node->getValue(k);
-                      dc_pz[i] = track_pz_nomm_node->getValue(k);
-                      dc_vx[i] = track_vx_nomm_node->getValue(k);
-                      dc_vy[i] = track_vy_nomm_node->getValue(k);
-                      dc_vz[i] = track_vz_nomm_node->getValue(k);
-                    }
-                  }
-                }
+        if (pindex == i && detector == CVT) {
+          cvt_px[i] = rec_Track->getFloat("px_nomm", k);
+          cvt_py[i] = rec_Track->getFloat("py_nomm", k);
+          cvt_pz[i] = rec_Track->getFloat("pz_nomm", k);
+          cvt_vx[i] = rec_Track->getFloat("vx_nomm", k);
+          cvt_vy[i] = rec_Track->getFloat("vy_nomm", k);
+          cvt_vz[i] = rec_Track->getFloat("vz_nomm", k);
 
-                len_pid = pid_node->getLength();
-                len_pindex = fortag_pindex_node->getLength();
+        } else if (pindex == i && detector == DC) {
+          dc_sec[i] = rec_Track->getByte("sector", k);
+          dc_px[i] = rec_Track->getFloat("px_nomm", k);
+          dc_py[i] = rec_Track->getFloat("py_nomm", k);
+          dc_pz[i] = rec_Track->getFloat("pz_nomm", k);
+          dc_vx[i] = rec_Track->getFloat("vx_nomm", k);
+          dc_vy[i] = rec_Track->getFloat("vy_nomm", k);
+          dc_vz[i] = rec_Track->getFloat("vz_nomm", k);
+        }
+      }
+    }
 
-                ft_cal_energy.resize(len_pid);
-                ft_cal_time.resize(len_pid);
-                ft_cal_path.resize(len_pid);
-                ft_cal_x.resize(len_pid);
-                ft_cal_y.resize(len_pid);
-                ft_cal_z.resize(len_pid);
-                ft_cal_dx.resize(len_pid);
-                ft_cal_dy.resize(len_pid);
-                ft_cal_radius.resize(len_pid);
+    len_pid = rec_Particle->getRows();
+    len_pindex = rec_ForwardTagger->getRows();
 
-                ft_hodo_energy.resize(len_pid);
-                ft_hodo_time.resize(len_pid);
-                ft_hodo_path.resize(len_pid);
-                ft_hodo_x.resize(len_pid);
-                ft_hodo_y.resize(len_pid);
-                ft_hodo_z.resize(len_pid);
-                ft_hodo_dx.resize(len_pid);
-                ft_hodo_dy.resize(len_pid);
-                ft_hodo_radius.resize(len_pid);
+    ft_cal_energy.resize(len_pid);
+    ft_cal_time.resize(len_pid);
+    ft_cal_path.resize(len_pid);
+    ft_cal_x.resize(len_pid);
+    ft_cal_y.resize(len_pid);
+    ft_cal_z.resize(len_pid);
+    ft_cal_dx.resize(len_pid);
+    ft_cal_dy.resize(len_pid);
+    ft_cal_radius.resize(len_pid);
 
-                for (int i = 0; i < len_pid; i++) {
-                  ft_cal_energy[i] = NAN;
-                  ft_cal_time[i] = NAN;
-                  ft_cal_path[i] = NAN;
-                  ft_cal_x[i] = NAN;
-                  ft_cal_y[i] = NAN;
-                  ft_cal_z[i] = NAN;
-                  ft_cal_dx[i] = NAN;
-                  ft_cal_dy[i] = NAN;
-                  ft_cal_radius[i] = NAN;
+    ft_hodo_energy.resize(len_pid);
+    ft_hodo_time.resize(len_pid);
+    ft_hodo_path.resize(len_pid);
+    ft_hodo_x.resize(len_pid);
+    ft_hodo_y.resize(len_pid);
+    ft_hodo_z.resize(len_pid);
+    ft_hodo_dx.resize(len_pid);
+    ft_hodo_dy.resize(len_pid);
+    ft_hodo_radius.resize(len_pid);
 
-                  ft_hodo_energy[i] = NAN;
-                  ft_hodo_time[i] = NAN;
-                  ft_hodo_path[i] = NAN;
-                  ft_hodo_x[i] = NAN;
-                  ft_hodo_y[i] = NAN;
-                  ft_hodo_z[i] = NAN;
-                  ft_hodo_dx[i] = NAN;
-                  ft_hodo_dy[i] = NAN;
-                  ft_hodo_radius[i] = NAN;
-                }
+    for (int i = 0; i < len_pid; i++) {
+      ft_cal_energy[i] = NAN;
+      ft_cal_time[i] = NAN;
+      ft_cal_path[i] = NAN;
+      ft_cal_x[i] = NAN;
+      ft_cal_y[i] = NAN;
+      ft_cal_z[i] = NAN;
+      ft_cal_dx[i] = NAN;
+      ft_cal_dy[i] = NAN;
+      ft_cal_radius[i] = NAN;
 
-                for (int i = 0; i < len_pid; i++) {
-                  for (int k = 0; k < len_pindex; k++) {
-                    int pindex = fortag_pindex_node->getValue(k);
-                    int detector = fortag_detector_node->getValue(k);
+      ft_hodo_energy[i] = NAN;
+      ft_hodo_time[i] = NAN;
+      ft_hodo_path[i] = NAN;
+      ft_hodo_x[i] = NAN;
+      ft_hodo_y[i] = NAN;
+      ft_hodo_z[i] = NAN;
+      ft_hodo_dx[i] = NAN;
+      ft_hodo_dy[i] = NAN;
+      ft_hodo_radius[i] = NAN;
+    }
 
-                    if (pindex == i && detector == FTCAL) {
-                      ft_cal_energy[i] = fortag_energy_node->getValue(k);
-                      ft_cal_time[i] = fortag_time_node->getValue(k);
-                      ft_cal_path[i] = fortag_path_node->getValue(k);
-                      ft_cal_x[i] = fortag_x_node->getValue(k);
-                      ft_cal_y[i] = fortag_y_node->getValue(k);
-                      ft_cal_z[i] = fortag_z_node->getValue(k);
-                      ft_cal_dx[i] = fortag_dx_node->getValue(k);
-                      ft_cal_dy[i] = fortag_dy_node->getValue(k);
-                      ft_cal_radius[i] = fortag_radius_node->getValue(k);
-                    } else if (pindex == i && detector == FTHODO) {
-                      ft_hodo_energy[i] = fortag_energy_node->getValue(k);
-                      ft_hodo_time[i] = fortag_time_node->getValue(k);
-                      ft_hodo_path[i] = fortag_path_node->getValue(k);
-                      ft_hodo_x[i] = fortag_x_node->getValue(k);
-                      ft_hodo_y[i] = fortag_y_node->getValue(k);
-                      ft_hodo_z[i] = fortag_z_node->getValue(k);
-                      ft_hodo_dx[i] = fortag_dx_node->getValue(k);
-                      ft_hodo_dy[i] = fortag_dy_node->getValue(k);
-                      ft_hodo_radius[i] = fortag_radius_node->getValue(k);
-                    }
-                  }
-                }
+    for (int i = 0; i < len_pid; i++) {
+      for (int k = 0; k < len_pindex; k++) {
+        int pindex = rec_ForwardTagger->getShort("pindex", k);
+        int detector = rec_ForwardTagger->getByte("detector", k);
 
-                if (cov) {
-                  len_pid = pid_node->getLength();
-                  len_pindex = CovMat_pindex_node->getLength();
+        if (pindex == i && detector == FTCAL) {
+          ft_cal_energy[i] = rec_ForwardTagger->getFloat("energy", k);
+          ft_cal_time[i] = rec_ForwardTagger->getFloat("time", k);
+          ft_cal_path[i] = rec_ForwardTagger->getFloat("path", k);
+          ft_cal_x[i] = rec_ForwardTagger->getFloat("x", k);
+          ft_cal_y[i] = rec_ForwardTagger->getFloat("y", k);
+          ft_cal_z[i] = rec_ForwardTagger->getFloat("z", k);
+          ft_cal_dx[i] = rec_ForwardTagger->getFloat("dx", k);
+          ft_cal_dy[i] = rec_ForwardTagger->getFloat("dy", k);
+          ft_cal_radius[i] = rec_ForwardTagger->getFloat("radius", k);
+        } else if (pindex == i && detector == FTHODO) {
+          ft_hodo_energy[i] = rec_ForwardTagger->getFloat("energy", k);
+          ft_hodo_time[i] = rec_ForwardTagger->getFloat("time", k);
+          ft_hodo_path[i] = rec_ForwardTagger->getFloat("path", k);
+          ft_hodo_x[i] = rec_ForwardTagger->getFloat("x", k);
+          ft_hodo_y[i] = rec_ForwardTagger->getFloat("y", k);
+          ft_hodo_z[i] = rec_ForwardTagger->getFloat("z", k);
+          ft_hodo_dx[i] = rec_ForwardTagger->getFloat("dx", k);
+          ft_hodo_dy[i] = rec_ForwardTagger->getFloat("dy", k);
+          ft_hodo_radius[i] = rec_ForwardTagger->getFloat("radius", k);
+        }
+      }
+    }
 
-                  CovMat_11.resize(len_pid);
-                  CovMat_12.resize(len_pid);
-                  CovMat_13.resize(len_pid);
-                  CovMat_14.resize(len_pid);
-                  CovMat_15.resize(len_pid);
-                  CovMat_22.resize(len_pid);
-                  CovMat_23.resize(len_pid);
-                  CovMat_24.resize(len_pid);
-                  CovMat_25.resize(len_pid);
-                  CovMat_33.resize(len_pid);
-                  CovMat_34.resize(len_pid);
-                  CovMat_35.resize(len_pid);
-                  CovMat_44.resize(len_pid);
-                  CovMat_45.resize(len_pid);
-                  CovMat_55.resize(len_pid);
+    if (cov) {
+      len_pid = rec_Particle->getRows();
+      len_pindex = rec_CovMat->getRows();
 
-                  for (int i = 0; i < len_pid; i++) {
-                    CovMat_11[i] = NAN;
-                    CovMat_12[i] = NAN;
-                    CovMat_13[i] = NAN;
-                    CovMat_14[i] = NAN;
-                    CovMat_15[i] = NAN;
-                    CovMat_22[i] = NAN;
-                    CovMat_23[i] = NAN;
-                    CovMat_24[i] = NAN;
-                    CovMat_25[i] = NAN;
-                    CovMat_33[i] = NAN;
-                    CovMat_34[i] = NAN;
-                    CovMat_35[i] = NAN;
-                    CovMat_44[i] = NAN;
-                    CovMat_45[i] = NAN;
-                    CovMat_55[i] = NAN;
-                  }
+      CovMat_11.resize(len_pid);
+      CovMat_12.resize(len_pid);
+      CovMat_13.resize(len_pid);
+      CovMat_14.resize(len_pid);
+      CovMat_15.resize(len_pid);
+      CovMat_22.resize(len_pid);
+      CovMat_23.resize(len_pid);
+      CovMat_24.resize(len_pid);
+      CovMat_25.resize(len_pid);
+      CovMat_33.resize(len_pid);
+      CovMat_34.resize(len_pid);
+      CovMat_35.resize(len_pid);
+      CovMat_44.resize(len_pid);
+      CovMat_45.resize(len_pid);
+      CovMat_55.resize(len_pid);
 
-                  for (int i = 0; i < len_pid; i++) {
-                    for (int k = 0; k < len_pindex; ++k) {
-                      int pindex = CovMat_pindex_node->getValue(k);
-                      if (pindex == i) {
-                        CovMat_11[i] = CovMat_C11_node->getValue(k);
-                        CovMat_12[i] = CovMat_C12_node->getValue(k);
-                        CovMat_13[i] = CovMat_C13_node->getValue(k);
-                        CovMat_14[i] = CovMat_C14_node->getValue(k);
-                        CovMat_15[i] = CovMat_C15_node->getValue(k);
-                        CovMat_22[i] = CovMat_C22_node->getValue(k);
-                        CovMat_23[i] = CovMat_C23_node->getValue(k);
-                        CovMat_24[i] = CovMat_C24_node->getValue(k);
-                        CovMat_25[i] = CovMat_C25_node->getValue(k);
-                        CovMat_33[i] = CovMat_C33_node->getValue(k);
-                        CovMat_34[i] = CovMat_C34_node->getValue(k);
-                        CovMat_35[i] = CovMat_C35_node->getValue(k);
-                        CovMat_44[i] = CovMat_C44_node->getValue(k);
-                        CovMat_45[i] = CovMat_C45_node->getValue(k);
-                        CovMat_55[i] = CovMat_C55_node->getValue(k);
-                      }
-                    }
-                  }
-                }
+      for (int i = 0; i < len_pid; i++) {
+        CovMat_11[i] = NAN;
+        CovMat_12[i] = NAN;
+        CovMat_13[i] = NAN;
+        CovMat_14[i] = NAN;
+        CovMat_15[i] = NAN;
+        CovMat_22[i] = NAN;
+        CovMat_23[i] = NAN;
+        CovMat_24[i] = NAN;
+        CovMat_25[i] = NAN;
+        CovMat_33[i] = NAN;
+        CovMat_34[i] = NAN;
+        CovMat_35[i] = NAN;
+        CovMat_44[i] = NAN;
+        CovMat_45[i] = NAN;
+        CovMat_55[i] = NAN;
+      }
 
-                if (cvt) {
-                  len_pid = CVT_pid_node->getLength();
-                  l = CVT_pid_node->getLength();
+      for (int i = 0; i < len_pid; i++) {
+        for (int k = 0; k < len_pindex; ++k) {
+          int pindex = rec_CovMat->getShort("pindex", k);
+          if (pindex == i) {
+            CovMat_11[i] = rec_CovMat->getFloat("C11", k);
+            CovMat_12[i] = rec_CovMat->getFloat("C12", k);
+            CovMat_13[i] = rec_CovMat->getFloat("C13", k);
+            CovMat_14[i] = rec_CovMat->getFloat("C14", k);
+            CovMat_15[i] = rec_CovMat->getFloat("C15", k);
+            CovMat_22[i] = rec_CovMat->getFloat("C22", k);
+            CovMat_23[i] = rec_CovMat->getFloat("C23", k);
+            CovMat_24[i] = rec_CovMat->getFloat("C24", k);
+            CovMat_25[i] = rec_CovMat->getFloat("C25", k);
+            CovMat_33[i] = rec_CovMat->getFloat("C33", k);
+            CovMat_34[i] = rec_CovMat->getFloat("C34", k);
+            CovMat_35[i] = rec_CovMat->getFloat("C35", k);
+            CovMat_44[i] = rec_CovMat->getFloat("C44", k);
+            CovMat_45[i] = rec_CovMat->getFloat("C45", k);
+            CovMat_55[i] = rec_CovMat->getFloat("C55", k);
+          }
+        }
+      }
+    }
 
-                  cvt_pid.resize(len_pid);
-                  cvt_q.resize(len_pid);
-                  cvt_p.resize(len_pid);
-                  cvt_pt.resize(len_pid);
-                  cvt_phi0.resize(len_pid);
-                  cvt_tandip.resize(len_pid);
-                  cvt_z0.resize(len_pid);
-                  cvt_d0.resize(len_pid);
-                  cvt_CovMat_d02.resize(len_pid);
-                  cvt_CovMat_d0phi0.resize(len_pid);
-                  cvt_CovMat_d0rho.resize(len_pid);
-                  cvt_CovMat_phi02.resize(len_pid);
-                  cvt_CovMat_phi0rho.resize(len_pid);
-                  cvt_CovMat_rho2.resize(len_pid);
-                  cvt_CovMat_z02.resize(len_pid);
-                  cvt_CovMat_tandip2.resize(len_pid);
-
-                  for (int i = 0; i < len_pid; i++) {
-                    cvt_pid[i] = -1;
-                    cvt_q[i] = -1;
-                    cvt_p[i] = NAN;
-                    cvt_pt[i] = NAN;
-                    cvt_phi0[i] = NAN;
-                    cvt_tandip[i] = NAN;
-                    cvt_z0[i] = NAN;
-                    cvt_d0[i] = NAN;
-                    cvt_CovMat_d02[i] = NAN;
-                    cvt_CovMat_d0phi0[i] = NAN;
-                    cvt_CovMat_d0rho[i] = NAN;
-                    cvt_CovMat_phi02[i] = NAN;
-                    cvt_CovMat_phi0rho[i] = NAN;
-                    cvt_CovMat_rho2[i] = NAN;
-                    cvt_CovMat_z02[i] = NAN;
-                    cvt_CovMat_tandip2[i] = NAN;
-                  }
-
-                  for (int i = 0; i < len_pid; i++) {
-                    for (int k = 0; k < len_pindex; ++k) {
-                      int pindex = CovMat_pindex_node->getValue(k);
-                      if (pindex == i) {
-                        cvt_pid[i] = CVT_pid_node->getValue(k);
-                        cvt_q[i] = CVT_q_node->getValue(k);
-                        cvt_p[i] = CVT_p_node->getValue(k);
-                        cvt_phi0[i] = CVT_phi0_node->getValue(k);
-                        cvt_tandip[i] = CVT_tandip_node->getValue(k);
-                        cvt_z0[i] = CVT_z0_node->getValue(k);
-                        cvt_d0[i] = CVT_d0_node->getValue(k);
-                        cvt_CovMat_d02[i] = CVT_Cov_d02_node->getValue(k);
-                        cvt_CovMat_d0phi0[i] = CVT_Cov_d0phi0_node->getValue(k);
-                        cvt_CovMat_d0rho[i] = CVT_Cov_d0rho_node->getValue(k);
-                        cvt_CovMat_phi02[i] = CVT_Cov_phi02_node->getValue(k);
-                        cvt_CovMat_phi0rho[i] = CVT_Cov_phi0rho_node->getValue(k);
-                        cvt_CovMat_rho2[i] = CVT_Cov_rho2_node->getValue(k);
-                        cvt_CovMat_z02[i] = CVT_Cov_z02_node->getValue(k);
-                        cvt_CovMat_tandip2[i] = CVT_Cov_tandip2_node->getValue(k);
-                      }
-                    }
-                  }
-                }
-            */
     clas12->Fill();
   }
 

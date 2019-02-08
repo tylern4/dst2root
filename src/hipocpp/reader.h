@@ -171,6 +171,7 @@ class reader {
   void open(const char *filename);
   bool hasNext();
   bool next();
+  long numEvents() { return readerEventIndex.getMaxEvents(); }
   bool next(hipo::event &dataevent);
   void read(hipo::event &dataevent);
   void printWarning();
