@@ -948,455 +948,455 @@ int main(int argc, char **argv) {
       }
       if (cc_nphe_tot[i] != cc_nphe_tot[i]) cc_nphe_tot[i] = ((nphe_tot != 0.0) ? nphe_tot : NAN);
     }
+
+    len_pid = rec_Particle->getRows();
+    len_pindex = rec_Scintillator->getRows();
+
+    sc_ftof_1a_sec.resize(len_pid);
+    sc_ftof_1a_time.resize(len_pid);
+    sc_ftof_1a_path.resize(len_pid);
+    sc_ftof_1a_energy.resize(len_pid);
+    sc_ftof_1a_component.resize(len_pid);
+    sc_ftof_1a_x.resize(len_pid);
+    sc_ftof_1a_y.resize(len_pid);
+    sc_ftof_1a_z.resize(len_pid);
+    sc_ftof_1a_hx.resize(len_pid);
+    sc_ftof_1a_hy.resize(len_pid);
+    sc_ftof_1a_hz.resize(len_pid);
+
+    sc_ftof_1b_sec.resize(len_pid);
+    sc_ftof_1b_time.resize(len_pid);
+    sc_ftof_1b_path.resize(len_pid);
+    sc_ftof_1b_energy.resize(len_pid);
+    sc_ftof_1b_component.resize(len_pid);
+    sc_ftof_1b_x.resize(len_pid);
+    sc_ftof_1b_y.resize(len_pid);
+    sc_ftof_1b_z.resize(len_pid);
+    sc_ftof_1b_hx.resize(len_pid);
+    sc_ftof_1b_hy.resize(len_pid);
+    sc_ftof_1b_hz.resize(len_pid);
+
+    sc_ftof_2_sec.resize(len_pid);
+    sc_ftof_2_time.resize(len_pid);
+    sc_ftof_2_path.resize(len_pid);
+    sc_ftof_2_energy.resize(len_pid);
+    sc_ftof_2_component.resize(len_pid);
+    sc_ftof_2_x.resize(len_pid);
+    sc_ftof_2_y.resize(len_pid);
+    sc_ftof_2_z.resize(len_pid);
+    sc_ftof_2_hx.resize(len_pid);
+    sc_ftof_2_hy.resize(len_pid);
+    sc_ftof_2_hz.resize(len_pid);
+
+    sc_ctof_time.resize(len_pid);
+    sc_ctof_path.resize(len_pid);
+    sc_ctof_energy.resize(len_pid);
+    sc_ctof_component.resize(len_pid);
+    sc_ctof_x.resize(len_pid);
+    sc_ctof_y.resize(len_pid);
+    sc_ctof_z.resize(len_pid);
+    sc_ctof_hx.resize(len_pid);
+    sc_ctof_hy.resize(len_pid);
+    sc_ctof_hz.resize(len_pid);
+
+    sc_cnd_time.resize(len_pid);
+    sc_cnd_path.resize(len_pid);
+    sc_cnd_energy.resize(len_pid);
+    sc_cnd_component.resize(len_pid);
+    sc_cnd_x.resize(len_pid);
+    sc_cnd_y.resize(len_pid);
+    sc_cnd_z.resize(len_pid);
+    sc_cnd_hx.resize(len_pid);
+    sc_cnd_hy.resize(len_pid);
+    sc_cnd_hz.resize(len_pid);
+
+    for (int i = 0; i < len_pid; i++) {
+      sc_ftof_1a_sec[i] = -1;
+      sc_ftof_1a_time[i] = NAN;
+      sc_ftof_1a_path[i] = NAN;
+      sc_ftof_1a_energy[i] = NAN;
+      sc_ftof_1a_component[i] = -1;
+      sc_ftof_1a_x[i] = NAN;
+      sc_ftof_1a_y[i] = NAN;
+      sc_ftof_1a_z[i] = NAN;
+      sc_ftof_1a_hx[i] = NAN;
+      sc_ftof_1a_hy[i] = NAN;
+      sc_ftof_1a_hz[i] = NAN;
+
+      sc_ftof_1b_sec[i] = -1;
+      sc_ftof_1b_time[i] = NAN;
+      sc_ftof_1b_path[i] = NAN;
+      sc_ftof_1b_energy[i] = NAN;
+      sc_ftof_1b_component[i] = -1;
+      sc_ftof_1b_x[i] = NAN;
+      sc_ftof_1b_y[i] = NAN;
+      sc_ftof_1b_z[i] = NAN;
+      sc_ftof_1b_hx[i] = NAN;
+      sc_ftof_1b_hy[i] = NAN;
+      sc_ftof_1b_hz[i] = NAN;
+
+      sc_ftof_2_sec[i] = -1;
+      sc_ftof_2_time[i] = NAN;
+      sc_ftof_2_path[i] = NAN;
+      sc_ftof_2_energy[i] = NAN;
+      sc_ftof_2_component[i] = -1;
+      sc_ftof_2_x[i] = NAN;
+      sc_ftof_2_y[i] = NAN;
+      sc_ftof_2_z[i] = NAN;
+      sc_ftof_2_hx[i] = NAN;
+      sc_ftof_2_hy[i] = NAN;
+      sc_ftof_2_hz[i] = NAN;
+
+      sc_ctof_time[i] = NAN;
+      sc_ctof_path[i] = NAN;
+      sc_ctof_energy[i] = NAN;
+      sc_ctof_component[i] = -1;
+      sc_ctof_x[i] = NAN;
+      sc_ctof_y[i] = NAN;
+      sc_ctof_z[i] = NAN;
+      sc_ctof_hx[i] = NAN;
+      sc_ctof_hy[i] = NAN;
+      sc_ctof_hz[i] = NAN;
+
+      sc_cnd_time[i] = NAN;
+      sc_cnd_path[i] = NAN;
+      sc_cnd_energy[i] = NAN;
+      sc_cnd_component[i] = -1;
+      sc_cnd_x[i] = NAN;
+      sc_cnd_y[i] = NAN;
+      sc_cnd_z[i] = NAN;
+      sc_cnd_hx[i] = NAN;
+      sc_cnd_hy[i] = NAN;
+      sc_cnd_hz[i] = NAN;
+    }
+
+    for (int i = 0; i < len_pid; i++) {
+      for (int k = 0; k < len_pindex; k++) {
+        int pindex = rec_Scintillator->getShort("pindex", k);
+        int detector = rec_Scintillator->getByte("detector", k);
+        int layer = rec_Scintillator->getByte("layer", k);
+        if (pindex == i && detector == FTOF && layer == FTOF_1A) {
+          sc_ftof_1a_sec[i] = rec_Scintillator->getByte("sector", k);
+          sc_ftof_1a_time[i] = rec_Scintillator->getFloat("time", k);
+          sc_ftof_1a_path[i] = rec_Scintillator->getFloat("path", k);
+          sc_ftof_1a_energy[i] = rec_Scintillator->getFloat("energy", k);
+          sc_ftof_1a_component[i] = rec_Scintillator->getShort("component", k);
+          sc_ftof_1a_x[i] = rec_Scintillator->getFloat("x", k);
+          sc_ftof_1a_y[i] = rec_Scintillator->getFloat("y", k);
+          sc_ftof_1a_z[i] = rec_Scintillator->getFloat("z", k);
+          sc_ftof_1a_hx[i] = rec_Scintillator->getFloat("hx", k);
+          sc_ftof_1a_hy[i] = rec_Scintillator->getFloat("hy", k);
+          sc_ftof_1a_hz[i] = rec_Scintillator->getFloat("hz", k);
+        } else if (pindex == i && detector == FTOF && layer == FTOF_1B) {
+          sc_ftof_1b_sec[i] = rec_Scintillator->getByte("sector", k);
+          sc_ftof_1b_time[i] = rec_Scintillator->getFloat("time", k);
+          sc_ftof_1b_path[i] = rec_Scintillator->getFloat("path", k);
+          sc_ftof_1b_energy[i] = rec_Scintillator->getFloat("energy", k);
+          sc_ftof_1b_component[i] = rec_Scintillator->getShort("component", k);
+          sc_ftof_1b_x[i] = rec_Scintillator->getFloat("x", k);
+          sc_ftof_1b_y[i] = rec_Scintillator->getFloat("y", k);
+          sc_ftof_1b_z[i] = rec_Scintillator->getFloat("z", k);
+          sc_ftof_1b_hx[i] = rec_Scintillator->getFloat("hx", k);
+          sc_ftof_1b_hy[i] = rec_Scintillator->getFloat("hy", k);
+          sc_ftof_1b_hz[i] = rec_Scintillator->getFloat("hz", k);
+        } else if (pindex == i && detector == FTOF && layer == FTOF_2) {
+          sc_ftof_2_sec[i] = rec_Scintillator->getByte("sector", k);
+          sc_ftof_2_time[i] = rec_Scintillator->getFloat("time", k);
+          sc_ftof_2_path[i] = rec_Scintillator->getFloat("path", k);
+          sc_ftof_2_energy[i] = rec_Scintillator->getFloat("energy", k);
+          sc_ftof_2_component[i] = rec_Scintillator->getShort("component", k);
+          sc_ftof_2_x[i] = rec_Scintillator->getFloat("x", k);
+          sc_ftof_2_y[i] = rec_Scintillator->getFloat("y", k);
+          sc_ftof_2_z[i] = rec_Scintillator->getFloat("z", k);
+          sc_ftof_2_hx[i] = rec_Scintillator->getFloat("hx", k);
+          sc_ftof_2_hy[i] = rec_Scintillator->getFloat("hy", k);
+          sc_ftof_2_hz[i] = rec_Scintillator->getFloat("hz", k);
+        } else if (pindex == i && detector == CTOF) {
+          sc_ctof_time[i] = rec_Scintillator->getFloat("time", k);
+          sc_ctof_path[i] = rec_Scintillator->getFloat("path", k);
+          sc_ctof_energy[i] = rec_Scintillator->getFloat("energy", k);
+          sc_ctof_component[i] = rec_Scintillator->getShort("component", k);
+          sc_ctof_x[i] = rec_Scintillator->getFloat("x", k);
+          sc_ctof_y[i] = rec_Scintillator->getFloat("y", k);
+          sc_ctof_z[i] = rec_Scintillator->getFloat("z", k);
+          sc_ctof_hx[i] = rec_Scintillator->getFloat("hx", k);
+          sc_ctof_hy[i] = rec_Scintillator->getFloat("hy", k);
+          sc_ctof_hz[i] = rec_Scintillator->getFloat("hz", k);
+        } else if (pindex == i && detector == CND) {
+          sc_cnd_time[i] = rec_Scintillator->getFloat("time", k);
+          sc_cnd_path[i] = rec_Scintillator->getFloat("path", k);
+          sc_cnd_energy[i] = rec_Scintillator->getFloat("energy", k);
+          sc_cnd_component[i] = rec_Scintillator->getShort("component", k);
+          sc_cnd_x[i] = rec_Scintillator->getFloat("x", k);
+          sc_cnd_y[i] = rec_Scintillator->getFloat("y", k);
+          sc_cnd_z[i] = rec_Scintillator->getFloat("z", k);
+          sc_cnd_hx[i] = rec_Scintillator->getFloat("hx", k);
+          sc_cnd_hy[i] = rec_Scintillator->getFloat("hy", k);
+          sc_cnd_hz[i] = rec_Scintillator->getFloat("hz", k);
+        }
+      }
+    }
     /*
-            len_pid = pid_node->getLength();
-            len_pindex = scint_pindex_node->getLength();
+                len_pid = pid_node->getLength();
+                len_pindex = track_pindex_node->getLength();
 
-            sc_ftof_1a_sec.resize(len_pid);
-            sc_ftof_1a_time.resize(len_pid);
-            sc_ftof_1a_path.resize(len_pid);
-            sc_ftof_1a_energy.resize(len_pid);
-            sc_ftof_1a_component.resize(len_pid);
-            sc_ftof_1a_x.resize(len_pid);
-            sc_ftof_1a_y.resize(len_pid);
-            sc_ftof_1a_z.resize(len_pid);
-            sc_ftof_1a_hx.resize(len_pid);
-            sc_ftof_1a_hy.resize(len_pid);
-            sc_ftof_1a_hz.resize(len_pid);
+                dc_sec.resize(len_pid);
+                dc_px.resize(len_pid);
+                dc_py.resize(len_pid);
+                dc_pz.resize(len_pid);
+                dc_vx.resize(len_pid);
+                dc_vy.resize(len_pid);
+                dc_vz.resize(len_pid);
 
-            sc_ftof_1b_sec.resize(len_pid);
-            sc_ftof_1b_time.resize(len_pid);
-            sc_ftof_1b_path.resize(len_pid);
-            sc_ftof_1b_energy.resize(len_pid);
-            sc_ftof_1b_component.resize(len_pid);
-            sc_ftof_1b_x.resize(len_pid);
-            sc_ftof_1b_y.resize(len_pid);
-            sc_ftof_1b_z.resize(len_pid);
-            sc_ftof_1b_hx.resize(len_pid);
-            sc_ftof_1b_hy.resize(len_pid);
-            sc_ftof_1b_hz.resize(len_pid);
+                cvt_px.resize(len_pid);
+                cvt_py.resize(len_pid);
+                cvt_pz.resize(len_pid);
+                cvt_vx.resize(len_pid);
+                cvt_vy.resize(len_pid);
+                cvt_vz.resize(len_pid);
 
-            sc_ftof_2_sec.resize(len_pid);
-            sc_ftof_2_time.resize(len_pid);
-            sc_ftof_2_path.resize(len_pid);
-            sc_ftof_2_energy.resize(len_pid);
-            sc_ftof_2_component.resize(len_pid);
-            sc_ftof_2_x.resize(len_pid);
-            sc_ftof_2_y.resize(len_pid);
-            sc_ftof_2_z.resize(len_pid);
-            sc_ftof_2_hx.resize(len_pid);
-            sc_ftof_2_hy.resize(len_pid);
-            sc_ftof_2_hz.resize(len_pid);
+                for (int i = 0; i < len_pid; i++) {
+                  dc_sec[i] = -1;
+                  dc_px[i] = NAN;
+                  dc_py[i] = NAN;
+                  dc_pz[i] = NAN;
+                  dc_vx[i] = NAN;
+                  dc_vy[i] = NAN;
+                  dc_vz[i] = NAN;
 
-            sc_ctof_time.resize(len_pid);
-            sc_ctof_path.resize(len_pid);
-            sc_ctof_energy.resize(len_pid);
-            sc_ctof_component.resize(len_pid);
-            sc_ctof_x.resize(len_pid);
-            sc_ctof_y.resize(len_pid);
-            sc_ctof_z.resize(len_pid);
-            sc_ctof_hx.resize(len_pid);
-            sc_ctof_hy.resize(len_pid);
-            sc_ctof_hz.resize(len_pid);
-
-            sc_cnd_time.resize(len_pid);
-            sc_cnd_path.resize(len_pid);
-            sc_cnd_energy.resize(len_pid);
-            sc_cnd_component.resize(len_pid);
-            sc_cnd_x.resize(len_pid);
-            sc_cnd_y.resize(len_pid);
-            sc_cnd_z.resize(len_pid);
-            sc_cnd_hx.resize(len_pid);
-            sc_cnd_hy.resize(len_pid);
-            sc_cnd_hz.resize(len_pid);
-
-            for (int i = 0; i < len_pid; i++) {
-              sc_ftof_1a_sec[i] = -1;
-              sc_ftof_1a_time[i] = NAN;
-              sc_ftof_1a_path[i] = NAN;
-              sc_ftof_1a_energy[i] = NAN;
-              sc_ftof_1a_component[i] = -1;
-              sc_ftof_1a_x[i] = NAN;
-              sc_ftof_1a_y[i] = NAN;
-              sc_ftof_1a_z[i] = NAN;
-              sc_ftof_1a_hx[i] = NAN;
-              sc_ftof_1a_hy[i] = NAN;
-              sc_ftof_1a_hz[i] = NAN;
-
-              sc_ftof_1b_sec[i] = -1;
-              sc_ftof_1b_time[i] = NAN;
-              sc_ftof_1b_path[i] = NAN;
-              sc_ftof_1b_energy[i] = NAN;
-              sc_ftof_1b_component[i] = -1;
-              sc_ftof_1b_x[i] = NAN;
-              sc_ftof_1b_y[i] = NAN;
-              sc_ftof_1b_z[i] = NAN;
-              sc_ftof_1b_hx[i] = NAN;
-              sc_ftof_1b_hy[i] = NAN;
-              sc_ftof_1b_hz[i] = NAN;
-
-              sc_ftof_2_sec[i] = -1;
-              sc_ftof_2_time[i] = NAN;
-              sc_ftof_2_path[i] = NAN;
-              sc_ftof_2_energy[i] = NAN;
-              sc_ftof_2_component[i] = -1;
-              sc_ftof_2_x[i] = NAN;
-              sc_ftof_2_y[i] = NAN;
-              sc_ftof_2_z[i] = NAN;
-              sc_ftof_2_hx[i] = NAN;
-              sc_ftof_2_hy[i] = NAN;
-              sc_ftof_2_hz[i] = NAN;
-
-              sc_ctof_time[i] = NAN;
-              sc_ctof_path[i] = NAN;
-              sc_ctof_energy[i] = NAN;
-              sc_ctof_component[i] = -1;
-              sc_ctof_x[i] = NAN;
-              sc_ctof_y[i] = NAN;
-              sc_ctof_z[i] = NAN;
-              sc_ctof_hx[i] = NAN;
-              sc_ctof_hy[i] = NAN;
-              sc_ctof_hz[i] = NAN;
-
-              sc_cnd_time[i] = NAN;
-              sc_cnd_path[i] = NAN;
-              sc_cnd_energy[i] = NAN;
-              sc_cnd_component[i] = -1;
-              sc_cnd_x[i] = NAN;
-              sc_cnd_y[i] = NAN;
-              sc_cnd_z[i] = NAN;
-              sc_cnd_hx[i] = NAN;
-              sc_cnd_hy[i] = NAN;
-              sc_cnd_hz[i] = NAN;
-            }
-
-            for (int i = 0; i < len_pid; i++) {
-              for (int k = 0; k < len_pindex; k++) {
-                int pindex = scint_pindex_node->getValue(k);
-                int detector = scint_detector_node->getValue(k);
-                int layer = scint_layer_node->getValue(k);
-                if (pindex == i && detector == FTOF && layer == FTOF_1A) {
-                  sc_ftof_1a_sec[i] = scint_sector_node->getValue(k);
-                  sc_ftof_1a_time[i] = scint_time_node->getValue(k);
-                  sc_ftof_1a_path[i] = scint_path_node->getValue(k);
-                  sc_ftof_1a_energy[i] = scint_energy_node->getValue(k);
-                  sc_ftof_1a_component[i] = scint_component_node->getValue(k);
-                  sc_ftof_1a_x[i] = scint_x_node->getValue(k);
-                  sc_ftof_1a_y[i] = scint_y_node->getValue(k);
-                  sc_ftof_1a_z[i] = scint_z_node->getValue(k);
-                  sc_ftof_1a_hx[i] = scint_hx_node->getValue(k);
-                  sc_ftof_1a_hy[i] = scint_hy_node->getValue(k);
-                  sc_ftof_1a_hz[i] = scint_hz_node->getValue(k);
-                } else if (pindex == i && detector == FTOF && layer == FTOF_1B) {
-                  sc_ftof_1b_sec[i] = scint_sector_node->getValue(k);
-                  sc_ftof_1b_time[i] = scint_time_node->getValue(k);
-                  sc_ftof_1b_path[i] = scint_path_node->getValue(k);
-                  sc_ftof_1b_energy[i] = scint_energy_node->getValue(k);
-                  sc_ftof_1b_component[i] = scint_component_node->getValue(k);
-                  sc_ftof_1b_x[i] = scint_x_node->getValue(k);
-                  sc_ftof_1b_y[i] = scint_y_node->getValue(k);
-                  sc_ftof_1b_z[i] = scint_z_node->getValue(k);
-                  sc_ftof_1b_hx[i] = scint_hx_node->getValue(k);
-                  sc_ftof_1b_hy[i] = scint_hy_node->getValue(k);
-                  sc_ftof_1b_hz[i] = scint_hz_node->getValue(k);
-                } else if (pindex == i && detector == FTOF && layer == FTOF_2) {
-                  sc_ftof_2_sec[i] = scint_sector_node->getValue(k);
-                  sc_ftof_2_time[i] = scint_time_node->getValue(k);
-                  sc_ftof_2_path[i] = scint_path_node->getValue(k);
-                  sc_ftof_2_energy[i] = scint_energy_node->getValue(k);
-                  sc_ftof_2_component[i] = scint_component_node->getValue(k);
-                  sc_ftof_2_x[i] = scint_x_node->getValue(k);
-                  sc_ftof_2_y[i] = scint_y_node->getValue(k);
-                  sc_ftof_2_z[i] = scint_z_node->getValue(k);
-                  sc_ftof_2_hx[i] = scint_hx_node->getValue(k);
-                  sc_ftof_2_hy[i] = scint_hy_node->getValue(k);
-                  sc_ftof_2_hz[i] = scint_hz_node->getValue(k);
-                } else if (pindex == i && detector == CTOF) {
-                  sc_ctof_time[i] = scint_time_node->getValue(k);
-                  sc_ctof_path[i] = scint_path_node->getValue(k);
-                  sc_ctof_energy[i] = scint_energy_node->getValue(k);
-                  sc_ctof_component[i] = scint_component_node->getValue(k);
-                  sc_ctof_x[i] = scint_x_node->getValue(k);
-                  sc_ctof_y[i] = scint_y_node->getValue(k);
-                  sc_ctof_z[i] = scint_z_node->getValue(k);
-                  sc_ctof_hx[i] = scint_hx_node->getValue(k);
-                  sc_ctof_hy[i] = scint_hy_node->getValue(k);
-                  sc_ctof_hz[i] = scint_hz_node->getValue(k);
-                } else if (pindex == i && detector == CND) {
-                  sc_cnd_time[i] = scint_time_node->getValue(k);
-                  sc_cnd_path[i] = scint_path_node->getValue(k);
-                  sc_cnd_energy[i] = scint_energy_node->getValue(k);
-                  sc_cnd_component[i] = scint_component_node->getValue(k);
-                  sc_cnd_x[i] = scint_x_node->getValue(k);
-                  sc_cnd_y[i] = scint_y_node->getValue(k);
-                  sc_cnd_z[i] = scint_z_node->getValue(k);
-                  sc_cnd_hx[i] = scint_hx_node->getValue(k);
-                  sc_cnd_hy[i] = scint_hy_node->getValue(k);
-                  sc_cnd_hz[i] = scint_hz_node->getValue(k);
+                  cvt_px[i] = NAN;
+                  cvt_py[i] = NAN;
+                  cvt_pz[i] = NAN;
+                  cvt_vx[i] = NAN;
+                  cvt_vy[i] = NAN;
+                  cvt_vz[i] = NAN;
                 }
-              }
-            }
 
-            len_pid = pid_node->getLength();
-            len_pindex = track_pindex_node->getLength();
+                for (int i = 0; i < len_pid; i++) {
+                  for (int k = 0; k < len_pindex; k++) {
+                    int pindex = track_pindex_node->getValue(k);
+                    int detector = track_detector_node->getValue(k);
 
-            dc_sec.resize(len_pid);
-            dc_px.resize(len_pid);
-            dc_py.resize(len_pid);
-            dc_pz.resize(len_pid);
-            dc_vx.resize(len_pid);
-            dc_vy.resize(len_pid);
-            dc_vz.resize(len_pid);
+                    if (pindex == i && detector == CVT) {
+                      cvt_px[i] = track_px_nomm_node->getValue(k);
+                      cvt_py[i] = track_py_nomm_node->getValue(k);
+                      cvt_pz[i] = track_pz_nomm_node->getValue(k);
+                      cvt_vx[i] = track_vx_nomm_node->getValue(k);
+                      cvt_vy[i] = track_vy_nomm_node->getValue(k);
+                      cvt_vz[i] = track_vz_nomm_node->getValue(k);
 
-            cvt_px.resize(len_pid);
-            cvt_py.resize(len_pid);
-            cvt_pz.resize(len_pid);
-            cvt_vx.resize(len_pid);
-            cvt_vy.resize(len_pid);
-            cvt_vz.resize(len_pid);
-
-            for (int i = 0; i < len_pid; i++) {
-              dc_sec[i] = -1;
-              dc_px[i] = NAN;
-              dc_py[i] = NAN;
-              dc_pz[i] = NAN;
-              dc_vx[i] = NAN;
-              dc_vy[i] = NAN;
-              dc_vz[i] = NAN;
-
-              cvt_px[i] = NAN;
-              cvt_py[i] = NAN;
-              cvt_pz[i] = NAN;
-              cvt_vx[i] = NAN;
-              cvt_vy[i] = NAN;
-              cvt_vz[i] = NAN;
-            }
-
-            for (int i = 0; i < len_pid; i++) {
-              for (int k = 0; k < len_pindex; k++) {
-                int pindex = track_pindex_node->getValue(k);
-                int detector = track_detector_node->getValue(k);
-
-                if (pindex == i && detector == CVT) {
-                  cvt_px[i] = track_px_nomm_node->getValue(k);
-                  cvt_py[i] = track_py_nomm_node->getValue(k);
-                  cvt_pz[i] = track_pz_nomm_node->getValue(k);
-                  cvt_vx[i] = track_vx_nomm_node->getValue(k);
-                  cvt_vy[i] = track_vy_nomm_node->getValue(k);
-                  cvt_vz[i] = track_vz_nomm_node->getValue(k);
-
-                } else if (pindex == i && detector == DC) {
-                  dc_sec[i] = track_sector_node->getValue(k);
-                  dc_px[i] = track_px_nomm_node->getValue(k);
-                  dc_py[i] = track_py_nomm_node->getValue(k);
-                  dc_pz[i] = track_pz_nomm_node->getValue(k);
-                  dc_vx[i] = track_vx_nomm_node->getValue(k);
-                  dc_vy[i] = track_vy_nomm_node->getValue(k);
-                  dc_vz[i] = track_vz_nomm_node->getValue(k);
-                }
-              }
-            }
-
-            len_pid = pid_node->getLength();
-            len_pindex = fortag_pindex_node->getLength();
-
-            ft_cal_energy.resize(len_pid);
-            ft_cal_time.resize(len_pid);
-            ft_cal_path.resize(len_pid);
-            ft_cal_x.resize(len_pid);
-            ft_cal_y.resize(len_pid);
-            ft_cal_z.resize(len_pid);
-            ft_cal_dx.resize(len_pid);
-            ft_cal_dy.resize(len_pid);
-            ft_cal_radius.resize(len_pid);
-
-            ft_hodo_energy.resize(len_pid);
-            ft_hodo_time.resize(len_pid);
-            ft_hodo_path.resize(len_pid);
-            ft_hodo_x.resize(len_pid);
-            ft_hodo_y.resize(len_pid);
-            ft_hodo_z.resize(len_pid);
-            ft_hodo_dx.resize(len_pid);
-            ft_hodo_dy.resize(len_pid);
-            ft_hodo_radius.resize(len_pid);
-
-            for (int i = 0; i < len_pid; i++) {
-              ft_cal_energy[i] = NAN;
-              ft_cal_time[i] = NAN;
-              ft_cal_path[i] = NAN;
-              ft_cal_x[i] = NAN;
-              ft_cal_y[i] = NAN;
-              ft_cal_z[i] = NAN;
-              ft_cal_dx[i] = NAN;
-              ft_cal_dy[i] = NAN;
-              ft_cal_radius[i] = NAN;
-
-              ft_hodo_energy[i] = NAN;
-              ft_hodo_time[i] = NAN;
-              ft_hodo_path[i] = NAN;
-              ft_hodo_x[i] = NAN;
-              ft_hodo_y[i] = NAN;
-              ft_hodo_z[i] = NAN;
-              ft_hodo_dx[i] = NAN;
-              ft_hodo_dy[i] = NAN;
-              ft_hodo_radius[i] = NAN;
-            }
-
-            for (int i = 0; i < len_pid; i++) {
-              for (int k = 0; k < len_pindex; k++) {
-                int pindex = fortag_pindex_node->getValue(k);
-                int detector = fortag_detector_node->getValue(k);
-
-                if (pindex == i && detector == FTCAL) {
-                  ft_cal_energy[i] = fortag_energy_node->getValue(k);
-                  ft_cal_time[i] = fortag_time_node->getValue(k);
-                  ft_cal_path[i] = fortag_path_node->getValue(k);
-                  ft_cal_x[i] = fortag_x_node->getValue(k);
-                  ft_cal_y[i] = fortag_y_node->getValue(k);
-                  ft_cal_z[i] = fortag_z_node->getValue(k);
-                  ft_cal_dx[i] = fortag_dx_node->getValue(k);
-                  ft_cal_dy[i] = fortag_dy_node->getValue(k);
-                  ft_cal_radius[i] = fortag_radius_node->getValue(k);
-                } else if (pindex == i && detector == FTHODO) {
-                  ft_hodo_energy[i] = fortag_energy_node->getValue(k);
-                  ft_hodo_time[i] = fortag_time_node->getValue(k);
-                  ft_hodo_path[i] = fortag_path_node->getValue(k);
-                  ft_hodo_x[i] = fortag_x_node->getValue(k);
-                  ft_hodo_y[i] = fortag_y_node->getValue(k);
-                  ft_hodo_z[i] = fortag_z_node->getValue(k);
-                  ft_hodo_dx[i] = fortag_dx_node->getValue(k);
-                  ft_hodo_dy[i] = fortag_dy_node->getValue(k);
-                  ft_hodo_radius[i] = fortag_radius_node->getValue(k);
-                }
-              }
-            }
-
-            if (cov) {
-              len_pid = pid_node->getLength();
-              len_pindex = CovMat_pindex_node->getLength();
-
-              CovMat_11.resize(len_pid);
-              CovMat_12.resize(len_pid);
-              CovMat_13.resize(len_pid);
-              CovMat_14.resize(len_pid);
-              CovMat_15.resize(len_pid);
-              CovMat_22.resize(len_pid);
-              CovMat_23.resize(len_pid);
-              CovMat_24.resize(len_pid);
-              CovMat_25.resize(len_pid);
-              CovMat_33.resize(len_pid);
-              CovMat_34.resize(len_pid);
-              CovMat_35.resize(len_pid);
-              CovMat_44.resize(len_pid);
-              CovMat_45.resize(len_pid);
-              CovMat_55.resize(len_pid);
-
-              for (int i = 0; i < len_pid; i++) {
-                CovMat_11[i] = NAN;
-                CovMat_12[i] = NAN;
-                CovMat_13[i] = NAN;
-                CovMat_14[i] = NAN;
-                CovMat_15[i] = NAN;
-                CovMat_22[i] = NAN;
-                CovMat_23[i] = NAN;
-                CovMat_24[i] = NAN;
-                CovMat_25[i] = NAN;
-                CovMat_33[i] = NAN;
-                CovMat_34[i] = NAN;
-                CovMat_35[i] = NAN;
-                CovMat_44[i] = NAN;
-                CovMat_45[i] = NAN;
-                CovMat_55[i] = NAN;
-              }
-
-              for (int i = 0; i < len_pid; i++) {
-                for (int k = 0; k < len_pindex; ++k) {
-                  int pindex = CovMat_pindex_node->getValue(k);
-                  if (pindex == i) {
-                    CovMat_11[i] = CovMat_C11_node->getValue(k);
-                    CovMat_12[i] = CovMat_C12_node->getValue(k);
-                    CovMat_13[i] = CovMat_C13_node->getValue(k);
-                    CovMat_14[i] = CovMat_C14_node->getValue(k);
-                    CovMat_15[i] = CovMat_C15_node->getValue(k);
-                    CovMat_22[i] = CovMat_C22_node->getValue(k);
-                    CovMat_23[i] = CovMat_C23_node->getValue(k);
-                    CovMat_24[i] = CovMat_C24_node->getValue(k);
-                    CovMat_25[i] = CovMat_C25_node->getValue(k);
-                    CovMat_33[i] = CovMat_C33_node->getValue(k);
-                    CovMat_34[i] = CovMat_C34_node->getValue(k);
-                    CovMat_35[i] = CovMat_C35_node->getValue(k);
-                    CovMat_44[i] = CovMat_C44_node->getValue(k);
-                    CovMat_45[i] = CovMat_C45_node->getValue(k);
-                    CovMat_55[i] = CovMat_C55_node->getValue(k);
+                    } else if (pindex == i && detector == DC) {
+                      dc_sec[i] = track_sector_node->getValue(k);
+                      dc_px[i] = track_px_nomm_node->getValue(k);
+                      dc_py[i] = track_py_nomm_node->getValue(k);
+                      dc_pz[i] = track_pz_nomm_node->getValue(k);
+                      dc_vx[i] = track_vx_nomm_node->getValue(k);
+                      dc_vy[i] = track_vy_nomm_node->getValue(k);
+                      dc_vz[i] = track_vz_nomm_node->getValue(k);
+                    }
                   }
                 }
-              }
-            }
 
-            if (cvt) {
-              len_pid = CVT_pid_node->getLength();
-              l = CVT_pid_node->getLength();
+                len_pid = pid_node->getLength();
+                len_pindex = fortag_pindex_node->getLength();
 
-              cvt_pid.resize(len_pid);
-              cvt_q.resize(len_pid);
-              cvt_p.resize(len_pid);
-              cvt_pt.resize(len_pid);
-              cvt_phi0.resize(len_pid);
-              cvt_tandip.resize(len_pid);
-              cvt_z0.resize(len_pid);
-              cvt_d0.resize(len_pid);
-              cvt_CovMat_d02.resize(len_pid);
-              cvt_CovMat_d0phi0.resize(len_pid);
-              cvt_CovMat_d0rho.resize(len_pid);
-              cvt_CovMat_phi02.resize(len_pid);
-              cvt_CovMat_phi0rho.resize(len_pid);
-              cvt_CovMat_rho2.resize(len_pid);
-              cvt_CovMat_z02.resize(len_pid);
-              cvt_CovMat_tandip2.resize(len_pid);
+                ft_cal_energy.resize(len_pid);
+                ft_cal_time.resize(len_pid);
+                ft_cal_path.resize(len_pid);
+                ft_cal_x.resize(len_pid);
+                ft_cal_y.resize(len_pid);
+                ft_cal_z.resize(len_pid);
+                ft_cal_dx.resize(len_pid);
+                ft_cal_dy.resize(len_pid);
+                ft_cal_radius.resize(len_pid);
 
-              for (int i = 0; i < len_pid; i++) {
-                cvt_pid[i] = -1;
-                cvt_q[i] = -1;
-                cvt_p[i] = NAN;
-                cvt_pt[i] = NAN;
-                cvt_phi0[i] = NAN;
-                cvt_tandip[i] = NAN;
-                cvt_z0[i] = NAN;
-                cvt_d0[i] = NAN;
-                cvt_CovMat_d02[i] = NAN;
-                cvt_CovMat_d0phi0[i] = NAN;
-                cvt_CovMat_d0rho[i] = NAN;
-                cvt_CovMat_phi02[i] = NAN;
-                cvt_CovMat_phi0rho[i] = NAN;
-                cvt_CovMat_rho2[i] = NAN;
-                cvt_CovMat_z02[i] = NAN;
-                cvt_CovMat_tandip2[i] = NAN;
-              }
+                ft_hodo_energy.resize(len_pid);
+                ft_hodo_time.resize(len_pid);
+                ft_hodo_path.resize(len_pid);
+                ft_hodo_x.resize(len_pid);
+                ft_hodo_y.resize(len_pid);
+                ft_hodo_z.resize(len_pid);
+                ft_hodo_dx.resize(len_pid);
+                ft_hodo_dy.resize(len_pid);
+                ft_hodo_radius.resize(len_pid);
 
-              for (int i = 0; i < len_pid; i++) {
-                for (int k = 0; k < len_pindex; ++k) {
-                  int pindex = CovMat_pindex_node->getValue(k);
-                  if (pindex == i) {
-                    cvt_pid[i] = CVT_pid_node->getValue(k);
-                    cvt_q[i] = CVT_q_node->getValue(k);
-                    cvt_p[i] = CVT_p_node->getValue(k);
-                    cvt_phi0[i] = CVT_phi0_node->getValue(k);
-                    cvt_tandip[i] = CVT_tandip_node->getValue(k);
-                    cvt_z0[i] = CVT_z0_node->getValue(k);
-                    cvt_d0[i] = CVT_d0_node->getValue(k);
-                    cvt_CovMat_d02[i] = CVT_Cov_d02_node->getValue(k);
-                    cvt_CovMat_d0phi0[i] = CVT_Cov_d0phi0_node->getValue(k);
-                    cvt_CovMat_d0rho[i] = CVT_Cov_d0rho_node->getValue(k);
-                    cvt_CovMat_phi02[i] = CVT_Cov_phi02_node->getValue(k);
-                    cvt_CovMat_phi0rho[i] = CVT_Cov_phi0rho_node->getValue(k);
-                    cvt_CovMat_rho2[i] = CVT_Cov_rho2_node->getValue(k);
-                    cvt_CovMat_z02[i] = CVT_Cov_z02_node->getValue(k);
-                    cvt_CovMat_tandip2[i] = CVT_Cov_tandip2_node->getValue(k);
+                for (int i = 0; i < len_pid; i++) {
+                  ft_cal_energy[i] = NAN;
+                  ft_cal_time[i] = NAN;
+                  ft_cal_path[i] = NAN;
+                  ft_cal_x[i] = NAN;
+                  ft_cal_y[i] = NAN;
+                  ft_cal_z[i] = NAN;
+                  ft_cal_dx[i] = NAN;
+                  ft_cal_dy[i] = NAN;
+                  ft_cal_radius[i] = NAN;
+
+                  ft_hodo_energy[i] = NAN;
+                  ft_hodo_time[i] = NAN;
+                  ft_hodo_path[i] = NAN;
+                  ft_hodo_x[i] = NAN;
+                  ft_hodo_y[i] = NAN;
+                  ft_hodo_z[i] = NAN;
+                  ft_hodo_dx[i] = NAN;
+                  ft_hodo_dy[i] = NAN;
+                  ft_hodo_radius[i] = NAN;
+                }
+
+                for (int i = 0; i < len_pid; i++) {
+                  for (int k = 0; k < len_pindex; k++) {
+                    int pindex = fortag_pindex_node->getValue(k);
+                    int detector = fortag_detector_node->getValue(k);
+
+                    if (pindex == i && detector == FTCAL) {
+                      ft_cal_energy[i] = fortag_energy_node->getValue(k);
+                      ft_cal_time[i] = fortag_time_node->getValue(k);
+                      ft_cal_path[i] = fortag_path_node->getValue(k);
+                      ft_cal_x[i] = fortag_x_node->getValue(k);
+                      ft_cal_y[i] = fortag_y_node->getValue(k);
+                      ft_cal_z[i] = fortag_z_node->getValue(k);
+                      ft_cal_dx[i] = fortag_dx_node->getValue(k);
+                      ft_cal_dy[i] = fortag_dy_node->getValue(k);
+                      ft_cal_radius[i] = fortag_radius_node->getValue(k);
+                    } else if (pindex == i && detector == FTHODO) {
+                      ft_hodo_energy[i] = fortag_energy_node->getValue(k);
+                      ft_hodo_time[i] = fortag_time_node->getValue(k);
+                      ft_hodo_path[i] = fortag_path_node->getValue(k);
+                      ft_hodo_x[i] = fortag_x_node->getValue(k);
+                      ft_hodo_y[i] = fortag_y_node->getValue(k);
+                      ft_hodo_z[i] = fortag_z_node->getValue(k);
+                      ft_hodo_dx[i] = fortag_dx_node->getValue(k);
+                      ft_hodo_dy[i] = fortag_dy_node->getValue(k);
+                      ft_hodo_radius[i] = fortag_radius_node->getValue(k);
+                    }
                   }
                 }
-              }
-            }
-        */
+
+                if (cov) {
+                  len_pid = pid_node->getLength();
+                  len_pindex = CovMat_pindex_node->getLength();
+
+                  CovMat_11.resize(len_pid);
+                  CovMat_12.resize(len_pid);
+                  CovMat_13.resize(len_pid);
+                  CovMat_14.resize(len_pid);
+                  CovMat_15.resize(len_pid);
+                  CovMat_22.resize(len_pid);
+                  CovMat_23.resize(len_pid);
+                  CovMat_24.resize(len_pid);
+                  CovMat_25.resize(len_pid);
+                  CovMat_33.resize(len_pid);
+                  CovMat_34.resize(len_pid);
+                  CovMat_35.resize(len_pid);
+                  CovMat_44.resize(len_pid);
+                  CovMat_45.resize(len_pid);
+                  CovMat_55.resize(len_pid);
+
+                  for (int i = 0; i < len_pid; i++) {
+                    CovMat_11[i] = NAN;
+                    CovMat_12[i] = NAN;
+                    CovMat_13[i] = NAN;
+                    CovMat_14[i] = NAN;
+                    CovMat_15[i] = NAN;
+                    CovMat_22[i] = NAN;
+                    CovMat_23[i] = NAN;
+                    CovMat_24[i] = NAN;
+                    CovMat_25[i] = NAN;
+                    CovMat_33[i] = NAN;
+                    CovMat_34[i] = NAN;
+                    CovMat_35[i] = NAN;
+                    CovMat_44[i] = NAN;
+                    CovMat_45[i] = NAN;
+                    CovMat_55[i] = NAN;
+                  }
+
+                  for (int i = 0; i < len_pid; i++) {
+                    for (int k = 0; k < len_pindex; ++k) {
+                      int pindex = CovMat_pindex_node->getValue(k);
+                      if (pindex == i) {
+                        CovMat_11[i] = CovMat_C11_node->getValue(k);
+                        CovMat_12[i] = CovMat_C12_node->getValue(k);
+                        CovMat_13[i] = CovMat_C13_node->getValue(k);
+                        CovMat_14[i] = CovMat_C14_node->getValue(k);
+                        CovMat_15[i] = CovMat_C15_node->getValue(k);
+                        CovMat_22[i] = CovMat_C22_node->getValue(k);
+                        CovMat_23[i] = CovMat_C23_node->getValue(k);
+                        CovMat_24[i] = CovMat_C24_node->getValue(k);
+                        CovMat_25[i] = CovMat_C25_node->getValue(k);
+                        CovMat_33[i] = CovMat_C33_node->getValue(k);
+                        CovMat_34[i] = CovMat_C34_node->getValue(k);
+                        CovMat_35[i] = CovMat_C35_node->getValue(k);
+                        CovMat_44[i] = CovMat_C44_node->getValue(k);
+                        CovMat_45[i] = CovMat_C45_node->getValue(k);
+                        CovMat_55[i] = CovMat_C55_node->getValue(k);
+                      }
+                    }
+                  }
+                }
+
+                if (cvt) {
+                  len_pid = CVT_pid_node->getLength();
+                  l = CVT_pid_node->getLength();
+
+                  cvt_pid.resize(len_pid);
+                  cvt_q.resize(len_pid);
+                  cvt_p.resize(len_pid);
+                  cvt_pt.resize(len_pid);
+                  cvt_phi0.resize(len_pid);
+                  cvt_tandip.resize(len_pid);
+                  cvt_z0.resize(len_pid);
+                  cvt_d0.resize(len_pid);
+                  cvt_CovMat_d02.resize(len_pid);
+                  cvt_CovMat_d0phi0.resize(len_pid);
+                  cvt_CovMat_d0rho.resize(len_pid);
+                  cvt_CovMat_phi02.resize(len_pid);
+                  cvt_CovMat_phi0rho.resize(len_pid);
+                  cvt_CovMat_rho2.resize(len_pid);
+                  cvt_CovMat_z02.resize(len_pid);
+                  cvt_CovMat_tandip2.resize(len_pid);
+
+                  for (int i = 0; i < len_pid; i++) {
+                    cvt_pid[i] = -1;
+                    cvt_q[i] = -1;
+                    cvt_p[i] = NAN;
+                    cvt_pt[i] = NAN;
+                    cvt_phi0[i] = NAN;
+                    cvt_tandip[i] = NAN;
+                    cvt_z0[i] = NAN;
+                    cvt_d0[i] = NAN;
+                    cvt_CovMat_d02[i] = NAN;
+                    cvt_CovMat_d0phi0[i] = NAN;
+                    cvt_CovMat_d0rho[i] = NAN;
+                    cvt_CovMat_phi02[i] = NAN;
+                    cvt_CovMat_phi0rho[i] = NAN;
+                    cvt_CovMat_rho2[i] = NAN;
+                    cvt_CovMat_z02[i] = NAN;
+                    cvt_CovMat_tandip2[i] = NAN;
+                  }
+
+                  for (int i = 0; i < len_pid; i++) {
+                    for (int k = 0; k < len_pindex; ++k) {
+                      int pindex = CovMat_pindex_node->getValue(k);
+                      if (pindex == i) {
+                        cvt_pid[i] = CVT_pid_node->getValue(k);
+                        cvt_q[i] = CVT_q_node->getValue(k);
+                        cvt_p[i] = CVT_p_node->getValue(k);
+                        cvt_phi0[i] = CVT_phi0_node->getValue(k);
+                        cvt_tandip[i] = CVT_tandip_node->getValue(k);
+                        cvt_z0[i] = CVT_z0_node->getValue(k);
+                        cvt_d0[i] = CVT_d0_node->getValue(k);
+                        cvt_CovMat_d02[i] = CVT_Cov_d02_node->getValue(k);
+                        cvt_CovMat_d0phi0[i] = CVT_Cov_d0phi0_node->getValue(k);
+                        cvt_CovMat_d0rho[i] = CVT_Cov_d0rho_node->getValue(k);
+                        cvt_CovMat_phi02[i] = CVT_Cov_phi02_node->getValue(k);
+                        cvt_CovMat_phi0rho[i] = CVT_Cov_phi0rho_node->getValue(k);
+                        cvt_CovMat_rho2[i] = CVT_Cov_rho2_node->getValue(k);
+                        cvt_CovMat_z02[i] = CVT_Cov_z02_node->getValue(k);
+                        cvt_CovMat_tandip2[i] = CVT_Cov_tandip2_node->getValue(k);
+                      }
+                    }
+                  }
+                }
+            */
     clas12->Fill();
   }
 
