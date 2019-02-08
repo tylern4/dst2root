@@ -13,129 +13,110 @@
 
 #ifndef HIPO_BANK_H
 #define HIPO_BANK_H
-#include <iostream>
-#include <vector>
-#include <cstring>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <cstring>
+#include <iostream>
 #include <map>
+#include <vector>
 #include "dictionary.h"
 
 namespace hipo {
 
-  class structure {
+class structure {
+ private:
+  std::vector<char> structureBuffer;
+  char *structureAddress;
+  void setAddress(const char *address);
 
-    private:
+ protected:
+  void initStructureBySize(int __group, int __item, int __type, int __size);
+  std::vector<char> &getStructureBuffer() { return structureBuffer; }
+  int getStructureBufferSize() { return 8 + getSize(); }
 
-      std::vector<char> structureBuffer;
-      char *structureAddress;
-      void setAddress(const char *address);
+ public:
+  structure() { structureAddress = NULL; }
+  structure(int size) { allocate(size); }
 
-    protected:
-      void initStructureBySize(int __group, int __item, int __type, int __size);
-      std::vector<char>  &getStructureBuffer(){ return structureBuffer;}
-      int                 getStructureBufferSize(){ return 8+getSize();}
-    public:
+  virtual ~structure() {}
+  bool allocate(int size);
+  int getSize();
+  int getType();
+  int getGroup();
+  int getItem();
+  void init(const char *buffer, int size);
+  const char *getAddress();
+  virtual void show();
 
-      structure(){ structureAddress = NULL;}
-      structure(int size){ allocate(size);}
+  int getIntAt(int index) { return *reinterpret_cast<int32_t *>(&structureAddress[index + 8]); }
+  int16_t getShortAt(int index) { return *reinterpret_cast<int16_t *>(&structureAddress[index + 8]); }
+  int8_t getByteAt(int index) { return *reinterpret_cast<int8_t *>(&structureAddress[index + 8]); }
+  float getFloatAt(int index) { return *reinterpret_cast<float *>(&structureAddress[index + 8]); }
+  double getDoubleAt(int index) { return *reinterpret_cast<double *>(&structureAddress[index + 8]); }
+  long getLongAt(int index) { return *reinterpret_cast<int64_t *>(&structureAddress[index + 8]); }
 
-      virtual     ~structure(){}
-      bool         allocate(int size);
-      int          getSize();
-      int          getType();
-      int          getGroup();
-      int          getItem();
-      void         init(const char *buffer, int size);
-      const char  *getAddress();
-      virtual void  show();
+  std::string getStringAt(int index);
 
-      int          getIntAt   ( int index) {
-        return *reinterpret_cast<int32_t*>(&structureAddress[index+8]);
-      }
-      int16_t      getShortAt ( int index){
-        return *reinterpret_cast<int16_t*>(&structureAddress[index+8]);
-      }
-      int8_t       getByteAt  ( int index){
-        return *reinterpret_cast<int8_t*>(&structureAddress[index+8]);
-      }
-      float        getFloatAt ( int index){
-        return *reinterpret_cast<float*>(&structureAddress[index+8]);
-      }
-      double       getDoubleAt( int index){
-        return *reinterpret_cast<double*>(&structureAddress[index+8]);
-      }
-      long         getLongAt  ( int index){
-        return *reinterpret_cast<int64_t*>(&structureAddress[index+8]);
-      }
+  virtual void notify() {}
+  friend class event;
+};
 
-      std::string  getStringAt(int index);
+// typedef std::auto_ptr<hipo::generic_node> node_pointer;
 
+class bank : public hipo::structure {
+ private:
+  hipo::schema bankSchema;
+  int bankRows;
 
-      virtual void notify(){}
-      friend class event;
-  };
+ protected:
+  void setBankRows(int rows) { bankRows = rows; }
 
-  //typedef std::auto_ptr<hipo::generic_node> node_pointer;
+ public:
+  bank();
+  // constructor initializes the nodes in the bank
+  // and they will be filled automatically by reader.next()
+  // method.
+  bank(hipo::schema __schema) {
+    bankSchema = __schema;
+    bankRows = -1;
+  }
 
-    class bank : public hipo::structure {
+  bank(hipo::schema __schema, int __rows) {
+    bankSchema = __schema;
+    bankRows = __rows;
+    int size = bankSchema.getSizeForRows(__rows);
+    initStructureBySize(bankSchema.getGroup(), bankSchema.getItem(), 11, size);
+  }
 
-    private:
+  ~bank();
+  // display the content of the bank
+  // void show();
 
-      hipo::schema  bankSchema;
-      int           bankRows;
+  hipo::schema &getSchema() { return bankSchema; }
 
-    protected:
-        void setBankRows(int rows){ bankRows = rows;}
+  int getRows() { return bankRows; }
 
-    public:
+  int getInt(int item, int index);
+  int getShort(int item, int index);
+  int getByte(int item, int index);
+  float getFloat(int item, int index);
+  double getDouble(int item, int index);
+  long getLong(int item, int index);
 
-        bank();
-        // constructor initializes the nodes in the bank
-        // and they will be filled automatically by reader.next()
-        // method.
-        bank(hipo::schema __schema){
-          bankSchema = __schema;
-          bankRows   = -1;
-        }
+  int getInt(const char *name, int index);
+  int getShort(const char *name, int index);
+  int getByte(const char *name, int index);
+  float getFloat(const char *name, int index);
+  double getDouble(const char *name, int index);
+  long getLong(const char *name, int index);
 
-        bank(hipo::schema __schema, int __rows){
-          bankSchema = __schema;
-          bankRows   = __rows;
-          int size   = bankSchema.getSizeForRows(__rows);
-          initStructureBySize(bankSchema.getGroup(),bankSchema.getItem(), 11, size);
-        }
+  void show();
+  // virtual  void notify(){ };
 
-        ~bank();
-        // display the content of the bank
-        //void show();
+  virtual void notify();
+};
 
-        hipo::schema  &getSchema() { return bankSchema;}
-
-        int    getRows(){ return bankRows;}
-
-        int    getInt(int item, int index);
-        int    getShort(int item, int index);
-        int    getByte(int item, int index);
-        float  getFloat(int item, int index);
-        double getDouble(int item, int index);
-        long   getLong(int item, int index);
-
-        int    getInt(const char *name, int index);
-        int    getShort(const char *name, int index);
-        int    getByte(const char *name, int index);
-        float  getFloat(const char *name, int index);
-        double getDouble(const char *name, int index);
-        long   getLong(const char *name, int index);
-
-        void   show();
-        //virtual  void notify(){ };
-
-        virtual void notify();
-  };
-
-}
-
+}  // namespace hipo
 
 #endif /* EVENT_H */

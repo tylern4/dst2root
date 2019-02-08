@@ -103,12 +103,30 @@ int main(int argc, char **argv) {
   hipo::event *event = new hipo::event();
   int counter = 0;
 
-  hipo::bank *particles = new hipo::bank(dict->getSchema("REC::Particle"));
+  hipo::bank *rec_ForwardTagger = new hipo::bank(dict->getSchema("REC::ForwardTagger"));
+  hipo::bank *rec_VertDoca = new hipo::bank(dict->getSchema("REC::VertDoca"));
+  hipo::bank *rec_Track = new hipo::bank(dict->getSchema("REC::Track"));
+  hipo::bank *rec_Cherenkov = new hipo::bank(dict->getSchema("REC::Cherenkov"));
+  hipo::bank *rec_Event = new hipo::bank(dict->getSchema("REC::Event"));
+  hipo::bank *rec_Particle = new hipo::bank(dict->getSchema("REC::Particle"));
+  hipo::bank *rec_Scintillator = new hipo::bank(dict->getSchema("REC::Scintillator"));
+  hipo::bank *rec_Calorimeter = new hipo::bank(dict->getSchema("REC::Calorimeter"));
+  hipo::bank *rec_CovMat = new hipo::bank(dict->getSchema("REC::CovMat"));
 
   while (reader->next() == true) {
+    /*
     reader->read(*event);
+    event->getStructure(*rec_Particle);
+    event->getStructure(*rec_ForwardTagger);
+    event->getStructure(*rec_VertDoca);
+    event->getStructure(*rec_Track);
+    event->getStructure(*rec_Cherenkov);
+    event->getStructure(*rec_Event);
+    event->getStructure(*rec_Scintillator);
+    event->getStructure(*rec_Calorimeter);
+    event->getStructure(*rec_CovMat);
 
-    int l = particles->getRows();
+    int l = rec_Particle->getRows();
     pid.resize(l);
     p.resize(l);
     p2.resize(l);
@@ -123,24 +141,26 @@ int main(int argc, char **argv) {
     chi2pid.resize(l);
     status.resize(l);
     for (int i = 0; i < l; i++) {
-      pid[i] = particles->getInt("pid", i);
-      p2[i] = (particles->getFloat("px", i) * particles->getFloat("px", i) +
-               particles->getFloat("py", i) * particles->getFloat("py", i) +
-               particles->getFloat("pz", i) * particles->getFloat("pz", i));
+      pid[i] = rec_Particle->getInt("pid", i);
+      p2[i] = (rec_Particle->getFloat("px", i) * rec_Particle->getFloat("px", i) +
+               rec_Particle->getFloat("py", i) * rec_Particle->getFloat("py", i) +
+               rec_Particle->getFloat("pz", i) * rec_Particle->getFloat("pz", i));
       p[i] = sqrt(p2[i]);
-      px[i] = particles->getFloat("px", i);
-      py[i] = particles->getFloat("py", i);
-      pz[i] = particles->getFloat("pz", i);
-      vx[i] = particles->getFloat("vx", i);
-      vy[i] = particles->getFloat("vy", i);
-      vz[i] = particles->getFloat("vz", i);
-      charge[i] = particles->getInt("charge", i);
-      beta[i] = ((particles->getFloat("beta", i) != -9999) ? particles->getFloat("beta", i) : NAN);
-      chi2pid[i] = particles->getFloat("chi2pid", i);
-      status[i] = particles->getInt("status", i);
+      px[i] = rec_Particle->getFloat("px", i);
+      py[i] = rec_Particle->getFloat("py", i);
+      pz[i] = rec_Particle->getFloat("pz", i);
+      vx[i] = rec_Particle->getFloat("vx", i);
+      vy[i] = rec_Particle->getFloat("vy", i);
+      vz[i] = rec_Particle->getFloat("vz", i);
+      charge[i] = rec_Particle->getInt("charge", i);
+      beta[i] = ((rec_Particle->getFloat("beta", i) != -9999) ? rec_Particle->getFloat("beta", i) : NAN);
+      chi2pid[i] = rec_Particle->getFloat("chi2pid", i);
+      status[i] = rec_Particle->getInt("status", i);
+      std::cout << "Pid: " << pid[i] << '\n';
     }
+    */
     counter++;
   }
-  printf("processed events = %d\n", counter);
+  std::cout << counter << '\n';
 }
 //### END OF GENERATED CODE
