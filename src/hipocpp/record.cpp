@@ -79,18 +79,18 @@ void record::readRecord(std::ifstream &stream, long position, int dataOffset) {
   if (recordBuffer.size() < decompressedLength) {
     recordBuffer.resize(decompressedLength + 1024);
   }
-  // readBenchmark.pause();
+
   // for(int i = 0; i < recordBuffer.size(); i++) recordBuffer[i] = 0;
   // printf("****************** BEFORE padding = %d\n", compressedDataLengthPadding);
   // showBuffer(&recordBuffer[0], 10, 200);
-  // unzipBenchmark.resume();
+
   if (recordHeader.compressionType == 0) {
     memcpy((&recordBuffer[0]), (&recordCompressedBuffer[0]), decompressedLength);
   } else {
     int unc_result = getUncompressed((&recordCompressedBuffer[0]), (&recordBuffer[0]),
                                      dataBufferLengthBytes - compressedDataLengthPadding, decompressedLength);
   }
-  // unzipBenchmark.pause();
+
   // printf("******************\n");
   // showBuffer(&recordBuffer[0], 10, 200);
   // char *uncompressedBuffer  = getUncompressed(compressedBuffer,dataBufferLengthBytes,recordHeader.recordDataLength);
@@ -114,7 +114,6 @@ void record::readRecord(std::ifstream &stream, long position, int dataOffset) {
 }
 
 bool record::readRecord(std::ifstream &stream, long position, int dataOffset, long inputSize) {
-  readBenchmark.resume();
   if ((position + 80) >= inputSize) return false;
 
   recordHeaderBuffer.resize(80);
@@ -183,8 +182,7 @@ bool record::readRecord(std::ifstream &stream, long position, int dataOffset, lo
   // for(int i = 0; i < recordBuffer.size(); i++) recordBuffer[i] = 0;
   // printf("****************** BEFORE padding = %d\n", compressedDataLengthPadding);
   // showBuffer(&recordBuffer[0], 10, 200);
-  readBenchmark.pause();
-  unzipBenchmark.resume();
+
   if (recordHeader.compressionType == 0) {
     printf("compression type = 0 data length = %d\n", decompressedLength);
     memcpy((&recordBuffer[0]), (&recordCompressedBuffer[0]), decompressedLength);
@@ -192,7 +190,7 @@ bool record::readRecord(std::ifstream &stream, long position, int dataOffset, lo
     int unc_result = getUncompressed((&recordCompressedBuffer[0]), (&recordBuffer[0]),
                                      dataBufferLengthBytes - compressedDataLengthPadding, decompressedLength);
   }
-  unzipBenchmark.pause();
+
   // printf("******************\n");
   // showBuffer(&recordBuffer[0], 10, 200);
   // char *uncompressedBuffer  = getUncompressed(compressedBuffer,dataBufferLengthBytes,recordHeader.recordDataLength);
@@ -203,7 +201,7 @@ bool record::readRecord(std::ifstream &stream, long position, int dataOffset, lo
    * converting index array from lengths of each buffer in the
    * record to relative positions in the record stream.
    */
-  indexBenchmark.resume();
+
   int eventPosition = 0;
   for (int i = 0; i < recordHeader.numberOfEvents; i++) {
     int *ptr = reinterpret_cast<int *>(&recordBuffer[i * 4]);
@@ -212,7 +210,7 @@ bool record::readRecord(std::ifstream &stream, long position, int dataOffset, lo
     eventPosition += size;
     *ptr = eventPosition;
   }
-  indexBenchmark.pause();
+
   return true;
 }
 

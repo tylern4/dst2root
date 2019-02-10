@@ -56,7 +56,6 @@ int main(int argc, char **argv) {
   bool good_rec = false;
   bool elec_first = false;
   bool cov = false;
-  bool cvt = false;
 
   auto cli =
       (clipp::option("-h", "--help").set(print_help) % "print help",
@@ -350,23 +349,6 @@ int main(int argc, char **argv) {
   std::vector<float> CovMat_45;
   std::vector<float> CovMat_55;
 
-  std::vector<int> cvt_pid;
-  std::vector<int> cvt_q;
-  std::vector<float> cvt_p;
-  std::vector<float> cvt_pt;
-  std::vector<float> cvt_phi0;
-  std::vector<float> cvt_tandip;
-  std::vector<float> cvt_z0;
-  std::vector<float> cvt_d0;
-  std::vector<float> cvt_CovMat_d02;
-  std::vector<float> cvt_CovMat_d0phi0;
-  std::vector<float> cvt_CovMat_d0rho;
-  std::vector<float> cvt_CovMat_phi02;
-  std::vector<float> cvt_CovMat_phi0rho;
-  std::vector<float> cvt_CovMat_rho2;
-  std::vector<float> cvt_CovMat_z02;
-  std::vector<float> cvt_CovMat_tandip2;
-
   clas12->Branch("run", &run);
   clas12->Branch("event", &event);
   clas12->Branch("torus", &torus);
@@ -580,23 +562,6 @@ int main(int argc, char **argv) {
     clas12->Branch("CovMat_44", &CovMat_44);
     clas12->Branch("CovMat_45", &CovMat_45);
     clas12->Branch("CovMat_55", &CovMat_55);
-  }
-  if (cvt) {
-    clas12->Branch("cvt_pid", &cvt_pid);
-    clas12->Branch("cvt_q", &cvt_q);
-    clas12->Branch("cvt_p", &cvt_p);
-    clas12->Branch("cvt_pt", &cvt_pt);
-    clas12->Branch("cvt_phi0", &cvt_phi0);
-    clas12->Branch("cvt_tandip", &cvt_tandip);
-    clas12->Branch("cvt_z0", &cvt_z0);
-    clas12->Branch("cvt_d0", &cvt_d0);
-    clas12->Branch("cvt_CovMat_d02", &cvt_CovMat_d02);
-    clas12->Branch("cvt_CovMat_d0rho", &cvt_CovMat_d0rho);
-    clas12->Branch("cvt_CovMat_phi02", &cvt_CovMat_phi02);
-    clas12->Branch("cvt_CovMat_phi0rho", &cvt_CovMat_phi0rho);
-    clas12->Branch("cvt_CovMat_rho2", &cvt_CovMat_rho2);
-    clas12->Branch("cvt_CovMat_z02", &cvt_CovMat_z02);
-    clas12->Branch("cvt_CovMat_tandip2", &cvt_CovMat_tandip2);
   }
 
   int entry = 0;

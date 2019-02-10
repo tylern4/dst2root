@@ -18,10 +18,7 @@ namespace hipo {
  * will printout a warning message if the library
  * was not compiled with compression libraries LZ4 or GZIP
  */
-reader::reader() {
-  printWarning();
-  hipoutils.printLogo();
-}
+reader::reader() { printWarning(); }
 
 /**
  * Default destructor. Does nothing
